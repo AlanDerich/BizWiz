@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.derich.bizwiz.model.User;
@@ -16,9 +15,9 @@ import java.util.ArrayList;
  */
 public class DatabaseHelper  extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
-    private static final String DATABASE_NAME = "Bizwiz.db";
+    public static final String DATABASE_NAME = "Bizwiz.db";
 
     private static final String TABLE_USER = "user";
 
@@ -32,6 +31,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     public static final String COLUMN_CLIENT_ID = "client_id";
     public static final String COLUMN_CLIENT_FULLNAME = "client_fullName";
     public static final String COLUMN_CLIENT_DEBT = "client_debt";
+    public static final String COLUMN_CLIENT_ADDED_DEBT = "client_added_debt";
     public static final String COLUMN_NUMBER = "Number";
     public static final String COLUMN_CLIENT_EMAIL= "client_Email";
     public static final String COLUMN_STATUS = "status";
@@ -50,6 +50,17 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     public static final String TRANSACTION_TYPE = "transaction_type";
     public static final String TRANSACTION_DATE = "transaction_date";
 
+    public static final String TABLE_MPESA = "mpesa";
+    public static final String _ID = "id";
+    public static final String DATE_MILLIS = "date_in_millis";
+    public static final String COLUMN_OPENING_FLOAT = "opening_float";
+    public static final String COLUMN_OPENING_CASH = "opening_cash";
+    public static final String COLUMN_ADDED_FLOAT = "added_float";
+    public static final String COLUMN_ADDED_CASH = "added_cash";
+    public static final String COLUMN_REDUCTED_FLOAT = "reducted_float";
+    public static final String COLUMN_REDUCTED_CASH = "reducted_cash";
+    public static final String COLUMN_CLOSING_CASH = "closing_cash";
+
     private String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
             + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_USER_NAME + " TEXT,"
              + COLUMN_USER_EMAIL + " TEXT," + COLUMN_USER_PASSWORD + " TEXT" + "); ";
@@ -58,7 +69,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
 
     private String CREATE_CLIENT_TABLE = "CREATE TABLE " + TABLE_CLIENT + "("
             + COLUMN_CLIENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_CLIENT_FULLNAME + " TEXT,"
-             + COLUMN_CLIENT_DEBT + " INTEGER," +COLUMN_NUMBER + " INTEGER," + COLUMN_CLIENT_EMAIL + " TEXT," + COLUMN_STATUS +
+             + COLUMN_CLIENT_DEBT + " TEXT," +  COLUMN_CLIENT_ADDED_DEBT + " TEXT," +COLUMN_NUMBER + " INTEGER," + COLUMN_CLIENT_EMAIL + " TEXT," + COLUMN_STATUS +
             " TINYINT); ";
 
     private String DROP_CLIENT_TABLE = "DROP TABLE IF EXISTS " + TABLE_CLIENT;
@@ -77,6 +88,10 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
 
     private String DROP_TRANSACTION_TABLE = "DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS;
 
+    private String CREATE_MPESA_TABLE = "CREATE TABLE " + TABLE_MPESA + " ( "+ _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+ DATE_MILLIS + " INTEGER, " + COLUMN_OPENING_FLOAT + " INTEGER , " + COLUMN_OPENING_CASH +
+            " INTEGER, " + COLUMN_ADDED_CASH + " INTEGER, " + COLUMN_ADDED_FLOAT + " INTEGER, " + COLUMN_REDUCTED_CASH + " INTEGER, " + COLUMN_CLOSING_CASH + " INTEGER, " + COLUMN_REDUCTED_FLOAT + " INTEGER ) ";
+    private String DROP_MPESA_TABLE = "DROP TABLE IF EXISTS " + TABLE_MPESA;
+
 
     public DatabaseHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -88,6 +103,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         db.execSQL(CREATE_CLIENT_TABLE);
         db.execSQL(CREATE_PRODUCTS_TABLE);
         db.execSQL(CREATE_TRANSACTION_TABLE);
+        db.execSQL(CREATE_MPESA_TABLE);
 
     }
 
@@ -97,6 +113,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         db.execSQL(DROP_CLIENT_TABLE);
         db.execSQL(DROP_PRODUCTS_TABLE);
         db.execSQL(DROP_TRANSACTION_TABLE);
+        db.execSQL(DROP_MPESA_TABLE);
         onCreate(db);
     }
 
@@ -198,7 +215,9 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         }
         return balance;
 
-    }public int productPrice(String productName) {
+    }
+
+    public int productPrice(String productName) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select product_price from products where product_name=? order by null desc limit 1", new String[]{productName});
         int price;
@@ -223,15 +242,46 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
 
     }
 
+    public void deleteClient(String client_name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL("DELETE FROM clients where client_fullName=? ", new String[]{client_name});
 
+    }
+    public int clientDeleted(String client_name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select client_fullName from clients where client_fullName=? order by null desc limit 1", new String[]{client_name});
+        int status;
+        if (cursor.moveToFirst()) {
+            status = cursor.getInt(cursor.getColumnIndex("client_fullName"));
+        } else {
+            status = 0;
+        }
+        return status;
 
-    public boolean updateData (String client_name, String new_client_debt, String product_name, String quantity , String date, String type) {
+    }
+
+    public int syncStatus(String client_name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select status from clients where client_fullName=? order by null desc limit 1", new String[]{client_name});
+        int status;
+        if (cursor.moveToFirst()) {
+            status = cursor.getInt(cursor.getColumnIndex("status"));
+        } else {
+            status = 0;
+        }
+        return status;
+
+    }
+
+    public boolean updateData (String client_name, String added_debt, String new_client_debt, String product_name, String quantity , String date, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         ContentValues contentValues1 = new ContentValues();
         ContentValues contentValues2 = new ContentValues();
         contentValues.put((COLUMN_CLIENT_FULLNAME ),client_name );
+        contentValues.put(COLUMN_CLIENT_ADDED_DEBT,added_debt );
         contentValues.put(COLUMN_CLIENT_DEBT,new_client_debt );
+        contentValues.put(COLUMN_STATUS, 0);
         contentValues1.put((COLUMN_PRODUCT_NAME ),product_name );
         contentValues1.put(COLUMN_QUANTITY,quantity );
         contentValues2.put(TRANSACTION_DATE,date);
@@ -267,12 +317,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     }
 
 
-    public boolean addClient(String client_fullName, String client_debt,String Number,String client_Email, int status, String currentDateandTime, String type) {
+    public boolean addClient(String client_fullName,int added_debt, String client_debt,String Number,String client_Email, int status, String currentDateandTime, String type) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         ContentValues contentValues1 = new ContentValues();
 
         contentValues.put(COLUMN_CLIENT_FULLNAME, client_fullName);
+        contentValues.put(COLUMN_CLIENT_ADDED_DEBT, added_debt);
         contentValues.put(COLUMN_CLIENT_DEBT, client_debt);
         contentValues.put(COLUMN_NUMBER, Number);
         contentValues.put(COLUMN_CLIENT_EMAIL, client_Email);
@@ -301,13 +352,12 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
      * we have to update the sync status
      * and the second one is the status that will be changed
      * */
-    public boolean updateClientStatus(int client_id, int status) {
+    public void updateClientStatus(int client_id, int status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_STATUS, status);
         db.update(TABLE_CLIENT, contentValues, COLUMN_CLIENT_ID + "=" + client_id, null);
         db.close();
-        return true;
     }
 
     /*
@@ -330,6 +380,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
+
 
 
     public boolean addProduct(String product_name,String Quantity,String product_price, int status, String currentDateandTime, String type) {
@@ -390,6 +441,8 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
      * this method is for getting all the unsynced name
      * so that we can sync it with database
      * */
+
+
     public Cursor getUnsyncedProducts() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " = 0;";
@@ -465,5 +518,36 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return list1;
     }
 
+   /* public ArrayList<String> fetchData() {
 
+        ArrayList<String> listOfAllDates = new ArrayList<String>();
+        String cDate = null;
+
+       SQLiteDatabase database = this.getWritableDatabase();
+
+        String[] columns = new String[] {DATE_MILLIS, COLUMN_ADDED_CASH};
+        Cursor cursor = database.query(TABLE_MPESA, columns, null, null, null, null, null);
+
+        if (cursor != null) {
+
+            if (cursor.moveToFirst()) {
+                do {
+                    //iterate the cursor to get data.
+                    cDate = getDate(cursor.getLong(cursor.getColumnIndex(DATE_MILLIS)), "yyyy/MM/dd HH:mm:ss");
+
+                    listOfAllDates.add(cDate);
+
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+
+            //Close the DB connection.
+            database.close();
+        }
+
+            return listOfAllDates;
+
+        }
+
+*/
 }

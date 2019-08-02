@@ -3,8 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.derich.bizwiz">
 
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS"
+        android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
 
     <application
         android:allowBackup="true"
@@ -14,53 +23,70 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.Transactions"></activity>
-        <activity android:name=".activities.SpinnerProducts" />
-        <activity android:name=".activities.ProductsOffered" />
-        <activity android:name=".activities.UpdateProducts" />
-        <activity android:name=".activities.ClearDebt" />
-        <activity android:name=".activities.PaidSale" />
-        <activity android:name=".activities.AllClients" />
-        <activity android:name=".activities.Sales" />
-        <activity android:name=".activities.LoginActivity"
+        <activity android:name=".clients.DeleteClient"></activity>
+        <activity android:name=".syncFromServer.ShowData" />
+        <activity android:name=".syncFromServer.Main" />
+        <activity android:name=".clients.importContactClient" />
+        <activity android:name=".clients.AddFromContacts" />
+        <activity android:name=".mpesa.ClosingCash" />
+        <activity android:name=".mpesa.ReductedCash" />
+        <activity android:name=".mpesa.ReductedFloat" />
+        <activity android:name=".mpesa.AddedCash" />
+        <activity android:name=".mpesa.AddedFloat" />
+        <activity android:name=".mpesa.OpeningFloat" />
+        <activity android:name=".mpesa.OpeningCash" />
+        <activity
+            android:name=".activities.UserActivity"
+            android:label="@string/title_activity_user"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".mpesa.Mpesa"
+            android:label="@string/Mpesa" />
+        <activity android:name=".activities.Transactions" />
+        <activity android:name=".products.SpinnerProducts" />
+        <activity android:name=".products.ProductsOffered" />
+        <activity android:name=".products.UpdateProducts" />
+        <activity android:name=".sales.ClearDebt" />
+        <activity android:name=".sales.PaidSale" />
+        <activity android:name=".clients.AllClients" />
+        <activity android:name=".sales.Sales" />
+        <activity
+            android:name=".credentials.LoginActivity"
             android:noHistory="true">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ClientsDebts"
+            android:name=".clients.ClientsDebts"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".sales.AddDebt"
             android:label="@string/add_debt_name"
-            android:name=".activities.AddDebt"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.RegisterActivity"
+            android:name=".credentials.RegisterActivity"
             android:label="@string/register_user"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.ForgotPassword"
+            android:name=".credentials.ForgotPassword"
             android:label="@string/reset_password"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.ConfirmPassword"
+            android:name=".credentials.ConfirmPassword"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.UsersActivity"
-            android:screenOrientation="portrait" >
-
-        </activity>
         <activity
-            android:name=".activities.ClientsDetails"
+            android:name=".clients.ClientsDetails"
             android:label="@string/add_client"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.BackupData"
+            android:name=".products.BackupData"
             android:label="@string/add_product"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.ViewClient"
+            android:name=".clients.ViewClient"
             android:label="@string/clients"
             android:screenOrientation="portrait" />
 
@@ -69,6 +95,35 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <service android:name=".syncadapter.AuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+        <provider
+            android:name=".syncadapter.StubProvider"
+            android:authorities="com.example.derich.bizwiz.provider"
+            android:exported="false"
+            android:syncable="true" />
+
+        <service
+            android:name=".syncadapter.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
     </application>
 
 </manifest>

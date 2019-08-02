@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal|center_vertical"
+    tools:context=".mpesa.Mpesa">
+
+    <Button
+        android:id="@+id/btn_opening_float"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Opening float"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_opening_cash"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Opening cash"
+        app:layout_constraintEnd_toEndOf="@+id/btn_opening_float"
+        app:layout_constraintStart_toStartOf="@+id/btn_opening_float"
+        app:layout_constraintTop_toBottomOf="@+id/btn_opening_float" />
+
+    <Button
+        android:id="@+id/btn_added_float"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Added float"
+        app:layout_constraintEnd_toEndOf="@+id/btn_opening_cash"
+        app:layout_constraintStart_toStartOf="@+id/btn_opening_cash"
+        app:layout_constraintTop_toBottomOf="@+id/btn_opening_cash" />
+
+    <Button
+        android:id="@+id/btn_added_cash"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Added cash"
+        app:layout_constraintEnd_toEndOf="@+id/btn_added_float"
+        app:layout_constraintStart_toStartOf="@+id/btn_added_float"
+        app:layout_constraintTop_toBottomOf="@+id/btn_added_float" />
+
+    <Button
+        android:id="@+id/btn_reducted_float"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Reducted float"
+        app:layout_constraintEnd_toEndOf="@+id/btn_added_cash"
+        app:layout_constraintStart_toStartOf="@+id/btn_added_cash"
+        app:layout_constraintTop_toBottomOf="@+id/btn_added_cash" />
+
+    <Button
+        android:id="@+id/btn_reducted_cash"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Reducted cash"
+        app:layout_constraintEnd_toEndOf="@+id/btn_reducted_float"
+        app:layout_constraintStart_toStartOf="@+id/btn_reducted_float"
+        app:layout_constraintTop_toBottomOf="@+id/btn_reducted_float" />
+
+    <TextView
+        android:id="@+id/textView_expected_float"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text="Total Float"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/btn_reducted_cash"
+        app:layout_constraintStart_toStartOf="@+id/btn_reducted_cash"
+        app:layout_constraintTop_toBottomOf="@+id/btn_expected_closing_cash" />
+
+    <Button
+        android:id="@+id/btn_expected_closing_cash"
+        style="@android:style/Widget.Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Calculate expected Closing Cash"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="@+id/btn_reducted_cash"
+        app:layout_constraintStart_toStartOf="@+id/btn_reducted_cash"
+        app:layout_constraintTop_toBottomOf="@+id/btn_reducted_cash" />
+</android.support.constraint.ConstraintLayout>

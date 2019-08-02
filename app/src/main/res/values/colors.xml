@@ -6,8 +6,9 @@
     <color name="colorText">#008577</color>
     <color name="colorTextHint">#D81B60</color>
     <color name="colorWhite">#FFFEFE</color>
-    <color name="colorDark">#0E0F0F</color>
+    <color name="colorDark">#0F0F0E</color>
     <color name="fab1_color">#4CAF50</color>
     <color name="fab2_color">#2196F3</color>
+    <color name="white">#E7F5EE</color>
 
 </resources>

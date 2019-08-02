@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activities.UserActivity"
+    tools:showIn="@layout/app_bar_user">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:text="TextView"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/sales"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:ems="10"
+            android:text="sales"
+            app:layout_constraintEnd_toEndOf="@+id/text1"
+            app:layout_constraintStart_toStartOf="@+id/text1"
+            app:layout_constraintTop_toBottomOf="@+id/text1" />
+
+        <Button
+            android:id="@+id/products"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="Products Offered"
+            app:layout_constraintEnd_toEndOf="@+id/sales"
+            app:layout_constraintStart_toStartOf="@+id/sales"
+            app:layout_constraintTop_toBottomOf="@+id/sales" />
+
+        <Button
+            android:id="@+id/clients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="clients"
+            app:layout_constraintEnd_toEndOf="@+id/products"
+            app:layout_constraintStart_toStartOf="@+id/products"
+            app:layout_constraintTop_toBottomOf="@+id/products" />
+
+        <Button
+            android:id="@+id/viewClients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="View clients"
+            app:layout_constraintEnd_toEndOf="@+id/clients"
+            app:layout_constraintStart_toStartOf="@+id/clients"
+            app:layout_constraintTop_toBottomOf="@+id/clients" />
+
+        <Button
+            android:id="@+id/transactionss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="Check Transactions"
+            app:layout_constraintEnd_toEndOf="@+id/viewClients"
+            app:layout_constraintStart_toStartOf="@+id/viewClients"
+            app:layout_constraintTop_toBottomOf="@+id/viewClients" />
+
+        <Button
+            android:id="@+id/sync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="Sync with server"
+            app:layout_constraintEnd_toEndOf="@+id/transactionss"
+            app:layout_constraintStart_toStartOf="@+id/transactionss"
+            app:layout_constraintTop_toBottomOf="@+id/transactionss" />
+
+        <Button
+            android:id="@+id/delete_client"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="Delete client"
+            app:layout_constraintEnd_toEndOf="@+id/sync"
+            app:layout_constraintStart_toStartOf="@+id/sync"
+            app:layout_constraintTop_toBottomOf="@+id/sync" />
+
+        <android.support.design.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="210dp">
+
+                <TextView
+                    android:id="@+id/add_client_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_toStartOf="@+id/addDebt"
+                    android:layout_toLeftOf="@+id/addDebt"
+                    android:background="@drawable/drawable"
+                    android:paddingEnd="5dp"
+                    android:paddingRight="5dp"
+                    android:text="Add Client"
+                    android:textColor="#FAFAFA"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/addClient"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginRight="@dimen/fab_margin_right"
+                    android:clickable="true"
+                    android:elevation="6dp"
+                    android:src="@drawable/ic_action_addclient"
+                    android:visibility="invisible"
+                    app:backgroundTint="@color/fab1_color"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@android:drawable/ic_input_add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="150dp">
+
+                <TextView
+                    android:id="@+id/add_debt_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_toStartOf="@+id/addDebt"
+                    android:layout_toLeftOf="@+id/addDebt"
+                    android:background="@drawable/drawable"
+                    android:paddingEnd="5dp"
+                    android:paddingRight="5dp"
+                    android:text="Add Debt"
+                    android:textColor="#FAFAFA"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/addDebt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginRight="@dimen/fab_margin_right"
+                    android:clickable="true"
+                    android:elevation="6dp"
+                    android:src="@drawable/ic_action_adddebt"
+                    android:visibility="invisible"
+                    app:backgroundTint="@color/fab1_color"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@android:drawable/ic_input_add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginBottom="80dp">
+
+                <TextView
+                    android:id="@+id/add_product_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_toStartOf="@+id/add"
+                    android:layout_toLeftOf="@+id/add"
+                    android:background="@drawable/drawable"
+                    android:paddingEnd="5dp"
+                    android:paddingRight="5dp"
+                    android:text="Add Product"
+                    android:textColor="#FAFAFA"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/addProduct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/fab_margin_right"
+                    android:layout_marginRight="@dimen/fab_margin_right"
+                    android:clickable="true"
+                    android:elevation="6dp"
+                    android:src="@drawable/ic_action_addproduct"
+                    android:visibility="invisible"
+                    app:backgroundTint="@color/fab2_color"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@android:drawable/ic_input_add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end">
+
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/fab_margin_right"
+                    android:layout_marginBottom="16dp"
+                    android:src="@drawable/ic_action_add"
+                    app:backgroundTint="@color/fab2_color"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@android:drawable/ic_input_add" />
+                />
+            </LinearLayout>
+        </android.support.design.widget.CoordinatorLayout>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+</android.support.v4.widget.NestedScrollView>

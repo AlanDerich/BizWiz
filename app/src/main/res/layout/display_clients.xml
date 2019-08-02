@@ -4,48 +4,58 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <TextView
-        android:hint="Client first Name"
-        android:layout_alignParentLeft="true"
         android:id="@+id/textViewClientfName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:hint="Client first Name"
+        android:layout_alignParentStart="true" />
 
     <TextView
-        android:hint="Client Debt"
-        android:layout_alignParentLeft="true"
         android:id="@+id/textViewClientsDebt"
-        android:layout_marginTop="40dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:hint="Client Phone"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewClientfName"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:hint="Client Debt" />
+
+    <TextView
         android:id="@+id/textViewClientsPhone"
-        android:layout_marginTop="60dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewClientsDebt"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:hint="Client Phone"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/textViewClientsEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewClientsPhone"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="80dp"
-        android:hint="Client Email" />
+        android:layout_marginTop="5dp"
+        android:hint="Client Email"
+        android:layout_alignParentStart="true" />
 
     <ImageView
         android:background="@drawable/success"
         android:layout_alignParentRight="true"
         android:id="@+id/imageViewStatus"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true" />
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="100dp"
-        android:hint="Client Email" />
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>
