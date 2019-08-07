@@ -19,12 +19,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
 
     public static final String DATABASE_NAME = "Bizwiz.db";
 
-    private static final String TABLE_USER = "user";
+    public static final String TABLE_USER = "user";
 
-    private static final String COLUMN_USER_ID = "user_id";
-    private static final String COLUMN_USER_NAME = "user_name";
-    private static final String COLUMN_USER_EMAIL = "user_email";
-    private static final String COLUMN_USER_PASSWORD = "user_password";
+    public static final String COLUMN_USER_ID = "user_id";
+    public static final String COLUMN_USER_NAME = "user_name";
+    public static final String COLUMN_USER_EMAIL = "user_email";
+    public static final String COLUMN_USER_PASSWORD = "user_password";
+    public static final String COLUMN_USER_STATUS = "user_status";
 
     public static final String TABLE_CLIENT = "clients";
 
@@ -49,9 +50,10 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     public static final String TRANSACTION_ID = "transaction_id";
     public static final String TRANSACTION_TYPE = "transaction_type";
     public static final String TRANSACTION_DATE = "transaction_date";
+    public static final String COLUMN_TRANSACTION_STATUS = "transaction_status";
 
     public static final String TABLE_MPESA = "mpesa";
-    public static final String _ID = "id";
+    public static final String MPESA_ID = "id";
     public static final String DATE_MILLIS = "date_in_millis";
     public static final String COLUMN_OPENING_FLOAT = "opening_float";
     public static final String COLUMN_OPENING_CASH = "opening_cash";
@@ -60,10 +62,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     public static final String COLUMN_REDUCTED_FLOAT = "reducted_float";
     public static final String COLUMN_REDUCTED_CASH = "reducted_cash";
     public static final String COLUMN_CLOSING_CASH = "closing_cash";
+    public static final String COLUMN_COMMENT = "comment";
+    public static final String COLUMN_MPESA_STATUS = "status";
 
     private String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
             + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_USER_NAME + " TEXT,"
-             + COLUMN_USER_EMAIL + " TEXT," + COLUMN_USER_PASSWORD + " TEXT" + "); ";
+             + COLUMN_USER_EMAIL + " TEXT," + COLUMN_USER_PASSWORD + " TEXT, "+ COLUMN_USER_STATUS +
+            " TINYINT); ";
 
     private String DROP_USER_TABLE = "DROP TABLE IF EXISTS " + TABLE_USER;
 
@@ -84,12 +89,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
 
     private String CREATE_TRANSACTION_TABLE = "CREATE TABLE " + TABLE_TRANSACTIONS + "("
             + TRANSACTION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + TRANSACTION_TYPE + " TEXT,"
-            +TRANSACTION_DATE + " TEXT); ";
+            +TRANSACTION_DATE + " TEXT, "+ COLUMN_TRANSACTION_STATUS +
+            " TINYINT); ";
 
     private String DROP_TRANSACTION_TABLE = "DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS;
 
-    private String CREATE_MPESA_TABLE = "CREATE TABLE " + TABLE_MPESA + " ( "+ _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+ DATE_MILLIS + " INTEGER, " + COLUMN_OPENING_FLOAT + " INTEGER , " + COLUMN_OPENING_CASH +
-            " INTEGER, " + COLUMN_ADDED_CASH + " INTEGER, " + COLUMN_ADDED_FLOAT + " INTEGER, " + COLUMN_REDUCTED_CASH + " INTEGER, " + COLUMN_CLOSING_CASH + " INTEGER, " + COLUMN_REDUCTED_FLOAT + " INTEGER ) ";
+    private String CREATE_MPESA_TABLE = "CREATE TABLE " + TABLE_MPESA + " ( "+ MPESA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+ DATE_MILLIS + " TEXT, " + COLUMN_OPENING_FLOAT + " TEXT , " + COLUMN_OPENING_CASH +
+            " TEXT, " + COLUMN_ADDED_CASH + " TEXT, " + COLUMN_ADDED_FLOAT + " TEXT, " + COLUMN_REDUCTED_CASH + " TEXT, " + COLUMN_CLOSING_CASH + " TEXT, " + COLUMN_REDUCTED_FLOAT + " TEXT , " + COLUMN_COMMENT +" TEXT, " + COLUMN_MPESA_STATUS + " TINYINT );" ;
     private String DROP_MPESA_TABLE = "DROP TABLE IF EXISTS " + TABLE_MPESA;
 
 
@@ -123,6 +129,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         values.put(COLUMN_USER_NAME, user.getName());
         values.put(COLUMN_USER_EMAIL, user.getEmail());
         values.put(COLUMN_USER_PASSWORD, user.getPassword());
+        values.put(COLUMN_USER_STATUS, 0);
 
         db.insert(TABLE_USER, null, values);
         db.close();
@@ -286,6 +293,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         contentValues1.put(COLUMN_QUANTITY,quantity );
         contentValues2.put(TRANSACTION_DATE,date);
         contentValues2.put(TRANSACTION_TYPE,type);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.update(TABLE_CLIENT,contentValues,"client_fullName = ? " , new String[]{client_name});
         db.update(TABLE_PRODUCTS,contentValues1,"product_name = ? " , new String[]{product_name});
         db.insert(TABLE_TRANSACTIONS, null, contentValues2);
@@ -299,6 +307,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         contentValues.put(COLUMN_CLIENT_DEBT,new_client_debt );
         contentValues1.put(TRANSACTION_DATE,currentDateandTime);
         contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.update(TABLE_CLIENT,contentValues,"client_fullName = ? " , new String[]{client_name});
         return true;
@@ -311,6 +320,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         contentValues.put(COLUMN_QUANTITY,new_value );
         contentValues1.put(TRANSACTION_DATE,currentDateandTime);
         contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.update(TABLE_PRODUCTS,contentValues,"product_name = ?",new String[] {product_name});
         return true;
@@ -330,6 +340,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         contentValues.put(COLUMN_STATUS, status);
         contentValues1.put(TRANSACTION_DATE,currentDateandTime);
         contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.insert(TABLE_CLIENT, null, contentValues);
         db.close();
@@ -341,6 +352,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put(TRANSACTION_DATE,currentDateandTime);
         contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.close();
         return true;
@@ -393,6 +405,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         contentValues.put(COLUMN_STATUSS, status);
         contentValues1.put(TRANSACTION_DATE,currentDateandTime);
         contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.insert(TABLE_PRODUCTS, null, contentValues);
         db.close();
@@ -405,6 +418,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
 
         contentValues.put(TRANSACTION_TYPE, transaction_type);
         contentValues.put(TRANSACTION_DATE, transaction_date);
+        contentValues.put(COLUMN_TRANSACTION_STATUS, 0);
 
 
         db.insert(TABLE_TRANSACTIONS, null, contentValues);
@@ -423,6 +437,15 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_STATUS, status);
         db.update(TABLE_PRODUCTS, contentValues, COLUMN_PRODUCT_ID + "=" + product_id, null);
+        db.close();
+        return true;
+    }
+
+    public boolean updateUSerStatus(int user_id, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_USER_STATUS, status);
+        db.update(TABLE_USER, contentValues, COLUMN_USER_ID + "=" + user_id, null);
         db.close();
         return true;
     }
@@ -448,6 +471,25 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         String sql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " = 0;";
         Cursor c = db.rawQuery(sql, null);
         return c;
+    }
+
+    public Cursor getUnsyncedTransactions() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_TRANSACTIONS + " WHERE " + COLUMN_TRANSACTION_STATUS + " = 0;";
+        Cursor cursor = db.rawQuery(sql, null);
+        return cursor;
+    }
+
+    public Cursor getUnsyncedUsers() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_STATUS + " = 0;";
+        return db.rawQuery(sql, null);
+    }
+
+    public Cursor getUnsyncedMpesa() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT * FROM " + TABLE_MPESA + " WHERE " + COLUMN_MPESA_STATUS + " = 0;";
+        return db.rawQuery(sql, null);
     }
 
     /*  public boolean checkDebt(String debt){

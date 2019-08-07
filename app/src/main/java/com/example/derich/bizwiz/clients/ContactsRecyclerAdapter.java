@@ -1,9 +1,12 @@
 package com.example.derich.bizwiz.clients;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,21 +15,23 @@ import com.example.derich.bizwiz.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecyclerAdapter.ViewHolder>{
+public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecyclerAdapter.ViewHolder> implements Filterable {
 
     private LayoutInflater layoutInflater;
     public List<Contacts> cont;
+    protected List<Contacts> originalList;
+    protected Context context;
     Contacts list;
     private ArrayList<Contacts> arraylist;
-    boolean checked = false;
-    View vv;
 
 
-    public ContactsRecyclerAdapter(LayoutInflater inflater, List<Contacts> items) {
+    public ContactsRecyclerAdapter(Context context,LayoutInflater inflater, List<Contacts> items) {
         this.layoutInflater = inflater;
         this.cont = items;
         this.arraylist = new ArrayList<>();
         this.arraylist.addAll(cont);
+        this.originalList = cont;
+        this.context = context;
     }
 
     @Override
@@ -51,9 +56,33 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
         return cont.size();
     }
 
-    public void filter(String newText) {
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                cont = (List<Contacts>) results.values;
+                notifyDataSetChanged();
+            }
 
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<Contacts> filteredResults = null;
+                if (constraint.length() == 0) {
+                    filteredResults = originalList;
+                } else {
+                    filteredResults = getFilteredResults(constraint.toString().toLowerCase());
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredResults;
+
+                return results;
+            }
+        };
     }
+
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,6 +109,17 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
     @Override
     public int getItemViewType(int position) {
         return position;
+    }
+
+    protected List<Contacts> getFilteredResults(String constraint) {
+        List<Contacts> results = new ArrayList<>();
+
+        for (Contacts item : originalList) {
+            if (item.getName().toLowerCase().contains(constraint)) {
+                results.add(item);
+            }
+        }
+        return results;
     }
 
 }

@@ -17,7 +17,6 @@ public class Products {private String product_name;private String Quantity;Strin
     public String getProduct_price() {
         return product_price;
     }
-
     public int getStatus() {
         return status;
     }

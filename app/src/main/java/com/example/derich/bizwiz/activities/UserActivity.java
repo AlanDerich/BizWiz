@@ -6,9 +6,11 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -43,6 +45,7 @@ import com.example.derich.bizwiz.sales.AddDebt;
 import com.example.derich.bizwiz.sales.Sales;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 import com.example.derich.bizwiz.syncFromServer.Main;
+import com.example.derich.bizwiz.syncFromServer2.Syncronization;
 import com.example.derich.bizwiz.utils.PreferenceUtils;
 
 import static com.example.derich.bizwiz.credentials.LoginActivity.sharedPreferences;
@@ -97,6 +100,7 @@ public class UserActivity extends AppCompatActivity
         FabClose = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
         FabClockwise = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_clockwise);
         FabAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_anticlockwise);
+        registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         showPhoneStatePermission();
@@ -197,7 +201,7 @@ public class UserActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(UserActivity.this, Main.class);
+                Intent intent = new Intent(UserActivity.this, Syncronization.class);
                 startActivity(intent);
             }
         });

@@ -77,7 +77,52 @@ public class NetworkStateChecker extends BroadcastReceiver {
                                 cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_QUANTITY)),
                                 cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_PRICE))
                         );
-                    } while (cursor.moveToNext());
+                    } while (cur.moveToNext());
+                }
+                Cursor trans = db.getUnsyncedTransactions();
+                if (trans.moveToFirst()) {
+                    do {
+                        //calling the method to save the unsynced client to MySQL
+                        saveTransaction(
+                                trans.getInt(trans.getColumnIndex(DatabaseHelper.TRANSACTION_ID)),
+                                trans.getString(trans.getColumnIndex(DatabaseHelper.TRANSACTION_TYPE)),
+                                trans.getString(trans.getColumnIndex(DatabaseHelper.TRANSACTION_DATE))
+                        );
+                    } while (trans.moveToNext());
+                }
+
+                Cursor users = db.getUnsyncedUsers();
+                if (users.moveToFirst()) {
+                    do {
+                        //calling the method to save the unsynced client to MySQL
+                        saveUser(
+                                users.getInt(users.getColumnIndex(DatabaseHelper.COLUMN_USER_ID)),
+                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME)),
+                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_EMAIL)),
+                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_PASSWORD))
+
+                        );
+                    } while (users.moveToNext());
+                }
+
+                Cursor mpesa = db.getUnsyncedMpesa();
+                if (mpesa.moveToFirst()) {
+                    do {
+                        //calling the method to save the unsynced client to MySQL
+                        saveMpesa(
+                                mpesa.getInt(mpesa.getColumnIndex(DatabaseHelper.MPESA_ID)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.DATE_MILLIS)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_OPENING_FLOAT)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_OPENING_CASH)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_ADDED_FLOAT)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_ADDED_CASH)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_REDUCTED_FLOAT)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_REDUCTED_CASH)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_CLOSING_CASH)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_COMMENT))
+
+                        );
+                    } while (mpesa.moveToNext());
                 }
             }
         }
@@ -106,9 +151,6 @@ public class NetworkStateChecker extends BroadcastReceiver {
                                 db.updateClientStatus(client_id, ClientsDetails.CLIENT_SYNCED_WITH_SERVER);
                                 //sending the broadcast to refresh the list
                                 context.sendBroadcast(new Intent(ClientsDetails.DATA_SAVED_BROADCAST));
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                                String currentDateandTime = sdf.format(new Date());
-                                String type = "Synced clients with server. ";
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -165,8 +207,126 @@ public class NetworkStateChecker extends BroadcastReceiver {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("product_name", product_name);
-                params.put("product_quantity", product_quantity);
+                params.put("quantity", product_quantity);
                 params.put("product_price", product_price);
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
+    }
+
+    private void saveTransaction(final int transaction_id,final String transaction_type, final String transaction_date) {
+        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_TRANSACTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                //updating the status in sqlite
+                                db.updateProductStatus(transaction_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+
+                                //sending the broadcast to refresh the list
+                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("transaction_type", transaction_type);
+                params.put("transaction_date", transaction_date);
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
+    }
+    private void saveUser(final int user_id,final String user_name, final String user_email,final String user_password) {
+        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_USER,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                //updating the status in sqlite
+                                db.updateUSerStatus(user_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+
+                                //sending the broadcast to refresh the list
+                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("user_name", user_name);
+                params.put("user_email", user_email);
+                params.put("user_password", user_password);
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
+    }
+
+    private void saveMpesa(final int client_id,final String date_in_millis, final String opening_float,final String opening_cash, final String added_float,final String added_cash, final String reducted_float,final String reducted_cash, final String closing_cash,final String comment) {
+        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_USER,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                //updating the status in sqlite
+                                db.updateUSerStatus(client_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+
+                                //sending the broadcast to refresh the list
+                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("date_in_millis", date_in_millis);
+                params.put("opening_float", opening_float);
+                params.put("opening_cash", opening_cash);
+                params.put("added_float", added_float);
+                params.put("added_cash", added_cash);
+                params.put("reducted_float", reducted_float);
+                params.put("reducted_cash", reducted_cash);
+                params.put("closing_cash", closing_cash);
+                params.put("comment", comment);
                 return params;
             }
         };

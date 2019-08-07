@@ -53,6 +53,9 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
      * it will not work if you are using localhost
      * */
     public static final String URL_SAVE_PRODUCT = "http://alanderich.info/bizwiz/saveProduct.php";
+    public static final String URL_SAVE_TRANSACTION = "http://alanderich.info/bizwiz/saveTransaction.php";
+    public static final String URL_SAVE_USER = "http://alanderich.info/bizwiz/saveUsers.php";
+    public static final String URL_SAVE_MPESA = "http://alanderich.info/bizwiz/saveMpesa.php";
 
     //database helper object
     private DatabaseHelper db;
@@ -199,7 +202,7 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("product_name", product_name);
-                params.put("Quantity", quantity);
+                params.put("quantity", quantity);
                 params.put("product_price", product_price);
                 return params;
             }

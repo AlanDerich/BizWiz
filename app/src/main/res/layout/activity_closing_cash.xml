@@ -4,43 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".mpesa.AddedFloat">
+    tools:context=".mpesa.ClosingCash">
 
     <EditText
-        android:id="@+id/editText_added_float"
-        android:layout_width="wrap_content"
+        android:id="@+id/editText_closingFloat"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="224dp"
         android:ems="10"
         android:gravity="center"
-        android:hint="@string/amount"
-        android:inputType="textPersonName"
+        android:hint="Closing Float"
+        android:inputType="number"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_added_float"
+        android:id="@+id/button_calculate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/add"
-        app:layout_constraintEnd_toEndOf="@+id/editText_added_float"
-        app:layout_constraintStart_toStartOf="@+id/editText_added_float"
-        app:layout_constraintTop_toBottomOf="@+id/editText_added_float_comment" />
+        android:text="Calculate"
+        android:textAllCaps="true"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/editText_closingFloat"
+        app:layout_constraintStart_toStartOf="@+id/editText_closingFloat"
+        app:layout_constraintTop_toBottomOf="@+id/editText_closingFloat" />
 
-    <EditText
-        android:id="@+id/editText_added_float_comment"
+    <TextView
+        android:id="@+id/textView_closing_cash"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:ems="10"
         android:gravity="center"
-        android:hint="Comment"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_added_float" />
-
+        android:text="Closing Cash"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/editText_closingFloat"
+        app:layout_constraintStart_toStartOf="@+id/editText_closingFloat"
+        app:layout_constraintTop_toBottomOf="@+id/button_calculate" />
 </android.support.constraint.ConstraintLayout>

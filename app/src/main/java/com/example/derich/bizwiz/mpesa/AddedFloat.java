@@ -15,13 +15,26 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_CASH;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_FLOAT;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLOSING_CASH;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_COMMENT;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_MPESA_STATUS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_OPENING_CASH;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_OPENING_FLOAT;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_REDUCTED_CASH;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_REDUCTED_FLOAT;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_STATUS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.DATE_MILLIS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_MPESA;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 
 public class AddedFloat extends AppCompatActivity {
-    EditText amount;
+    EditText amount, comments;
     DatabaseHelper myDb;
     Button btn_insert;
 
@@ -31,6 +44,7 @@ public class AddedFloat extends AppCompatActivity {
         setContentView(R.layout.activity_added_float);
         btn_insert = findViewById(R.id.button_added_float);
         amount = findViewById(R.id.editText_added_float);
+        comments= findViewById(R.id.editText_added_float_comment);
         addedFloat();
     }
 
@@ -40,12 +54,17 @@ public class AddedFloat extends AppCompatActivity {
             public void onClick(View v) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 String addedAmount = amount.getText().toString().trim();
+                String comment = comments.getText().toString().trim();
+
+
                 if (!(addedAmount.isEmpty()))
                 {
                     Integer addedCash = Integer.valueOf(addedAmount);
+
                 long timeMillis = System.currentTimeMillis();
-                insert( getDate(timeMillis),addedCash);
+                insert( getDate(timeMillis),addedCash, comment);
                 amount.setText("");
+                comments.setText("");
                     Toast.makeText(AddedFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
                 }
                 else{
@@ -63,16 +82,34 @@ public class AddedFloat extends AppCompatActivity {
         return sdf.format(vCalendar.getTime());
     }
 
-    public void insert(String date,Integer addedCash) {
+    public void insert(String date,Integer addedCash, String comment) {
+        SimpleDateFormat sdif = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
+        String currentDateandTime = sdif.format(new Date());
+        String type = "A float of " + addedCash + " Ksh was added.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(AddedFloat.this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues contentValue = new ContentValues();
+        ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_ADDED_FLOAT, addedCash);
+        contentValue.put(COLUMN_COMMENT,comment);
+        contentValue.put(COLUMN_MPESA_STATUS, 0);
+
+        contentValue.put(COLUMN_ADDED_CASH, 0);
+        contentValue.put(COLUMN_CLOSING_CASH, 0);
+        contentValue.put(COLUMN_OPENING_CASH, 0);
+        contentValue.put(COLUMN_OPENING_FLOAT, 0);
+        contentValue.put(COLUMN_REDUCTED_CASH, 0);
+        contentValue.put(COLUMN_REDUCTED_FLOAT, 0);
+
+        contentValue1.put(TRANSACTION_TYPE, type);
+        contentValue1.put(TRANSACTION_DATE,currentDateandTime);
+        contentValue1.put(COLUMN_TRANSACTION_STATUS, 0);
 
         //insert data in DB
         database.insert(TABLE_MPESA,null,contentValue);
+        database.insert(TABLE_TRANSACTIONS,null,contentValue1);
 
         //Close the DB connection.
         database.close();

@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.activities.DetectConnection;
+import com.example.derich.bizwiz.activities.Transactions;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import org.json.JSONArray;
@@ -26,7 +28,11 @@ public class Main extends AppCompatActivity {
     SQLiteDatabase sqLiteDatabase;
     Button SaveButtonInSQLite, ShowSQLiteDataInListView;
 
-    String HttpJSonURL = "https://alanderich.info/bizwiz/test/SubjectFullForm.php";
+    String ClientHttpJSonURL = "https://alanderich.info/bizwiz/SubjectFullForm.php";
+    String ProductHttpJSonURL = "https://alanderich.info/bizwiz/ProductsFullForm.php";
+    String UserHttpJSonURL = "https://alanderich.info/bizwiz/UsersFullForm.php";
+    String TransactionHttpJSonURL = "https://alanderich.info/bizwiz/TransactionsFullForm.php";
+    String MpesaHttpJSonURL = "https://alanderich.info/bizwiz/MpesaFullForm.php";
 
     ProgressDialog progressDialog;
 
@@ -40,6 +46,9 @@ public class Main extends AppCompatActivity {
         ShowSQLiteDataInListView = findViewById(R.id.showList);
         ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        if (DetectConnection.checkConnection(this)) {
+            // Its Available...
         if (activeNetwork != null) {
             //if connected to wifi or mobile data plan
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
@@ -54,8 +63,6 @@ public class Main extends AppCompatActivity {
 
                 SQLiteDataBaseBuild();
 
-                DeletePreviousData();
-
                 new StoreJSonDataInToSQLiteClass(Main.this).execute();
 
             }
@@ -65,6 +72,11 @@ public class Main extends AppCompatActivity {
             else {
             Toast.makeText(Main.this,"No internet connection is detected", Toast.LENGTH_LONG).show();
             }
+        }
+
+        }
+        else {
+            Toast.makeText(Main.this,"No internet connection is detected. Please enable to continue", Toast.LENGTH_LONG).show();
         }
 
         ShowSQLiteDataInListView.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +96,11 @@ public class Main extends AppCompatActivity {
 
         public Context context;
 
-        String FinalJSonResult;
+        String ClientJSonResult;
+        String ProductJsonResult;
+        String MpesaJsonResult;
+        String UsersJsonResult;
+        String TransactionsJsonResult;
 
         public StoreJSonDataInToSQLiteClass(Context context) {
 
@@ -105,22 +121,42 @@ public class Main extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
+            getClients();
+            getProducts();
+            getUsers();
+            getTransactions();
+            getMpesa();
 
-            HttpServiceClass httpServiceClass = new HttpServiceClass(HttpJSonURL);
+                        return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result)
+
+        {
+            sqLiteDatabase.close();
+
+            progressDialog.dismiss();
+
+        }
+
+        public void getClients(){
+            HttpServiceClass httpServiceClass = new HttpServiceClass(ClientHttpJSonURL);
 
             try {
                 httpServiceClass.ExecutePostRequest();
 
+
                 if (httpServiceClass.getResponseCode() == 200) {
 
-                    FinalJSonResult = httpServiceClass.getResponse();
+                    ClientJSonResult = httpServiceClass.getResponse();
 
-                    if (FinalJSonResult != null) {
-
+                    if (ClientJSonResult != null) {
+                        DeletePreviousClientsData();
                         JSONArray jsonArray = null;
                         try {
 
-                            jsonArray = new JSONArray(FinalJSonResult);
+                            jsonArray = new JSONArray(ClientJSonResult);
                             JSONObject jsonObject;
 
                             for (int i = 0; i < jsonArray.length(); i++) {
@@ -139,12 +175,76 @@ public class Main extends AppCompatActivity {
                                 sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
 
                             }
+                            Toast.makeText(Main.this,"Clients Updated", Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                     }
+                 else {
+
+                    Toast.makeText(Main.this,"clients not updated", Toast.LENGTH_SHORT).show();
+                }
+            }
+                else{
+                    Toast.makeText(Main.this, httpServiceClass.getErrorMessage(), Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+        public void getMpesa(){
+            HttpServiceClass httpServiceClass = new HttpServiceClass(MpesaHttpJSonURL);
+
+            try {
+                httpServiceClass.ExecutePostRequest();
+
+
+                if (httpServiceClass.getResponseCode() == 200) {
+
+                    MpesaJsonResult = httpServiceClass.getResponse();
+
+                    if (MpesaJsonResult != null) {
+                        DeletePreviousMpesaData();
+                        JSONArray jsonArray = null;
+                        try {
+
+                            jsonArray = new JSONArray(MpesaJsonResult);
+                            JSONObject jsonObject;
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+
+                                jsonObject = jsonArray.getJSONObject(i);
+
+                                String date_in_millis = jsonObject.getString("date_in_millis");
+                                String opening_float = jsonObject.getString("opening_float");
+                                String opening_cash = jsonObject.getString("opening_cash");
+                                String added_float = jsonObject.getString("added_float");
+                                String added_cash = jsonObject.getString("added_cash");
+                                String reducted_float = jsonObject.getString("reducted_float");
+                                String reducted_cash = jsonObject.getString("reducted_cash");
+                                String closing_cash = jsonObject.getString("closing_cash");
+                                String comment = jsonObject.getString("comment");
+
+                                String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_MPESA+" (date_in_millis,opening_float,opening_cash,added_float,added_cash,reducted_float,reducted_cash,closing_cash,comment,status) " +
+                                        "VALUES('"+date_in_millis+"', '"+opening_float+"' , '"+opening_cash+"', '"+added_float+"', '"+added_cash+"' , '"+reducted_float+"', '"+reducted_cash+"', '"+closing_cash+"' , '"+comment+"',  '"+1+"');";
+
+                                sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                            }
+                            Toast.makeText(context,"Mpesa table updated", Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
-                } else {
+                else {
+                        Toast.makeText(context,"Mpesa table not updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                 else {
 
                     Toast.makeText(context, httpServiceClass.getErrorMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -152,18 +252,162 @@ public class Main extends AppCompatActivity {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            return null;
+
         }
+        public void getUsers(){
+            HttpServiceClass httpServiceClass = new HttpServiceClass(UserHttpJSonURL);
 
-        @Override
-        protected void onPostExecute(Void result)
+            try {
+                httpServiceClass.ExecutePostRequest();
 
-        {
-            sqLiteDatabase.close();
 
-            progressDialog.dismiss();
+                if (httpServiceClass.getResponseCode() == 200) {
 
-            Toast.makeText(Main.this,"Load Done", Toast.LENGTH_LONG).show();
+                    UsersJsonResult = httpServiceClass.getResponse();
+
+                    if (UsersJsonResult != null) {
+                        DeletePreviousUserData();
+                        JSONArray jsonArray = null;
+                        try {
+
+                            jsonArray = new JSONArray(UsersJsonResult);
+                            JSONObject jsonObject;
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+
+                                jsonObject = jsonArray.getJSONObject(i);
+
+                                String user_name = jsonObject.getString("user_name");
+                                String user_email = jsonObject.getString("user_email");
+                                String user_password = jsonObject.getString("user_password");
+
+                                String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_USER+" (user_name,user_email,user_password,status) VALUES('"+user_name+"', '"+user_email+"' , '"+user_password+"',  '"+1+"');";
+
+                                sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                            }
+                            Toast.makeText(context,"Users updated", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                else {
+                        Toast.makeText(context,"Users not updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                 else {
+
+                        Toast.makeText(context, httpServiceClass.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+        public void getTransactions(){
+            HttpServiceClass httpServiceClass = new HttpServiceClass(TransactionHttpJSonURL);
+
+            try {
+                httpServiceClass.ExecutePostRequest();
+
+
+                if (httpServiceClass.getResponseCode() == 200) {
+
+                    TransactionsJsonResult = httpServiceClass.getResponse();
+
+                    if (TransactionsJsonResult != null) {
+                        DeletePreviousTransactionsData();
+                        JSONArray jsonArray = null;
+                        try {
+
+                            jsonArray = new JSONArray(TransactionsJsonResult);
+                            JSONObject jsonObject;
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+
+                                jsonObject = jsonArray.getJSONObject(i);
+
+                                String transaction_type = jsonObject.getString("transaction_type");
+                                String transaction_date = jsonObject.getString("transaction_date");
+
+                                String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_TRANSACTIONS+" (transaction_type,transaction_date,transaction_status) VALUES('"+transaction_type+"', '"+transaction_date+"',  '"+1+"');";
+
+                                sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                            }
+                            Toast.makeText(context,"Users updated", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    else {
+                        Toast.makeText(context,"Users not updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+
+                    Toast.makeText(context, httpServiceClass.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
+        public void getProducts(){
+            HttpServiceClass httpServiceClass = new HttpServiceClass(ProductHttpJSonURL);
+
+            try {
+                httpServiceClass.ExecutePostRequest();
+
+
+                if (httpServiceClass.getResponseCode() == 200) {
+
+                    ProductJsonResult = httpServiceClass.getResponse();
+
+                    if (ProductJsonResult != null) {
+                        DeletePreviousProductssData();
+                        JSONArray jsonArray = null;
+                        try {
+
+                            jsonArray = new JSONArray(ProductJsonResult);
+                            JSONObject jsonObject;
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+
+                                jsonObject = jsonArray.getJSONObject(i);
+
+                                String product_name = jsonObject.getString("product_name");
+                                String quantity = jsonObject.getString("quantity");
+                                String product_price = jsonObject.getString("product_price");
+
+                                String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_PRODUCTS+" (product_name,product_quantity,product_price,status) VALUES('"+product_name+"', '"+quantity+"' , '"+product_price+"',  '"+1+"');";
+
+                                sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                            }
+                            Toast.makeText(context,"Products updated", Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    else {
+                        Toast.makeText(context,"Products not updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                 else {
+
+                        Toast.makeText(context, httpServiceClass.getErrorMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
         }
     }
@@ -175,9 +419,29 @@ public class Main extends AppCompatActivity {
 
     }
 
-    public void DeletePreviousData(){
+    public void DeletePreviousClientsData(){
 
         sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_CLIENT+"");
 
     }
+    public void DeletePreviousProductssData(){
+
+        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_PRODUCTS+"");
+
+    }
+    public void DeletePreviousUserData(){
+
+        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_USER+"");
+
+    }
+    public void DeletePreviousTransactionsData(){
+        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_TRANSACTIONS+"");
+
+    }
+    public void DeletePreviousMpesaData(){
+        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_MPESA+"");
+
+    }
+
+
 }

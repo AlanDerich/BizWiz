@@ -32,7 +32,6 @@ public class importContactClient extends AppCompatActivity {
     SearchView search;
     Cursor phones;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    ImageView mSearchCloseButton;
 
 
     @Override
@@ -54,21 +53,15 @@ public class importContactClient extends AppCompatActivity {
         showContacts();
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                // TODO Auto-generated method stub
-
+            public boolean onQueryTextSubmit(String text) {
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                // TODO Auto-generated method stub
-
-                adapter.filter(newText);
-
-                return false;
+            public boolean onQueryTextChange(String text) {
+                adapter.getFilter().filter(text);
+                return true;
             }
         });
 
@@ -162,7 +155,7 @@ public class importContactClient extends AppCompatActivity {
             }
             contacts.addAll(removed);
             selectUsers=contacts;
-            adapter = new ContactsRecyclerAdapter(inflater, selectUsers);
+            adapter = new ContactsRecyclerAdapter(importContactClient.this,inflater, selectUsers);
             recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
             recyclerView.setAdapter(adapter);
 

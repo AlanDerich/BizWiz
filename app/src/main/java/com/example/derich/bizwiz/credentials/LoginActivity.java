@@ -2,7 +2,9 @@ package com.example.derich.bizwiz.credentials;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -15,6 +17,7 @@ import android.view.View;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.activities.NetworkStateChecker;
 import com.example.derich.bizwiz.activities.UserActivity;
 import com.example.derich.bizwiz.helper.InputValidation;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
@@ -48,6 +51,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+        registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         getSupportActionBar().hide();
 
         initViews();
