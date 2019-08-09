@@ -38,6 +38,7 @@ import com.example.derich.bizwiz.clients.ClientsDetails;
 import com.example.derich.bizwiz.clients.DeleteClient;
 import com.example.derich.bizwiz.clients.ViewClient;
 import com.example.derich.bizwiz.credentials.LoginActivity;
+import com.example.derich.bizwiz.credentials.RegisterActivity;
 import com.example.derich.bizwiz.mpesa.Mpesa;
 import com.example.derich.bizwiz.products.BackupData;
 import com.example.derich.bizwiz.products.ProductsOffered;
@@ -45,7 +46,6 @@ import com.example.derich.bizwiz.sales.AddDebt;
 import com.example.derich.bizwiz.sales.Sales;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 import com.example.derich.bizwiz.syncFromServer.Main;
-import com.example.derich.bizwiz.syncFromServer2.Syncronization;
 import com.example.derich.bizwiz.utils.PreferenceUtils;
 
 import static com.example.derich.bizwiz.credentials.LoginActivity.sharedPreferences;
@@ -61,7 +61,8 @@ public class UserActivity extends AppCompatActivity
     public DatabaseHelper db;
     Context context;
     SQLiteDatabase dbHelper;
-    Button viewClients,clients,sales,products,transactionss, sync, delete_client;
+
+    Button viewClients,clients,sales,products,transactionss, sync, delete_client, addUser;
     private final int REQUEST_PERMISSION_READ_CONTACTS = 1;
 
     private TextView textViewName;
@@ -75,6 +76,7 @@ public class UserActivity extends AppCompatActivity
     // Instance fields
     Account mAccount;
     private Cursor mCursor;
+    private String Admin = "Admin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -96,6 +98,7 @@ public class UserActivity extends AppCompatActivity
         fab_debt = (FloatingActionButton) findViewById(R.id.addDebt);
         fab_product= (FloatingActionButton) findViewById(R.id.addProduct);
         delete_client = findViewById(R.id.delete_client);
+        addUser = findViewById(R.id.addClientButton);
         FabOpen = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
         FabClose = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
         FabClockwise = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_clockwise);
@@ -165,9 +168,19 @@ public class UserActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
         textViewName.setText("Welcome " + PreferenceHelper.getUsername() + ". What would you like to do?");
+        String Administrator = PreferenceHelper.getUsername();
 
 
-
+if (Administrator.equals(Admin)){
+    transactionss.setVisibility(View.VISIBLE);
+    addUser.setVisibility(View.VISIBLE);
+    delete_client.setVisibility(View.VISIBLE);
+}
+else {
+    transactionss.setVisibility(View.GONE);
+    addUser.setVisibility(View.GONE);
+    delete_client.setVisibility(View.GONE);
+}
 
         clients.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +214,7 @@ public class UserActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(UserActivity.this, Syncronization.class);
+                Intent intent = new Intent(UserActivity.this, Main.class);
                 startActivity(intent);
             }
         });
@@ -216,6 +229,14 @@ public class UserActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UserActivity.this, DeleteClient.class);
+                startActivity(intent);
+            }
+
+        });
+        addUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -270,17 +291,23 @@ public class UserActivity extends AppCompatActivity
 
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            Intent intent = new Intent(UserActivity.this, UserActivity.class);
+            startActivity(intent);
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_clients) {
+            Intent intent = new Intent(UserActivity.this, AllClients.class);
+            startActivity(intent);
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_mpesa_logs) {
+            Intent intent = new Intent(UserActivity.this, MpesaLogs.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_mpesa) {
             Intent intent = new Intent(UserActivity.this, Mpesa.class);

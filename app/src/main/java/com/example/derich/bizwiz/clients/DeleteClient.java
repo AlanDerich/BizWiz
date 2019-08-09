@@ -20,6 +20,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_DEBT;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_FULLNAME;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_ID;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_NUMBER;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_STATUS;
+
 public class DeleteClient extends AppCompatActivity {
 
     Spinner delete_client_spinner;
@@ -93,10 +99,11 @@ public class DeleteClient extends AppCompatActivity {
                         }
                         StringBuffer buffer = new StringBuffer();
                         while (res.moveToNext()) {
-                            buffer.append("Id :").append(res.getString(0)).append("\n");
-                            buffer.append("Name :").append(res.getString(1)).append("\n");
-                            buffer.append("Phone :").append(res.getString(3)).append("\n");
-                            buffer.append("Amount :").append(res.getString(2)).append("\n\n");
+                            buffer.append("Id :").append(res.getString(res.getColumnIndex(COLUMN_CLIENT_ID))).append("\n");
+                            buffer.append("Name :").append(res.getString(res.getColumnIndex(COLUMN_CLIENT_FULLNAME))).append("\n");
+                            buffer.append("Phone :").append(res.getString(res.getColumnIndex(COLUMN_NUMBER))).append("\n");
+                            buffer.append("Debt Amount :").append(res.getString(res.getColumnIndex(COLUMN_CLIENT_DEBT))).append("\n");
+                            buffer.append("Sync status :").append(res.getString(res.getColumnIndex(COLUMN_STATUS))).append("\n\n");
                         }
 
                         // Show all data

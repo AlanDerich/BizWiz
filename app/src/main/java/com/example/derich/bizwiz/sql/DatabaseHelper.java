@@ -55,6 +55,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     public static final String TABLE_MPESA = "mpesa";
     public static final String MPESA_ID = "id";
     public static final String DATE_MILLIS = "date_in_millis";
+    public static final String TIME_OF_TRANSACTION = "time_of_transaction";
     public static final String COLUMN_OPENING_FLOAT = "opening_float";
     public static final String COLUMN_OPENING_CASH = "opening_cash";
     public static final String COLUMN_ADDED_FLOAT = "added_float";
@@ -95,7 +96,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     private String DROP_TRANSACTION_TABLE = "DROP TABLE IF EXISTS " + TABLE_TRANSACTIONS;
 
     private String CREATE_MPESA_TABLE = "CREATE TABLE " + TABLE_MPESA + " ( "+ MPESA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+ DATE_MILLIS + " TEXT, " + COLUMN_OPENING_FLOAT + " TEXT , " + COLUMN_OPENING_CASH +
-            " TEXT, " + COLUMN_ADDED_CASH + " TEXT, " + COLUMN_ADDED_FLOAT + " TEXT, " + COLUMN_REDUCTED_CASH + " TEXT, " + COLUMN_CLOSING_CASH + " TEXT, " + COLUMN_REDUCTED_FLOAT + " TEXT , " + COLUMN_COMMENT +" TEXT, " + COLUMN_MPESA_STATUS + " TINYINT );" ;
+            " TEXT, " + COLUMN_ADDED_CASH + " TEXT, " + COLUMN_ADDED_FLOAT + " TEXT, " + COLUMN_REDUCTED_CASH + " TEXT, " + COLUMN_CLOSING_CASH + " TEXT, " + COLUMN_REDUCTED_FLOAT + " TEXT , " + COLUMN_COMMENT +" TEXT, " + TIME_OF_TRANSACTION +" TEXT, " + COLUMN_MPESA_STATUS + " TINYINT );" ;
     private String DROP_MPESA_TABLE = "DROP TABLE IF EXISTS " + TABLE_MPESA;
 
 
@@ -142,13 +143,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         db.update(TABLE_USER, values, COLUMN_USER_EMAIL+" = ?",new String[] { email });
         db.close();
     }
-    public boolean checkUser(String email){
+    public boolean checkUser(String username){
         String[] columns = {
                 COLUMN_USER_ID
         };
         SQLiteDatabase db = this.getWritableDatabase();
-        String selection = COLUMN_USER_EMAIL + " = ?";
-        String[] selectionArgs = { email };
+        String selection = COLUMN_USER_NAME + " = ?";
+        String[] selectionArgs = { username };
 
         Cursor cursor = db.query(TABLE_USER,
                 columns,
@@ -167,13 +168,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return false;
     }
 
-    public boolean checkUser(String email, String password){
+    public boolean checkUser(String username, String password){
         String[] columns = {
                 COLUMN_USER_ID
         };
         SQLiteDatabase db = this.getWritableDatabase();
-        String selection = COLUMN_USER_EMAIL + " = ?" + " AND " + COLUMN_USER_PASSWORD + " =?";
-        String[] selectionArgs = { email, password };
+        String selection = COLUMN_USER_NAME + " = ?" + " AND " + COLUMN_USER_PASSWORD + " =?";
+        String[] selectionArgs = { username, password };
 
         Cursor cursor = db.query(TABLE_USER,
                 columns,

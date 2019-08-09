@@ -38,7 +38,7 @@ public class ForgotPassword extends AppCompatActivity {
         setContentView(R.layout.activity_forgotpassword);
 
 
-        textInputEditTextEmail = (TextInputEditText) findViewById(R.id.textInputEditTextEmail);
+        textInputEditTextEmail = (TextInputEditText) findViewById(R.id.textInputEditTextUsername);
         appCompatButtonConfirm = (AppCompatButton) findViewById(R.id.appCompatButtonConfirm);
         nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollView);
 

@@ -61,9 +61,8 @@ public class Main extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                SQLiteDataBaseBuild();
-
-                new StoreJSonDataInToSQLiteClass(Main.this).execute();
+               Intent intent = new Intent(Main.this, Syncronization.class);
+               startActivity(intent);
 
             }
         });
@@ -92,7 +91,7 @@ public class Main extends AppCompatActivity {
 
     }
 
-    private class StoreJSonDataInToSQLiteClass extends AsyncTask<Void, Void, Void> {
+    /*private class StoreJSonDataInToSQLiteClass extends AsyncTask<Void, Void, Void> {
 
         public Context context;
 
@@ -443,5 +442,5 @@ public class Main extends AppCompatActivity {
 
     }
 
-
+*/
 }

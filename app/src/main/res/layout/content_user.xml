@@ -114,6 +114,20 @@
             app:layout_constraintTop_toBottomOf="@+id/transactionss" />
 
         <Button
+            android:id="@+id/addClientButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:text="Add User"
+            app:layout_constraintEnd_toEndOf="@+id/sync"
+            app:layout_constraintStart_toStartOf="@+id/sync"
+            app:layout_constraintTop_toBottomOf="@+id/sync" />
+
+        <Button
             android:id="@+id/delete_client"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,9 +137,9 @@
             android:layout_marginEnd="64dp"
             android:layout_marginRight="64dp"
             android:text="Delete client"
-            app:layout_constraintEnd_toEndOf="@+id/sync"
-            app:layout_constraintStart_toStartOf="@+id/sync"
-            app:layout_constraintTop_toBottomOf="@+id/sync" />
+            app:layout_constraintEnd_toEndOf="@+id/addClientButton"
+            app:layout_constraintStart_toStartOf="@+id/addClientButton"
+            app:layout_constraintTop_toBottomOf="@+id/addClientButton" />
 
         <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"

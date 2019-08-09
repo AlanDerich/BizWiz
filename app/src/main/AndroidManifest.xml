@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.derich.bizwiz">
 
-    <uses-permission
-        android:name="android.permission.AUTHENTICATE_ACCOUNTS"
-         />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -23,10 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".clients.DeleteClient"></activity>
+        <activity android:name=".activities.MpesaLogs"></activity>
+        <activity android:name=".clients.DeleteClient" />
         <activity android:name=".syncFromServer.ShowData" />
         <activity android:name=".syncFromServer.Main" />
-        <activity android:name=".clients.importContactClient" />
+        <activity
+            android:name=".clients.importContactClient"
+            android:noHistory="true" />
         <activity android:name=".mpesa.ClosingCash" />
         <activity android:name=".mpesa.ReductedCash" />
         <activity android:name=".mpesa.ReductedFloat" />
@@ -34,7 +35,8 @@
         <activity android:name=".mpesa.AddedFloat" />
         <activity android:name=".mpesa.OpeningFloat" />
         <activity android:name=".mpesa.OpeningCash" />
-        <activity android:name=".syncFromServer2.Syncronization" />
+        <activity android:name=".syncFromServer.Syncronization" />
+        <activity android:name=".credentials.UserSyncronization" />
         <activity
             android:name=".activities.UserActivity"
             android:label="@string/title_activity_user"

@@ -69,18 +69,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         textInputLayoutConfirmPassword = (TextInputLayout) findViewById(R.id.textInputLayoutConfirmPassword);
 
         textInputEditTextName = (TextInputEditText) findViewById(R.id.textInputEditTextName);
-        textInputEditTextEmail = (TextInputEditText) findViewById(R.id.textInputEditTextEmail);
+        textInputEditTextEmail = (TextInputEditText) findViewById(R.id.textInputEditTextUsername);
         textInputEditTextPassword = (TextInputEditText) findViewById(R.id.textInputEditTextPassword);
         textInputEditTextConfirmPassword = (TextInputEditText) findViewById(R.id.textInputEditTextConfirmPassword);
 
         appCompatButtonRegister = (AppCompatButton) findViewById(R.id.appCompatButtonRegister);
 
-        appCompatTextViewLoginLink = (AppCompatTextView) findViewById(R.id.appCompatTextViewLoginLink);
     }
 
     private void initListeners(){
         appCompatButtonRegister.setOnClickListener(this);
-        appCompatTextViewLoginLink.setOnClickListener(this);
     }
 
     private void initObjects(){
@@ -95,9 +93,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             case R.id.appCompatButtonRegister:
                 postDataToSQLite();
                 break;
-            case R.id.appCompatTextViewLoginLink:
-                finish();
-                break;
+
         }
     }
 
@@ -130,8 +126,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             // Snack Bar to show success message that record saved successfully
             Snackbar.make(nestedScrollView, getString(R.string.success_message), Snackbar.LENGTH_LONG).show();
             emptyInputEditText();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
 
 
         } else {

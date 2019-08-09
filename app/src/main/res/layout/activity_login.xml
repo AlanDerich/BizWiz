@@ -24,17 +24,17 @@
             android:src="@drawable/logo" />
 
         <android.support.design.widget.TextInputLayout
-            android:id="@+id/textInputLayoutEmail"
+            android:id="@+id/textInputLayoutUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColorHint="#FFF"
             android:layout_marginTop="40dp" >
 
             <android.support.design.widget.TextInputEditText
-                android:id="@+id/textInputEditTextEmail"
+                android:id="@+id/textInputEditTextUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_email"
+                android:hint="@string/hint_username"
                 android:inputType="text"
                 android:maxLines="1"
                 android:textColor="@color/colorText" />
@@ -66,13 +66,14 @@
             android:background="@color/colorTextHint"
             android:text="@string/text_login" />
 
+
         <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/textViewLinkRegister"
+            android:id="@+id/syncUsers"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
-            android:text="@string/text_not_member"
+            android:text="Get Users From Database"
             android:textSize="16sp"
             android:textColor="@color/colorText" />
 

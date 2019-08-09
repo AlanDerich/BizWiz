@@ -11,6 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,6 +49,11 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_CLIENT;
  */
 public class ClientsDetails extends AppCompatActivity implements View.OnClickListener {
     public static final String CONTACT_ID ="com.example.derich.bizwiz.contact_id";
+    public static final String CLIENT_NAME = "com.example.derich.bizwiz.CLIENT_NAME";
+    private static final String NAME_NOT_SET = "";
+    public static final String CLIENT_PHONE = "com.example.derich.bizwiz.CLIENT_PHONE";
+    private static final int PHONE_NOT_SET = -1;
+    private static final String CLIENT_NAME_NOT_SET = "";
     public static SharedPreferences sharedPreferences;
     /*
      * this is the url to our webservice
@@ -84,6 +91,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
 
     //adapterobject for list view
     private ClientAdapter clientAdapter;
+    private boolean mIsNewClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +111,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         editTextNumber = findViewById(R.id.editTextNumber);
         editTextClientEmail = findViewById(R.id.editTextClientEmail);
         listViewClients = findViewById(R.id.listViewClients);
+        readDisplayStateValues();
 
         //adding click listener to button
         buttonSave.setOnClickListener(this);
@@ -122,6 +131,19 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
 
         //registering the broadcast receiver to update sync status
         registerReceiver(broadcastReceiver, new IntentFilter(DATA_SAVED_BROADCAST));
+    }
+
+    private void readDisplayStateValues() {
+        Intent intent = getIntent();
+        String client_name = intent.getStringExtra(CLIENT_NAME);
+        editTextFullName.setText(client_name);
+        String client_phone = intent.getStringExtra(CLIENT_PHONE);
+        editTextNumber.setText(client_phone);
+
+        if(CLIENT_NAME.isEmpty()) {
+            setEmpty();
+        }
+
     }
 
     /*
@@ -167,10 +189,11 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         final int client_added_debt = 0;
 
         if (!(client_fullName.isEmpty())) {
-            if (!(Number.isEmpty()) ) {
+            if (!(Number.isEmpty() || !(client_Email.isEmpty())) ) {
                 if (!checkClientDetails(client_fullName,Number)){
                     final ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setMessage("Saving Client...");
+                progressDialog.setCancelable(false);
                 progressDialog.show();
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_CLIENT,
                         new Response.Listener<String>() {
@@ -226,9 +249,69 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(ClientsDetails.this, "Client already exists.", Toast.LENGTH_LONG).show();
                 }
             }
+            else if (!(Number.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(client_Email).matches())){
+                if (!checkClientDetails(client_fullName,Number)){
+                    final ProgressDialog progressDialog = new ProgressDialog(this);
+                    progressDialog.setMessage("Saving Client...");
+                    progressDialog.show();
+                    StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_CLIENT,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    progressDialog.dismiss();
+                                    try {
+                                        JSONObject obj = new JSONObject(response);
+                                        if (!obj.getBoolean("error")) {
+                                            //if there is a success
+                                            //storing the CLIENT to sqlite with status synced
+                                            saveClientToLocalStorage(client_fullName, client_added_debt, client_debt, Number, client_Email, CLIENT_SYNCED_WITH_SERVER);
+                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
+                                            String currentDateandTime = sdf.format(new Date());
+                                            String type = "Synced clients with server. ";
+                                            db.syncAttempt(currentDateandTime,type);
+                                        } else {
+                                            //if there is some error
+                                            //saving the name to sqlite with status unsynced
+                                            saveClientToLocalStorage(client_fullName,client_added_debt, client_debt, Number, client_Email, CLIENT_NOT_SYNCED_WITH_SERVER);
+                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
+                                            String currentDateandTime = sdf.format(new Date());
+                                            String type = "Did not Sync clients with server. ";
+                                            db.syncAttempt(currentDateandTime,type);
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    progressDialog.dismiss();
+                                    //on error storing the client to sqlite with status unsynced
+                                    saveClientToLocalStorage(client_fullName, client_added_debt, client_debt, Number, client_Email, CLIENT_NOT_SYNCED_WITH_SERVER);
+                                }
+                            }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("client_fullName", client_fullName);
+                            params.put("client_debt", client_debt);
+                            params.put("Number", Number);
+                            params.put("client_Email", client_Email);
+                            return params;
+                        }
+                    };
+
+                    VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
+                }
+                else {
+                    Toast.makeText(ClientsDetails.this, "Client already exists.", Toast.LENGTH_LONG).show();
+                }
+
+            }
 
             else {
-                Toast.makeText(ClientsDetails.this, "Please enter client's phone number .", Toast.LENGTH_LONG).show();
+                Toast.makeText(ClientsDetails.this, "Please enter client's phone number or a valid email address.", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(ClientsDetails.this, "Please enter client's Name.", Toast.LENGTH_LONG).show();
@@ -247,10 +330,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         Clients n = new Clients(client_fullName, client_debt, Number, client_Email, status);
         clients.add(n);
         refreshList();
-        editTextFullName.setText("");
-        editTextClientDebt.setText("");
-        editTextNumber.setText("");
-        editTextClientEmail.setText("");
+        setEmpty();
     }
 
 
@@ -278,5 +358,12 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
             return true;
         }
         return false;
+    }
+
+    public void setEmpty(){
+        editTextFullName.setText("");
+        editTextClientDebt.setText("");
+        editTextNumber.setText("");
+        editTextClientEmail.setText("");
     }
 }

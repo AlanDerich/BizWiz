@@ -30,16 +30,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private NestedScrollView nestedScrollView;
 
-    private TextInputLayout textInputLayoutEmail;
+    private TextInputLayout textInputLayoutUsername;
     private TextInputLayout textInputLayoutPassword;
 
-    private TextInputEditText textInputEditTextEmail;
+    private TextInputEditText textInputEditTextUsername;
     private TextInputEditText textInputEditTextPassword;
 
     private AppCompatButton appCompatButtonLogin;
 
-    private AppCompatTextView textViewLinkRegister;
     private AppCompatTextView textViewLinkForgotPassword;
+    private AppCompatTextView textViewLinkSyncUsers;
 
      private InputValidation inputValidation;
     private DatabaseHelper databaseHelper;
@@ -61,16 +61,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void initViews(){
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
-        textInputLayoutEmail =  findViewById(R.id.textInputLayoutEmail);
+        textInputLayoutUsername =  findViewById(R.id.textInputLayoutUsername);
         textInputLayoutPassword =  findViewById(R.id.textInputLayoutPassword);
 
-        textInputEditTextEmail =  findViewById(R.id.textInputEditTextEmail);
+        textInputEditTextUsername =  findViewById(R.id.textInputEditTextUsername);
         textInputEditTextPassword =  findViewById(R.id.textInputEditTextPassword);
 
         appCompatButtonLogin =  findViewById(R.id.appCompatButtonLogin);
 
-        textViewLinkRegister =  findViewById(R.id.textViewLinkRegister);
+
         textViewLinkForgotPassword =  findViewById(R.id.forgotPassword);
+        textViewLinkSyncUsers =  findViewById(R.id.syncUsers);
         PreferenceUtils utils = new PreferenceUtils();
 
         if (utils.getEmail(this) != null ){
@@ -83,8 +84,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void initListeners(){
         appCompatButtonLogin.setOnClickListener(this);
-        textViewLinkRegister.setOnClickListener(this);
         textViewLinkForgotPassword.setOnClickListener(this);
+        textViewLinkSyncUsers.setOnClickListener(this);
     }
 
     private void initObjects(){
@@ -98,28 +99,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.appCompatButtonLogin:
                 verifyFromSQLite();
                 break;
-            case R.id.textViewLinkRegister:
-                Intent intentRegister = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(intentRegister);
+            case R.id.syncUsers:
+                Intent intent = new Intent(getApplicationContext(), UserSyncronization.class);
+                startActivity(intent);
                 break;
             case R.id.forgotPassword:
-                Intent intent = new Intent(getApplicationContext(), ForgotPassword.class);
-                startActivity(intent);
+                Intent intentPassword = new Intent(getApplicationContext(), ForgotPassword.class);
+                startActivity(intentPassword);
                 break;
         }
     }
 
     private void verifyFromSQLite(){
-        if (!inputValidation.isInputEditTextFilled(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
+        if (!inputValidation.isInputEditTextFilled(textInputEditTextUsername, textInputLayoutUsername, getString(R.string.error_message_email))) {
             return;
         }
-        if (!inputValidation.isInputEditTextEmail(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
-            return;
-        }
+
         if (!inputValidation.isInputEditTextFilled(textInputEditTextPassword, textInputLayoutPassword, getString(R.string.error_message_email))) {
             return;
         }
-        String email = textInputEditTextEmail.getText().toString().trim();
+        String email = textInputEditTextUsername.getText().toString().trim();
         String password = textInputEditTextPassword.getText().toString().trim();
 
         if (databaseHelper.checkUser(email, password)) {
@@ -127,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             PreferenceUtils.savePassword(password, this);
             PreferenceHelper.setUsername(email);
             Intent accountsIntent = new Intent(activity, UserActivity.class);
-            accountsIntent.putExtra("EMAIL", textInputEditTextEmail.getText().toString().trim());
+            accountsIntent.putExtra("EMAIL", textInputEditTextUsername.getText().toString().trim());
             sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(Name, email);
@@ -141,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void emptyInputEditText(){
-        textInputEditTextEmail.setText(null);
+        textInputEditTextUsername.setText(null);
         textInputEditTextPassword.setText(null);
     }
 }

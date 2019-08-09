@@ -1,4 +1,4 @@
-package com.example.derich.bizwiz.syncFromServer2;
+package com.example.derich.bizwiz.syncFromServer;
 
 import android.util.Log;
 

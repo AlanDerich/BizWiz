@@ -1,6 +1,7 @@
 package com.example.derich.bizwiz.clients;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.model.Client;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.android.gms.location.ActivityRecognition.CLIENT_NAME;
 
 public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecyclerAdapter.ViewHolder> implements Filterable {
 
@@ -97,6 +101,18 @@ public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecycl
             title =  itemView.findViewById(R.id.name);
             phone =  itemView.findViewById(R.id.no);
             contact_select_layout =  itemView.findViewById(R.id.contact_select_layout);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String client_name = title.getText().toString().trim();
+                    String client_phone = phone.getText().toString().trim();
+                    Intent intent = new Intent(context, ClientsDetails.class);
+                    intent.putExtra(ClientsDetails.CLIENT_NAME, client_name );
+                    intent.putExtra(ClientsDetails.CLIENT_PHONE,client_phone);
+                    context.startActivity(intent);
+                }
+            });
 
         }
     }

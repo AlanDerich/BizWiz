@@ -16,6 +16,11 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.util.ArrayList;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_DEBT;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_EMAIL;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_FULLNAME;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_NUMBER;
+
 public class ViewClient  extends AppCompatActivity {
     DatabaseHelper myDB;
 
@@ -35,10 +40,10 @@ public class ViewClient  extends AppCompatActivity {
         }else{
             StringBuffer buffer = new StringBuffer();
             while(data.moveToNext()){
-                theList.add("Full Name :" + data.getString(1));
-                theList.add("Debt :" + data.getString(2));
-                theList.add("Number :" + data.getString(3));
-                theList.add("Email :" + data.getString(4) + "\n");
+                theList.add("Full Name :" + data.getString(data.getColumnIndex(COLUMN_CLIENT_FULLNAME)));
+                theList.add("Debt :" + data.getString(data.getColumnIndex(COLUMN_CLIENT_DEBT)));
+                theList.add("Number :" + data.getString(data.getColumnIndex(COLUMN_NUMBER)));
+                theList.add("Email :" + data.getString(data.getColumnIndex(COLUMN_CLIENT_EMAIL)) + "\n");
                 theList.add("\n");
                 ListAdapter listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,theList);
                 listView.setAdapter(listAdapter);

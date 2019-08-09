@@ -1,4 +1,4 @@
-package com.example.derich.bizwiz.syncFromServer2;
+package com.example.derich.bizwiz.syncFromServer;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
-import com.example.derich.bizwiz.syncFromServer.HttpServiceClass;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -138,7 +137,6 @@ public class Syncronization extends AppCompatActivity {
 
     public void getClients(){
 
-        HttpServiceClass httpServiceClass = new HttpServiceClass(urlClients);
         HttpHandler sh = new HttpHandler();
 
         // Making a request to urlClients and getting response
