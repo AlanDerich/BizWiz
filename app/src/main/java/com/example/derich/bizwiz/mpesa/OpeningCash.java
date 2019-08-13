@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,6 +31,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_ST
 import static com.example.derich.bizwiz.sql.DatabaseHelper.DATE_MILLIS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_MPESA;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 
@@ -45,15 +46,9 @@ public class OpeningCash extends AppCompatActivity {
         setContentView(R.layout.activity_opening_cash);
         amount = findViewById(R.id.editText_opening_cash);
         btn_insert = findViewById(R.id.button_opening_cash);
-        long timeMillis = System.currentTimeMillis();
-        if ((totalOpeningCash(getDate(timeMillis)))> 0){
-            int openingCash = totalOpeningCash(getDate(timeMillis));
 
-            Toast.makeText(this,"Today's opening cash of " + openingCash + " has already been inserted",Toast.LENGTH_LONG).show();
-        }
-        else {
             executeButton();
-        }
+
 
 
 
@@ -61,25 +56,33 @@ public class OpeningCash extends AppCompatActivity {
     }
 
 public void executeButton(){
+    long timeMillis = System.currentTimeMillis();
+    if ((totalOpeningCash(getDate(timeMillis)))> 0){
+        int openingCash = totalOpeningCash(getDate(timeMillis));
 
-    btn_insert.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-            String addedAmount = amount.getText().toString().trim();
+        Toast.makeText(this,"Today's opening cash of " + openingCash + " has already been inserted",Toast.LENGTH_LONG).show();
+    }
+    else {
 
-            if (!(addedAmount.isEmpty())) {
-                Integer addedCash = Integer.valueOf(addedAmount);
-                long timeMillis = System.currentTimeMillis();
-                insert(getDate(timeMillis), addedCash);
-                amount.setText("");
-                Toast.makeText(OpeningCash.this,"Added successfully",Toast.LENGTH_SHORT).show();
+
+        btn_insert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                String addedAmount = amount.getText().toString().trim();
+
+                if (!(addedAmount.isEmpty())) {
+                    Integer addedCash = Integer.valueOf(addedAmount);
+                    long timeMillis = System.currentTimeMillis();
+                    insert(getDate(timeMillis), addedCash);
+                    amount.setText("");
+                    Toast.makeText(OpeningCash.this, "Added successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(OpeningCash.this, "Amount cannot be empty", Toast.LENGTH_LONG).show();
+                }
             }
-            else {
-                Toast.makeText(OpeningCash.this,"Amount cannot be empty",Toast.LENGTH_LONG).show();
-            }
-        }
-    });
+        });
+    }
 }
 
 
@@ -109,6 +112,8 @@ public void executeButton(){
     public void insert(String date,Integer openingCash) {
         SimpleDateFormat sdif = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
         String currentDateandTime = sdif.format(new Date());
+        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         String type = "An opening cash of " + openingCash + " Ksh was added.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(OpeningCash.this);
@@ -119,6 +124,7 @@ public void executeButton(){
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_OPENING_CASH, openingCash);
+        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 
         contentValue.put(COLUMN_ADDED_CASH, 0);

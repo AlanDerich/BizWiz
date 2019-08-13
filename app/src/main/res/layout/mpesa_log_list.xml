@@ -1,66 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="4dp"
-        app:cardPreventCornerOverlap="true"
-        app:contentPadding="16dp">
+        android:layout_height="80dp"
+        android:layout_marginTop="20dp"
+        >
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:background="@drawable/cardview_bg">
 
-            <TextView
-                android:id="@+id/textView_transaction_time"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Time"
-                app:layout_constraintBottom_toTopOf="@+id/textView_transaction_amount_list"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView_transaction_type_list" />
+                android:layout_gravity="center_vertical"
+                android:layout_margin="5dp"
+                android:orientation="horizontal"
+                android:weightSum="5">
 
-            <TextView
-                android:id="@+id/textView_transaction_type_list"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="Transaction Type"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView_transaction_time"
-                app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/imageViewStatusLog"
+                    android:layout_width="0dp"
+                    android:layout_height="65dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/success"
+                    />
 
-            <TextView
-                android:id="@+id/textView_transaction_amount_list"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/amount"
-                app:layout_constraintEnd_toEndOf="@+id/textView_transaction_type_list"
-                app:layout_constraintStart_toStartOf="@+id/textView_transaction_type_list"
-                app:layout_constraintTop_toBottomOf="@+id/textView_transaction_type_list" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2.8"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingLeft="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Transaction Type"
+                        android:textColor="@color/colorGray"
+                        android:textSize="18dp"
+                        android:textStyle="bold"
+                        android:id="@+id/textView_transaction_type"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Transaction Amount"
+                        android:textColor="@color/colorGray"
+                        android:textSize="15dp"
+                        android:textStyle="bold"
+                        android:id="@+id/textView_transaction_amount_list"
 
-            <TextView
-                android:id="@+id/textView_transaction_comment"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Comment"
-                app:layout_constraintEnd_toEndOf="@+id/textView_transaction_amount_list"
-                app:layout_constraintStart_toStartOf="@+id/textView_transaction_amount_list"
-                app:layout_constraintTop_toBottomOf="@+id/textView_transaction_amount_list" />
-        </android.support.constraint.ConstraintLayout>
-    </android.support.v7.widget.CardView>
-</FrameLayout>
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Comment"
+                        android:id="@+id/textView_transaction_comment"
+                        android:textColor="@color/colorLightGray"
+                        android:textSize="14dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1.2"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/roun_rect_orange"
+                        android:text="Time"
+                        android:id="@+id/textView_transaction_time"
+                        android:textColor="#fff"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

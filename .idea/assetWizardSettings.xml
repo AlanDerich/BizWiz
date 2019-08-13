@@ -24,6 +24,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -35,6 +36,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="paddingPercent" value="-10" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -57,7 +59,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="$USER_HOME$/android-studio-ide-181.5056338-linux/android images/1744706.png" />
+                                      <entry key="imageAsset" value="$USER_HOME$/android_studio/bizwiz.jpeg" />
                                       <entry key="outputName" value="ic_action_addclient" />
                                       <entry key="themeColor" value="ffffff" />
                                     </map>
@@ -85,7 +87,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="foregroundImage" value="$USER_HOME$/android-studio-ide-181.5056338-linux/android images/client.jpeg" />
+                                      <entry key="backgroundImage" value="$USER_HOME$/android_studio/bizwiz.jpeg" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/android_studio/bizwiz.jpeg" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -133,11 +136,6 @@
                                 </PersistentState>
                               </value>
                             </entry>
-                          </map>
-                        </option>
-                        <option name="values">
-                          <map>
-                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>

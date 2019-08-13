@@ -7,8 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.derich.bizwiz.model.User;
+import com.example.derich.bizwiz.mpesa.DataModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by group 7 on 3/27/19.
@@ -193,11 +195,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return false;
     }
 
-    public Cursor getAllData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_CLIENT, null);
-        return res;
-    }
     public Cursor getAllTransactions() {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from " + TABLE_TRANSACTIONS, null);
@@ -253,6 +250,12 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
     public void deleteClient(String client_name) {
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL("DELETE FROM clients where client_fullName=? ", new String[]{client_name});
+
+    }
+
+    public void deleteProduct(String product_name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL("DELETE FROM products where product_name=? ", new String[]{product_name});
 
     }
     public int clientDeleted(String client_name) {
@@ -383,6 +386,75 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return c;
     }
 
+    public List<DataModel> getdata(String date){
+        // DataModel dataModel = new DataModel();
+        List<DataModel> data=new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] params = new String[] {date};
+        String sql = "SELECT * FROM " + TABLE_MPESA + " WHERE " + DATE_MILLIS + " = ? " + " ORDER BY " + TIME_OF_TRANSACTION + " ASC;";
+        Cursor cursor = db.rawQuery(sql,params);
+        StringBuffer stringBuffer = new StringBuffer();
+        DataModel dataModel;
+        while (cursor.moveToNext()) {
+            dataModel= new DataModel();
+            String openingFloat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_OPENING_FLOAT));
+            String openingCash = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_OPENING_CASH));
+            String dateMillis = cursor.getString(cursor.getColumnIndexOrThrow(DATE_MILLIS));
+            String addedFloat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ADDED_FLOAT));
+            String addedCash = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ADDED_CASH));
+            String reductedFloat = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REDUCTED_FLOAT));
+            String reductedCash = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REDUCTED_CASH));
+            String closingCash = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CLOSING_CASH));
+            String comment = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMMENT));
+            String timeOfTransaction = cursor.getString(cursor.getColumnIndexOrThrow(TIME_OF_TRANSACTION));
+            String syncStatus = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MPESA_STATUS));
+            if (!openingFloat.equals("0")){
+                dataModel.setAmount(openingFloat);
+                dataModel.setTypeOfTransaction("Added opening float");
+
+            }
+            else if (!openingCash.equals("0")){
+                dataModel.setAmount(openingCash);
+                dataModel.setTypeOfTransaction("Added opening cash");
+            }
+            else if (!addedFloat.equals("0")){
+                dataModel.setAmount(addedFloat);
+                dataModel.setTypeOfTransaction("Added float");
+            }
+            else if (!addedCash.equals("0")){
+                dataModel.setAmount(addedCash);
+                dataModel.setTypeOfTransaction("Added cash");
+            }
+            else if (!reductedFloat.equals("0")){
+                dataModel.setAmount(reductedFloat);
+                dataModel.setTypeOfTransaction("Reducted float");
+            }
+            else if (!reductedCash.equals("0")){
+                dataModel.setAmount(reductedCash);
+                dataModel.setTypeOfTransaction("Reducted cash");
+            }
+            else if (!closingCash.equals("0")){
+                dataModel.setAmount(closingCash);
+                dataModel.setTypeOfTransaction("Closing cash");
+            }
+            else {
+                dataModel.setAmount("none");
+            }
+
+            dataModel.setComment(comment);
+            dataModel.setTimeOfTransaction(timeOfTransaction);
+            dataModel.setSyncStatus(syncStatus);
+            stringBuffer.append(dataModel);
+            // stringBuffer.append(dataModel);
+            data.add(dataModel);
+        }
+
+
+        //
+
+        return data;
+    }
+
     /*
      * this method is for getting all the unsynced name
      * so that we can sync it with database
@@ -413,19 +485,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return true;
     }
 
-    public boolean addTransaction(String transaction_type,String transaction_date) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put(TRANSACTION_TYPE, transaction_type);
-        contentValues.put(TRANSACTION_DATE, transaction_date);
-        contentValues.put(COLUMN_TRANSACTION_STATUS, 0);
-
-
-        db.insert(TABLE_TRANSACTIONS, null, contentValues);
-        db.close();
-        return true;
-    }
 
     /*
      * This method taking two arguments
@@ -447,6 +506,22 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_USER_STATUS, status);
         db.update(TABLE_USER, contentValues, COLUMN_USER_ID + "=" + user_id, null);
+        db.close();
+        return true;
+    }
+    public boolean updateMpesaStatus(int mpesa_id, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_MPESA_STATUS, status);
+        db.update(TABLE_USER, contentValues, MPESA_ID + "=" + mpesa_id, null);
+        db.close();
+        return true;
+    }
+    public boolean updateTransactionStatus(int transaction_id, int status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_TRANSACTION_STATUS, status);
+        db.update(TABLE_TRANSACTIONS, contentValues, TRANSACTION_ID + "=" + transaction_id, null);
         db.close();
         return true;
     }
@@ -493,27 +568,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return db.rawQuery(sql, null);
     }
 
-    /*  public boolean checkDebt(String debt){
-        String[] columns = {
-                COLUMN_CLIENT_ID
-        };
-        SQLiteDatabase db = this.getWritableDatabase();
-        String selection = COLUMN_CLIENT_DEBT + " = ?";
-        String[] selectionArgs = { debt };
-
-        Cursor cursor = db.query(TABLE_CLIENT,
-                columns,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null);
-        int cursorCount = cursor.getCount();
-        cursor.close();
-        db.close();
-
-        return cursorCount > 0;
-    } */
     public ArrayList<String> getAllClients() {
         ArrayList<String> list = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -561,36 +615,29 @@ public class DatabaseHelper  extends SQLiteOpenHelper{
         return list1;
     }
 
-   /* public ArrayList<String> fetchData() {
+    public ArrayList<String> getAllMpesaDates() {
+        ArrayList<String> list = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.beginTransaction();
 
-        ArrayList<String> listOfAllDates = new ArrayList<String>();
-        String cDate = null;
-
-       SQLiteDatabase database = this.getWritableDatabase();
-
-        String[] columns = new String[] {DATE_MILLIS, COLUMN_ADDED_CASH};
-        Cursor cursor = database.query(TABLE_MPESA, columns, null, null, null, null, null);
-
-        if (cursor != null) {
-
-            if (cursor.moveToFirst()) {
-                do {
-                    //iterate the cursor to get data.
-                    cDate = getDate(cursor.getLong(cursor.getColumnIndex(DATE_MILLIS)), "yyyy/MM/dd HH:mm:ss");
-
-                    listOfAllDates.add(cDate);
-
-                } while (cursor.moveToNext());
+        try {
+            String selectQuery = "SELECT DISTINCT " + DATE_MILLIS + " FROM " + TABLE_MPESA;
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    String dateOfTransaction = cursor.getString(cursor.getColumnIndex("date_in_millis"));
+                    list.add(dateOfTransaction);
+                }
             }
-            cursor.close();
-
-            //Close the DB connection.
-            database.close();
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            db.close();
         }
+        return list;
+    }
 
-            return listOfAllDates;
 
-        }
-
-*/
 }

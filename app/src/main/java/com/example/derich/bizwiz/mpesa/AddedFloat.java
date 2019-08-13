@@ -3,8 +3,8 @@ package com.example.derich.bizwiz.mpesa;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +30,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_ST
 import static com.example.derich.bizwiz.sql.DatabaseHelper.DATE_MILLIS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_MPESA;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 
@@ -52,7 +53,6 @@ public class AddedFloat extends AppCompatActivity {
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 String addedAmount = amount.getText().toString().trim();
                 String comment = comments.getText().toString().trim();
 
@@ -85,6 +85,8 @@ public class AddedFloat extends AppCompatActivity {
     public void insert(String date,Integer addedCash, String comment) {
         SimpleDateFormat sdif = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
         String currentDateandTime = sdif.format(new Date());
+        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         String type = "A float of " + addedCash + " Ksh was added.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(AddedFloat.this);
@@ -93,6 +95,7 @@ public class AddedFloat extends AppCompatActivity {
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_ADDED_FLOAT, addedCash);
+        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
         contentValue.put(COLUMN_COMMENT,comment);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 

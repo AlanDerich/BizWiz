@@ -2,9 +2,9 @@ package com.example.derich.bizwiz.sales;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,8 +19,6 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import static java.lang.Integer.parseInt;
 
 public class PaidSale extends AppCompatActivity {
     DatabaseHelper myDb;
@@ -95,6 +93,11 @@ public class PaidSale extends AppCompatActivity {
                             }
 
                         }
+                        else {
+                            Toast.makeText(PaidSale.this, "Sorry...Values cannot be empty!", Toast.LENGTH_LONG).show();
+                            emptyInputEditText();
+                        }
+
                     }
                 }
         );

@@ -41,13 +41,13 @@ public class ConfirmPassword extends AppCompatActivity {
         inputValidation = new InputValidation(this);
         databaseHelper = new DatabaseHelper(this);
 
-        textInputEditTextPassword = (TextInputEditText) findViewById(R.id.textInputpass);
-        textInputEditTextConfirmPassword = (TextInputEditText) findViewById(R.id.textInputConfirmPassword);
+        textInputEditTextPassword = findViewById(R.id.textInputpass);
+        textInputEditTextConfirmPassword =  findViewById(R.id.textInputConfirmPassword);
 
-        textInputLayoutPassword = (TextInputLayout) findViewById(R.id.textInputLayoutPassword);
-        textInputLayoutConfirmPassword = (TextInputLayout) findViewById(R.id.textInputLayoutConfirmPassword);
-        nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollView);
-        appCompatButtonReset = (AppCompatButton) findViewById(R.id.appCompatButtonReset);
+        textInputLayoutPassword =  findViewById(R.id.textInputLayoutPassword);
+        textInputLayoutConfirmPassword = findViewById(R.id.textInputLayoutConfirmPassword);
+        nestedScrollView =  findViewById(R.id.nestedScrollView);
+        appCompatButtonReset =  findViewById(R.id.appCompatButtonReset);
 
         Intent intent = getIntent();
         email = intent.getStringExtra("EMAIL");

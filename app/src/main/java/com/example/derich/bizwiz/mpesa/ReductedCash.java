@@ -3,8 +3,8 @@ package com.example.derich.bizwiz.mpesa;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +30,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_ST
 import static com.example.derich.bizwiz.sql.DatabaseHelper.DATE_MILLIS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_MPESA;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 
@@ -79,6 +80,8 @@ public class ReductedCash extends AppCompatActivity {
     public void insert(String date,Integer reductedCash, String comm) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
         String currentDateandTime = sdf.format(new Date());
+        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         String type = "A cash of  " + reductedCash + " Ksh was deducted.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(ReductedCash.this);
@@ -89,6 +92,7 @@ public class ReductedCash extends AppCompatActivity {
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_REDUCTED_CASH, reductedCash);
+        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
         contentValue.put(COLUMN_COMMENT, comm);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 

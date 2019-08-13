@@ -341,10 +341,11 @@ public class Syncronization extends AppCompatActivity {
                     String reducted_float = m.getString("reducted_float");
                     String reducted_cash = m.getString("reducted_cash");
                     String closing_cash = m.getString("closing_cash");
+                    String time_of_transaction = m.getString("time_of_transaction");
                     String comment = m.getString("comment");
 
-                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_MPESA+" (date_in_millis,opening_float,opening_cash,added_float,added_cash,reducted_float,reducted_cash,closing_cash,comment,status) " +
-                            "VALUES('"+date_in_millis+"', '"+opening_float+"' , '"+opening_cash+"', '"+added_float+"', '"+added_cash+"' , '"+reducted_float+"', '"+reducted_cash+"', '"+closing_cash+"' , '"+comment+"',  '"+1+"');";
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_MPESA+" (date_in_millis,opening_float,opening_cash,added_float,added_cash,reducted_float,reducted_cash,closing_cash,time_of_transaction,comment,status) " +
+                            "VALUES('"+date_in_millis+"', '"+opening_float+"' , '"+opening_cash+"', '"+added_float+"', '"+added_cash+"' , '"+reducted_float+"', '"+reducted_cash+"', '"+closing_cash+"', '"+time_of_transaction+"' , '"+comment+"',  '"+1+"');";
 
                     sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
 

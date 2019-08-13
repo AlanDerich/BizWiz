@@ -6,14 +6,13 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
@@ -34,6 +33,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_ST
 import static com.example.derich.bizwiz.sql.DatabaseHelper.DATE_MILLIS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_MPESA;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 
@@ -52,6 +52,7 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
         btn_insert = findViewById(R.id.button_added_cash);
         amount = findViewById(R.id.editText_added_cash);
         comment = findViewById(R.id.editText_added_cash_comment);
+
         addedCash();
 
     }
@@ -59,6 +60,8 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
 
     public void addedCash(){
         btn_insert.setOnClickListener(new View.OnClickListener() {
+         //   Date currentTime = Calendar.getInstance().getTime();
+
             @Override
             public void onClick(View v) {
                 String addedAmount = amount.getText().toString().trim();
@@ -66,7 +69,7 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
                 if (!(addedAmount.isEmpty())) {
                     Integer addedCash = Integer.valueOf(addedAmount);
                     long timeMillis = System.currentTimeMillis();
-                    insert(getDate(timeMillis), addedCash, comments);
+                    insert(getDate(timeMillis),addedCash, comments);
                     amount.setText("");
                     comment.setText("");
                     Toast.makeText(AddedCash.this,"Added successfully",Toast.LENGTH_SHORT).show();
@@ -89,13 +92,17 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(AddedCash.this);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
+        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         String currentDateandTime = sdf.format(new Date());
         String type = "A cash of  " + addedCash + " Ksh added.";
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues contentValue = new ContentValues();
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
+
         contentValue.put(COLUMN_ADDED_CASH, addedCash);
+        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
         contentValue.put(COLUMN_COMMENT, comments);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 

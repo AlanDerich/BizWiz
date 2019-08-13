@@ -12,12 +12,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.derich.bizwiz.R;
-import com.example.derich.bizwiz.model.Client;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.android.gms.location.ActivityRecognition.CLIENT_NAME;
 
 public class ContactsRecyclerAdapter extends RecyclerView.Adapter<ContactsRecyclerAdapter.ViewHolder> implements Filterable {
 

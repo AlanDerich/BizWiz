@@ -1,14 +1,10 @@
 package com.example.derich.bizwiz.clients;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.service.autofill.SaveInfo;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
@@ -18,10 +14,8 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
  */
 public class AllClients extends AppCompatActivity {
     DatabaseHelper myDb;
-    Button viewClients;
-    Button addFromContacts;
+    Button viewClients,addDebt,addFromContacts;
 
-    private TextView textViewName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -29,6 +23,7 @@ public class AllClients extends AppCompatActivity {
         setContentView(R.layout.activity_all_clients);
         viewClients = findViewById(R.id.viewClients);
         addFromContacts = findViewById(R.id.addClientFromContacts);
+        addDebt = findViewById(R.id.addDebtBtn);
         myDb = new DatabaseHelper(this);
 
 
@@ -48,25 +43,13 @@ public class AllClients extends AppCompatActivity {
                 startActivity(vIntent);
             }
         });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public void addProduct(View view)
-    {
-        startActivity(new Intent(this,SaveInfo.class));
-
-    }
-    public void selectOption (View view) {
-        String button_text;
-        button_text = ((Button) view).getText().toString();
-        if   (button_text.equals("Add Client")) {
-            Intent intent = new Intent(this, ClientsDetails.class);
-            startActivity(intent);
-        }
-        else if (button_text.equals("View Clients")) {
-            Intent intent = new Intent(this, AllClients.class);
-            startActivity(intent);
-        }
+        addDebt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent vIntent = new Intent(AllClients.this, ClientsDetails.class);
+                startActivity(vIntent);
+            }
+        });
 
 
 

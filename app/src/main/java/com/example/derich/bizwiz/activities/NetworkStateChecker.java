@@ -3,7 +3,6 @@ package com.example.derich.bizwiz.activities;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -20,8 +19,6 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +26,6 @@ public class NetworkStateChecker extends BroadcastReceiver {
 
     private DatabaseHelper db;
     public Context context;
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String Name = "nameKey" ;
-    public static final String Email = "emailKey";
-    SharedPreferences sharedPreferences;
 
 
 
@@ -119,6 +112,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                                 mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_REDUCTED_FLOAT)),
                                 mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_REDUCTED_CASH)),
                                 mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_CLOSING_CASH)),
+                                mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.TIME_OF_TRANSACTION)),
                                 mpesa.getString(mpesa.getColumnIndex(DatabaseHelper.COLUMN_COMMENT))
 
                         );
@@ -225,7 +219,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateProductStatus(transaction_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateTransactionStatus(transaction_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
                                 context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
@@ -290,8 +284,8 @@ public class NetworkStateChecker extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
 
-    private void saveMpesa(final int client_id,final String date_in_millis, final String opening_float,final String opening_cash, final String added_float,final String added_cash, final String reducted_float,final String reducted_cash, final String closing_cash,final String comment) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_USER,
+    private void saveMpesa(final int mpesa_id,final String date_in_millis, final String opening_float,final String opening_cash, final String added_float,final String added_cash, final String reducted_float,final String reducted_cash, final String closing_cash,final String time_of_transaction,final String comment) {
+        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_MPESA,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -299,7 +293,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateUSerStatus(client_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateMpesaStatus(mpesa_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
                                 context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
@@ -326,6 +320,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                 params.put("reducted_float", reducted_float);
                 params.put("reducted_cash", reducted_cash);
                 params.put("closing_cash", closing_cash);
+                params.put("time_of_transaction", time_of_transaction);
                 params.put("comment", comment);
                 return params;
             }

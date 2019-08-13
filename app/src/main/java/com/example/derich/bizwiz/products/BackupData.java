@@ -36,10 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_FULLNAME;
-import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_NUMBER;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_NAME;
-import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_CLIENT;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
 
 /**

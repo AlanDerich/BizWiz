@@ -31,7 +31,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.AllClients;
 import com.example.derich.bizwiz.clients.ClientsDetails;
@@ -48,6 +47,7 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 import com.example.derich.bizwiz.syncFromServer.Main;
 import com.example.derich.bizwiz.utils.PreferenceUtils;
 
+import static com.example.derich.bizwiz.PreferenceHelper.getUsername;
 import static com.example.derich.bizwiz.credentials.LoginActivity.sharedPreferences;
 
 public class UserActivity extends AppCompatActivity
@@ -109,6 +109,7 @@ public class UserActivity extends AppCompatActivity
         showPhoneStatePermission();
 
 
+
         fab_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,8 +168,8 @@ public class UserActivity extends AppCompatActivity
         textViewName = findViewById(R.id.text1);
         sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
 
-        textViewName.setText("Welcome " + PreferenceHelper.getUsername() + ". What would you like to do?");
-        String Administrator = PreferenceHelper.getUsername();
+        textViewName.setText("Welcome " + getUsername() + ". What would you like to do?");
+        String Administrator = getUsername();
 
 
 if (Administrator.equals(Admin)){
@@ -285,7 +286,44 @@ else {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder builder
+                    = new AlertDialog
+                    .Builder(UserActivity.this);
+
+            builder.setMessage("Do you want to exit ?");
+
+
+            builder.setTitle("Alert !");
+            builder.setCancelable(false);
+            builder
+                    .setPositiveButton(
+                            "Yes",
+                            new DialogInterface
+                                    .OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which)
+                                {
+                                    finish();
+                                }
+                            });
+            builder
+                    .setNegativeButton(
+                            "No",
+                            new DialogInterface
+                                    .OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which)
+                                {
+                                    dialog.cancel();
+                                }
+                            });
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.derich.bizwiz.sales;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.clients.ViewClient;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -41,7 +43,6 @@ public class AddDebt extends AppCompatActivity {
         btnViewProducts = findViewById(R.id.button_viewProdkts);
         ProductName = findViewById(R.id.Prod_Name);
         editTextQuantity = findViewById(R.id.editText_quantity);
-        DatabaseHelper databaseHelper= new DatabaseHelper(this);
         ArrayList<String> listPro = databaseHelper.getAllClients();
         Spinner spinner= findViewById(R.id.editText_Name);
         ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
@@ -61,8 +62,7 @@ public class AddDebt extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String name = null;
-                        if (editTextName.getSelectedItem() !=null){
+                        if (editTextName.getSelectedItem() !=null && ProductName.getSelectedItem() != null){
                         String client_name = editTextName.getSelectedItem().toString();
                         String productName = ProductName.getSelectedItem().toString();
                         String quantity = editTextQuantity.getText().toString();
@@ -76,13 +76,10 @@ public class AddDebt extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                         String currentDateandTime = sdf.format(new Date());
 
-
-
                         if ( !(productName.isEmpty()) && !(quantity.isEmpty())) {
 
                             if (syncStatus == 1){
-
-                            int new_value = previousBal - Integer.valueOf(quantity);
+                                int new_value = previousBal - Integer.valueOf(quantity);
                             int new_debt = previousDebt + amount;
 
                             String type = amount + " Ksh added to " + client_name + "'s debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
@@ -124,12 +121,14 @@ public class AddDebt extends AppCompatActivity {
                         }
 
                     }
-
+                        else {
+                            Toast.makeText(AddDebt.this, "Sorry...Values cannot be empty!", Toast.LENGTH_LONG).show();
+                            emptyInputEditText();
+                        }
                 }
                 }
         );
     }
-
 
     private void emptyInputEditText(){
         editTextQuantity.setText(null);
@@ -139,21 +138,8 @@ public class AddDebt extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Cursor res = databaseHelper.getAllData();
-                        if (res.getCount() == 0) {
-                            showMessage("Error", "Nothing found");
-                            return;
-                        }
-                        StringBuffer buffer = new StringBuffer();
-                        while (res.moveToNext()) {
-                            buffer.append("Id :").append(res.getString(0)).append("\n");
-                            buffer.append("Name :").append(res.getString(1)).append("\n");
-                            buffer.append("Phone :").append(res.getString(3)).append("\n");
-                            buffer.append("Amount :").append(res.getString(2)).append("\n\n");
-                        }
-
-                        // Show all data
-                        showMessage("Data", buffer.toString());
+                        Intent intent = new Intent(AddDebt.this, ViewClient.class);
+                        startActivity(intent);
                     }
                 }
         );
@@ -165,7 +151,7 @@ public class AddDebt extends AppCompatActivity {
                     public void onClick(View v) {
                         Cursor res = databaseHelper.getProducts();
                         if (res.getCount() == 0) {
-                            showMessage("Error", "Nothing found");
+                            showMessage("Error", "No products found");
                             return;
                         }
                         StringBuffer buffer = new StringBuffer();

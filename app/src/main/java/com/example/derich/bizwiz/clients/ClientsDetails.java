@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -48,18 +47,10 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_CLIENT;
  * Created by group 7 CS project on 3/11/18.
  */
 public class ClientsDetails extends AppCompatActivity implements View.OnClickListener {
-    public static final String CONTACT_ID ="com.example.derich.bizwiz.contact_id";
     public static final String CLIENT_NAME = "com.example.derich.bizwiz.CLIENT_NAME";
-    private static final String NAME_NOT_SET = "";
     public static final String CLIENT_PHONE = "com.example.derich.bizwiz.CLIENT_PHONE";
-    private static final int PHONE_NOT_SET = -1;
-    private static final String CLIENT_NAME_NOT_SET = "";
     public static SharedPreferences sharedPreferences;
-    /*
-     * this is the url to our webservice
-     * make sure you are using the ip instead of localhost
-     * it will not work if you are using localhost
-     * */
+
     public static final String URL_SAVE_CLIENT = "http://alanderich.info/bizwiz/saveClient.php";
 
     //database helper object
@@ -77,7 +68,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
     private ListView listViewClients;
 
     //List to store all the clients
-    private List<Clients> clients;
+    public List<Clients> clients;
 
     //1 means data is synced and 0 means data is not synced
     public static final int CLIENT_SYNCED_WITH_SERVER = 1;

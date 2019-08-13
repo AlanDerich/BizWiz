@@ -47,7 +47,13 @@ public class ClientAdapter  extends ArrayAdapter<Clients> {
         //setting the name to textview
         textViewfName.setText("Full Name: " + client.getClient_fullName());
         textViewDebt.setText("Debt: " + client.getClient_debt());
-        textViewPhone.setText("Number: 0" + client.getClient_number());
+        if (client.getClient_number().length() < 11){
+            textViewPhone.setText("Number: 0" + client.getClient_number());
+        }
+        else {
+            textViewPhone.setText("Number: +" + client.getClient_number());
+        }
+
         textViewEmail.setText("Email: " + client.getClient_Email());
 
         //if the synced status is 0 displaying

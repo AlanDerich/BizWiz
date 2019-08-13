@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.derich.bizwiz.R;
@@ -152,7 +151,7 @@ public class UserSyncronization extends AppCompatActivity {
 
             }
         } else {
-            Log.e(TAG, "Couldn't get data from server.");
+            Log.e(TAG, "Couldn't get user data from server.");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

@@ -22,7 +22,7 @@
         android:text="Clear Debt" />
 
     <Button
-        android:id="@+id/viewSales"
+        android:id="@+id/paidSalesBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="selectOption"

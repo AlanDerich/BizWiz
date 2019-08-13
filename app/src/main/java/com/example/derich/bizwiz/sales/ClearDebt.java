@@ -1,10 +1,9 @@
 package com.example.derich.bizwiz.sales;
 
 
-import android.database.Cursor;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.clients.ViewClient;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -87,8 +87,11 @@ public class ClearDebt extends AppCompatActivity {
                             Toast.makeText(ClearDebt.this, "Sorry...Values cannot be empty!", Toast.LENGTH_LONG).show();
                             emptyInputEditText();
                         }
-
-                    }
+                        }
+                        else {
+                            Toast.makeText(ClearDebt.this, "Sorry...Values cannot be empty!", Toast.LENGTH_LONG).show();
+                            emptyInputEditText();
+                        }
                     }
 
                 }
@@ -104,31 +107,11 @@ public class ClearDebt extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Cursor res = myDb.getAllData();
-                        if (res.getCount() == 0) {
-                            showMessage("Error", "Nothing found");
-                            return;
-                        }
-                        StringBuffer buffer = new StringBuffer();
-                        while (res.moveToNext()) {
-                            buffer.append("Id :").append(res.getString(0)).append("\n");
-                            buffer.append("Name :").append(res.getString(1)).append("\n");
-                            buffer.append("Phone :").append(res.getString(3)).append("\n");
-                            buffer.append("Amount :").append(res.getString(2)).append("\n\n");
-                        }
-
-                        // Show all data
-                        showMessage("Data", buffer.toString());
+                        Intent intent = new Intent(ClearDebt.this, ViewClient.class);
+                        startActivity(intent);
                     }
                 }
         );
     }
 
-    public void showMessage(String title, String Message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
 }

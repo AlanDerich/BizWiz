@@ -4,8 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +32,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_ST
 import static com.example.derich.bizwiz.sql.DatabaseHelper.DATE_MILLIS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_MPESA;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 
@@ -48,6 +49,14 @@ public class ClosingCash extends AppCompatActivity {
         amount = findViewById(R.id.editText_closingFloat);
         closingCash = findViewById(R.id.textView_closing_cash);
         btn_calculate = findViewById(R.id.button_calculate);
+        calculateClosingCashButton();
+
+
+
+
+
+    }
+    public void calculateClosingCashButton() {
         long timeMillis = System.currentTimeMillis();
         if((totalClosingCash(getDate(timeMillis)))> 0)
         {
@@ -56,37 +65,29 @@ public class ClosingCash extends AppCompatActivity {
             amount.setText("");
         }
         else {
-            amount.setText("");
-            calculateClosingCashButton();
+            btn_calculate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    long timeMillis = System.currentTimeMillis();
+                    String closingCashe = amount.getText().toString().trim();
+                    if (!(closingCashe.isEmpty())) {
+                        insert(getDate(timeMillis), calculateClosingCash());
+                        amount.setText("");
+                        closingCash.setText("The expected closing cash is " + calculateClosingCash());
+                    } else {
+                        Toast.makeText(ClosingCash.this, "Amount cannot be empty", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+            });
         }
-
-
-
-
-    }
-    public void calculateClosingCashButton() {
-        btn_calculate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                long timeMillis = System.currentTimeMillis();
-                String closingCashe = amount.getText().toString().trim();
-                if (!(closingCashe.isEmpty())){
-                    insert(getDate(timeMillis), calculateClosingCash());
-                    closingCash.setText("The expected closing cash is " + calculateClosingCash());
-                }
-                else {
-                    Toast.makeText(ClosingCash.this,"Amount cannot be empty",Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-        });
 
     }
 
     private int calculateClosingCash() {
-        //expectedFloat = (openingFloat + openingCash + addedCash + addedFloat) - (reductedFloat + reductedCash - closingCash)
-        //expectedCash = (openingFloat + openingCash + addedCash + addedFloat) - (reductedFloat + reductedCash - closingFloat)
+        //expectedFloat = (openingFloat + Amount + addedCash + addedFloat) - (reductedFloat + reductedCash - closingCash)
+        //expectedCash = (openingFloat + Amount + addedCash + addedFloat) - (reductedFloat + reductedCash - closingFloat)
         long timeMillis = System.currentTimeMillis();
         int openingCash = openingCash(getDate(timeMillis));
         int openingFloat = openingFloat(getDate(timeMillis));
@@ -213,6 +214,8 @@ public class ClosingCash extends AppCompatActivity {
     public void insert(String date,Integer closingCash) {
         SimpleDateFormat sdif = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
         String currentDateandTime = sdif.format(new Date());
+        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         String type = date + " closing cash was " + closingCash + " Ksh.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(ClosingCash.this);
@@ -221,6 +224,7 @@ public class ClosingCash extends AppCompatActivity {
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_CLOSING_CASH, closingCash);
+        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 
         contentValue.put(COLUMN_ADDED_CASH, 0);
