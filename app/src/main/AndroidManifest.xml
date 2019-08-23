@@ -21,11 +21,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".products.DeleteProduct"></activity>
+        <activity android:name=".sales.DailyReport"></activity>
+        <activity android:name=".sales.OpeningCashSales" />
+        <activity android:name=".sales.Statistics" />
+        <activity android:name=".products.DisplayProducts" />
+        <activity android:name=".products.DeleteProduct" />
         <activity android:name=".activities.MpesaLogs" />
         <activity android:name=".clients.DeleteClient" />
         <activity android:name=".syncFromServer.ShowData" />
-        <activity android:name=".syncFromServer.Main" />
+        <activity
+            android:name=".syncFromServer.Main"
+            android:noHistory="true" />
         <activity
             android:name=".clients.importContactClient"
             android:noHistory="true" />
@@ -37,7 +43,9 @@
         <activity android:name=".mpesa.OpeningFloat" />
         <activity android:name=".mpesa.OpeningCash" />
         <activity android:name=".syncFromServer.Syncronization" />
-        <activity android:name=".credentials.UserSyncronization" />
+        <activity
+            android:name=".credentials.UserSyncronization"
+            android:noHistory="true" />
         <activity
             android:name=".activities.UserActivity"
             android:label="@string/title_activity_user"
@@ -73,6 +81,7 @@
         <activity
             android:name=".credentials.ForgotPassword"
             android:label="@string/reset_password"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".credentials.ConfirmPassword"

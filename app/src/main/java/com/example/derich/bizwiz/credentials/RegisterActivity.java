@@ -9,43 +9,37 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
+import android.widget.Spinner;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.activities.NetworkStateChecker;
 import com.example.derich.bizwiz.helper.InputValidation;
 import com.example.derich.bizwiz.model.User;
+import com.example.derich.bizwiz.sales.CustomAdapter;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 /**
  * Created by group 7 CS project on 3/11/18.
  */
 
-
-
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private final AppCompatActivity activity = RegisterActivity.this;
 
     private NestedScrollView nestedScrollView;
-
     private TextInputLayout textInputLayoutName;
     private TextInputLayout textInputLayoutEmail;
+    private TextInputLayout textInputLayoutAnswer;
     private TextInputLayout textInputLayoutPassword;
     private TextInputLayout textInputLayoutConfirmPassword;
-
-    private TextInputEditText textInputEditTextName;
-    private TextInputEditText textInputEditTextEmail;
-    private TextInputEditText textInputEditTextPassword;
-    private TextInputEditText textInputEditTextConfirmPassword;
-
+    private TextInputEditText textInputEditTextName,textInputEditTextEmail,textInputEditTextPassword,textInputEditTextConfirmPassword,textInputEditTextAnswer;
     private AppCompatButton appCompatButtonRegister;
-    private AppCompatTextView appCompatTextViewLoginLink;
-
     private InputValidation inputValidation;
     private DatabaseHelper databaseHelper;
     private User user;
+    Spinner mSpinnerQuestions;
+    String[] questions = {"What is your home city?", "What is the name of your pet?", "Who is your best friend?", "What is your nickname?","How old are you?"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -53,26 +47,27 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_register);
         registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         getSupportActionBar().hide();
-
+        mSpinnerQuestions = findViewById(R.id.spinner_register_question);
         initViews();
         initListeners();
         initObjects();
+        CustomAdapter customAdapter= new CustomAdapter(RegisterActivity.this, questions);
+        mSpinnerQuestions.setAdapter(customAdapter);
     }
 
     private void initViews(){
-        nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollView);
-
-        textInputLayoutName = (TextInputLayout) findViewById(R.id.textInputLayoutName);
-        textInputLayoutEmail = (TextInputLayout) findViewById(R.id.textInputLayoutEmail);
-        textInputLayoutPassword = (TextInputLayout) findViewById(R.id.textInputLayoutPassword);
-        textInputLayoutConfirmPassword = (TextInputLayout) findViewById(R.id.textInputLayoutConfirmPassword);
-
-        textInputEditTextName = (TextInputEditText) findViewById(R.id.textInputEditTextName);
-        textInputEditTextEmail = (TextInputEditText) findViewById(R.id.textInputEditTextUsername);
-        textInputEditTextPassword = (TextInputEditText) findViewById(R.id.textInputEditTextPassword);
-        textInputEditTextConfirmPassword = (TextInputEditText) findViewById(R.id.textInputEditTextConfirmPassword);
-
-        appCompatButtonRegister = (AppCompatButton) findViewById(R.id.appCompatButtonRegister);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+        textInputEditTextAnswer = findViewById(R.id.textInputEditTextRegisterAnswer);
+        textInputLayoutName = findViewById(R.id.textInputLayoutName);
+        textInputLayoutEmail = findViewById(R.id.textInputLayoutEmail);
+        textInputLayoutAnswer = findViewById(R.id.textInputLayoutAnswer);
+        textInputLayoutPassword = findViewById(R.id.textInputLayoutPassword);
+        textInputLayoutConfirmPassword = findViewById(R.id.textInputLayoutConfirmPassword);
+        textInputEditTextName = findViewById(R.id.textInputEditTextName);
+        textInputEditTextEmail = findViewById(R.id.textInputEditTextUsername);
+        textInputEditTextPassword = findViewById(R.id.textInputEditTextPassword);
+        textInputEditTextConfirmPassword = findViewById(R.id.textInputEditTextConfirmPassword);
+        appCompatButtonRegister = findViewById(R.id.appCompatButtonRegister);
 
     }
 
@@ -103,6 +98,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if (!inputValidation.isInputEditTextFilled(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
             return;
         }
+        if (!inputValidation.isInputEditTextFilled(textInputEditTextAnswer, textInputLayoutAnswer, getString(R.string.error_message_valid_answer))) {
+            return;
+        }
         if (!inputValidation.isInputEditTextEmail(textInputEditTextEmail, textInputLayoutEmail, getString(R.string.error_message_email))) {
             return;
         }
@@ -119,6 +117,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             user.setName(textInputEditTextName.getText().toString().trim());
             user.setEmail(textInputEditTextEmail.getText().toString().trim());
             user.setPassword(textInputEditTextPassword.getText().toString().trim());
+            user.setQuestion(mSpinnerQuestions.getSelectedItem().toString().trim());
+            user.setAnswer(textInputEditTextAnswer.getText().toString().trim());
 
             databaseHelper.addUser(user);
 
@@ -138,6 +138,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void emptyInputEditText(){
         textInputEditTextName.setText(null);
         textInputEditTextEmail.setText(null);
+        textInputEditTextAnswer.setText(null);
         textInputEditTextPassword.setText(null);
         textInputEditTextConfirmPassword.setText(null);
     }

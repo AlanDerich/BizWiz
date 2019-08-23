@@ -1,6 +1,5 @@
 package com.example.derich.bizwiz.activities;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,7 +21,6 @@ import java.util.List;
 
 public class MpesaLogs extends AppCompatActivity {
     DatabaseHelper database;
-    SQLiteDatabase sqLiteDatabase;
     RecyclerView recyclerView;
     MpesaAdapter recycler;
     Spinner spinnerLogs;

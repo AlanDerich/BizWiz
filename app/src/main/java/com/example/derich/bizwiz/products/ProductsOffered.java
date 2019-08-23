@@ -13,7 +13,7 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 public class ProductsOffered extends AppCompatActivity {
     DatabaseHelper myDb;
-    Button AddProduct, updateStock, deleteProduct;
+    Button AddProduct, updateStock, deleteProduct, viewProducts;
     public static SharedPreferences sharedPreferences;
     private String Admin = "Admin";
 
@@ -24,6 +24,7 @@ public class ProductsOffered extends AppCompatActivity {
         AddProduct = findViewById(R.id.add_new_product);
         updateStock = findViewById(R.id.Update_products);
         deleteProduct = findViewById(R.id.delete_product_btn);
+        viewProducts = findViewById(R.id.view_products_btn);
         myDb = new DatabaseHelper(this);
 
         sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
@@ -56,6 +57,13 @@ public class ProductsOffered extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ProductsOffered.this, UpdateProducts.class);
+                startActivity(intent);
+            }
+        });
+        viewProducts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ProductsOffered.this, DisplayProducts.class);
                 startActivity(intent);
             }
         });

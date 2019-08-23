@@ -12,7 +12,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -38,8 +40,8 @@ public class UpdateProducts extends AppCompatActivity {
         btnAddStock= findViewById(R.id.addStock);
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         ArrayList<String> listProducts = databaseHelper.getAllProducts();
-        Spinner spinner1=(Spinner) findViewById(R.id.product_namee);
-        ArrayAdapter<String> adapter1= new ArrayAdapter<String>(this, R.layout.spinner_layout1,R.id.txts,listProducts);
+        Spinner spinner1= findViewById(R.id.product_namee);
+        ArrayAdapter<String> adapter1= new ArrayAdapter<String>(this, R.layout.spinner_layout,R.id.txt,listProducts);
         spinner1.setAdapter(adapter1);
         UpdateStock();
 
@@ -51,12 +53,21 @@ public class UpdateProducts extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         String stock = editStock.getText().toString();
+                        if (productName.getSelectedItem() != null){
                         String product_name = productName.getSelectedItem().toString();
                         databaseHelper = new DatabaseHelper(getApplicationContext());
                         sqLiteDatabase = databaseHelper.getReadableDatabase();
+                        int product_buying_price = myDb.getProductsPrice(product_name);
                         int previousStock=databaseHelper.previousBal(product_name);
+                        int previousSoldSales = databaseHelper.previousSoldBal(product_name);
+                        int soldSales = previousSoldSales + Integer.valueOf(stock);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                         String currentDateandTime = sdf.format(new Date());
+                            long timeMillis = System.currentTimeMillis();
+                            String date = ReductedCash.getDate(timeMillis);
+                            SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+                            String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+                            Integer amount = product_buying_price * Integer.valueOf(stock);
 
                         if ( !(product_name.isEmpty()) && !(stock.isEmpty())) {
 
@@ -65,7 +76,8 @@ public class UpdateProducts extends AppCompatActivity {
 
 
                             if (Integer.valueOf(stock) > 0) {
-                                boolean Update = myDb.updateQuantity(product_name, String.valueOf(new_stock), currentDateandTime, type);
+                                boolean Update = myDb.increaseQuantity(product_name, String.valueOf(new_stock),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
+                                myDb.insertSalesExpenses(String.valueOf(amount),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,product_name,stock);
                                 if (Update == true) {
                                     Toast.makeText(UpdateProducts.this, "Quantities Updated", Toast.LENGTH_LONG).show();
                                     emptyInputEditText();
@@ -83,6 +95,12 @@ public class UpdateProducts extends AppCompatActivity {
                         }
 
                     }
+                        else{
+                            Toast.makeText(UpdateProducts.this, "Sorry...No selected product!", Toast.LENGTH_LONG).show();
+                            emptyInputEditText();
+                        }
+                    }
+
 
                 }
         );

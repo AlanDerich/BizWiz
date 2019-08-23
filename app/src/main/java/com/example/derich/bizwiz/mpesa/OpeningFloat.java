@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
@@ -34,10 +35,10 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
 
 public class OpeningFloat extends AppCompatActivity {
     EditText amount;
-    DatabaseHelper myDb;
     Button btn_insert;
 
     @Override
@@ -130,6 +131,7 @@ public class OpeningFloat extends AppCompatActivity {
 
         contentValue1.put(TRANSACTION_TYPE, type);
         contentValue1.put(TRANSACTION_DATE,currentDateandTime);
+        contentValue1.put(TRANSACTION_USER, PreferenceHelper.getUsername());
         contentValue1.put(COLUMN_TRANSACTION_STATUS, 0);
 
         //insert data in DB

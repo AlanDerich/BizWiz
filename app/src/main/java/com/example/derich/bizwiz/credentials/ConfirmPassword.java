@@ -31,7 +31,7 @@ public class ConfirmPassword extends AppCompatActivity {
     private NestedScrollView nestedScrollView;
     private AppCompatButton appCompatButtonReset;
 
-    String email;
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class ConfirmPassword extends AppCompatActivity {
         appCompatButtonReset =  findViewById(R.id.appCompatButtonReset);
 
         Intent intent = getIntent();
-        email = intent.getStringExtra("EMAIL");
+        username = intent.getStringExtra("USERNAME");
 
         setTitle("Reset password");
 
@@ -78,13 +78,13 @@ public class ConfirmPassword extends AppCompatActivity {
             return;
         }
 
-        if (!databaseHelper.checkUser(email)) {
+        if (!databaseHelper.checkUser(username)) {
 
             Snackbar.make(nestedScrollView, "email doesn't exist", Snackbar.LENGTH_LONG).show();
             return;
 
         } else {
-            databaseHelper.updatePassword(email, value1);
+            databaseHelper.updatePassword(username, value1);
 
             Toast.makeText(this, "password reset successfully", Toast.LENGTH_SHORT).show();
             emptyInputEditText();

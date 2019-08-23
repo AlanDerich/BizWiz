@@ -37,7 +37,9 @@ public class ProductAdapter  extends ArrayAdapter<Products> {
         View listViewItem = inflater.inflate(R.layout.display_products, null, false);
         TextView textViewName = listViewItem.findViewById(R.id.textViewProductName);
         TextView textViewQuantity = listViewItem.findViewById(R.id.textViewQuantity);
-        TextView textViewPrice = listViewItem.findViewById(R.id.textViewProductPrice);
+        TextView textViewBuyingPrice = listViewItem.findViewById(R.id.textViewProductBuyingPrice);
+        TextView textViewRetailPrice = listViewItem.findViewById(R.id.textViewProductRetailPrice);
+        TextView textViewWholesalePrice = listViewItem.findViewById(R.id.textViewProductWholesalePrice);
         ImageView imageViewStatus = listViewItem.findViewById(R.id.imageViewStatus);
 
         //getting the current name
@@ -46,8 +48,9 @@ public class ProductAdapter  extends ArrayAdapter<Products> {
         //setting the name to textview
         textViewName.setText("Name: " + product.getProduct_name());
         textViewQuantity.setText("Quantity: " + product.getQuantity());
-        textViewPrice.setText("Price: " + product.getProduct_price());
-
+        textViewBuyingPrice.setText("Buying Price: " + product.getProduct_buying_price());
+        textViewRetailPrice.setText("Retail Price: " + product.getProduct_retail_price());
+        textViewWholesalePrice.setText("Wholesale Price: " + product.getProduct_wholesale_price());
         //if the synced status is 0 displaying
         //queued icon
         //else displaying synced icon

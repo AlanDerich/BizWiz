@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
@@ -35,6 +36,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_TRANSACTIONS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
 
 public class ClosingCash extends AppCompatActivity {
     EditText amount;
@@ -50,15 +52,10 @@ public class ClosingCash extends AppCompatActivity {
         closingCash = findViewById(R.id.textView_closing_cash);
         btn_calculate = findViewById(R.id.button_calculate);
         calculateClosingCashButton();
-
-
-
-
-
     }
     public void calculateClosingCashButton() {
         long timeMillis = System.currentTimeMillis();
-        if((totalClosingCash(getDate(timeMillis)))> 0)
+        if((getClosingCash(getDate(timeMillis) )!= 0))
         {
             int closingCassh = totalClosingCash(getDate(timeMillis));
             closingCash.setText("Today's closing cash is " + closingCassh);
@@ -72,8 +69,8 @@ public class ClosingCash extends AppCompatActivity {
                     String closingCashe = amount.getText().toString().trim();
                     if (!(closingCashe.isEmpty())) {
                         insert(getDate(timeMillis), calculateClosingCash());
-                        amount.setText("");
                         closingCash.setText("The expected closing cash is " + calculateClosingCash());
+                        amount.setText("");
                     } else {
                         Toast.makeText(ClosingCash.this, "Amount cannot be empty", Toast.LENGTH_SHORT).show();
                     }
@@ -95,8 +92,8 @@ public class ClosingCash extends AppCompatActivity {
         int totalAddedFloat = totalAddedFloat(getDate(timeMillis));
         int reductedFloat = reductedFloat(getDate(timeMillis));
         int reductedCash = reductedCash(getDate(timeMillis));
-
-        int closingFloat = Integer.valueOf(amount.getText().toString().trim());
+        String closing = amount.getText().toString().trim();
+        int closingFloat = Integer.valueOf(closing);
         int expectedCash;
 
         expectedCash = (openingCash + openingFloat + totalAddedCash + totalAddedFloat) - (reductedCash + reductedFloat + closingFloat);
@@ -187,6 +184,19 @@ public class ClosingCash extends AppCompatActivity {
         cursor.close();
         return reducted_cash;
     }
+    public int getClosingCash(String date) {
+        SQLiteOpenHelper dbHelper = new DatabaseHelper(ClosingCash.this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT SUM(closing_cash) FROM mpesa WHERE date_in_millis=?", new String[]{date});
+        int closingCash;
+        if (cursor.moveToFirst()) {
+            closingCash = cursor.getInt(0);
+        } else {
+            closingCash = 0;
+        }
+        cursor.close();
+        return closingCash;
+    }
 
     public int totalClosingCash(String date) {
         SQLiteOpenHelper dbHelper = new DatabaseHelper(ClosingCash.this);
@@ -200,8 +210,6 @@ public class ClosingCash extends AppCompatActivity {
         }
         cursor.close();
         return closingCash;
-
-
     }
 
     public static String getDate(long milliseconds){
@@ -237,6 +245,7 @@ public class ClosingCash extends AppCompatActivity {
 
         contentValue1.put(TRANSACTION_TYPE, type);
         contentValue1.put(TRANSACTION_DATE, currentDateandTime);
+        contentValue1.put(TRANSACTION_USER, PreferenceHelper.getUsername());
         contentValue1.put(COLUMN_TRANSACTION_STATUS, 0);
 
         //insert data in DB

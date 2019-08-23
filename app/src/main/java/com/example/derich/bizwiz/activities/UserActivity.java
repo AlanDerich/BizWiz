@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -59,8 +58,6 @@ public class UserActivity extends AppCompatActivity
     boolean isOpen = false;
     DatabaseHelper myDb;
     public DatabaseHelper db;
-    Context context;
-    SQLiteDatabase dbHelper;
 
     Button viewClients,clients,sales,products,transactionss, sync, delete_client, addUser;
     private final int REQUEST_PERMISSION_READ_CONTACTS = 1;
@@ -93,10 +90,10 @@ public class UserActivity extends AppCompatActivity
         add_client= findViewById(R.id.add_client_text);
         add_debt= findViewById(R.id.add_debt_text);
         add_product= findViewById(R.id.add_product_text);
-        fab_plus = (FloatingActionButton)findViewById(R.id.add);
-        fab_client =(FloatingActionButton)findViewById(R.id.addClient);
-        fab_debt = (FloatingActionButton) findViewById(R.id.addDebt);
-        fab_product= (FloatingActionButton) findViewById(R.id.addProduct);
+        fab_plus = findViewById(R.id.add);
+        fab_client =findViewById(R.id.addClient);
+        fab_debt = findViewById(R.id.addDebt);
+        fab_product= findViewById(R.id.addProduct);
         delete_client = findViewById(R.id.delete_client);
         addUser = findViewById(R.id.addClientButton);
         FabOpen = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
@@ -381,6 +378,10 @@ else {
                 startActivity(intent);
                 finish();
                 return true;
+            case R.id.refresh:
+                Intent intent1 = new Intent(this, UserActivity.class);
+                startActivity(intent1);
+                return true;
 
         }
 
@@ -411,7 +412,7 @@ else {
     @Override
     public void onRequestPermissionsResult(
             int requestCode,
-            String permissions[],
+            String[] permissions,
             int[] grantResults) {
         switch (requestCode) {
             case REQUEST_PERMISSION_READ_CONTACTS:

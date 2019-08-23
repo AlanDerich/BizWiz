@@ -23,7 +23,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.activities.NetworkStateChecker;
 import com.example.derich.bizwiz.activities.VolleySingleton;
@@ -39,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.derich.bizwiz.PreferenceHelper.getUsername;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_FULLNAME;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_NUMBER;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_CLIENT;
@@ -83,6 +83,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
     //adapterobject for list view
     private ClientAdapter clientAdapter;
     private boolean mIsNewClient;
+    public String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +91,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.client_details);
         registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
+         user = getUsername();
         //initializing views and objects
         db = new DatabaseHelper(this);
         dbHelper = new DatabaseHelper(this);
@@ -200,7 +202,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                                         String currentDateandTime = sdf.format(new Date());
                                         String type = "Synced clients with server. ";
-                                        db.syncAttempt(currentDateandTime,type);
+                                        db.syncAttempt(currentDateandTime,type,user);
                                     } else {
                                         //if there is some error
                                         //saving the name to sqlite with status unsynced
@@ -208,7 +210,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                                         String currentDateandTime = sdf.format(new Date());
                                         String type = "Did not Sync clients with server. ";
-                                        db.syncAttempt(currentDateandTime,type);
+                                        db.syncAttempt(currentDateandTime,type,user);
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -259,7 +261,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                                             String currentDateandTime = sdf.format(new Date());
                                             String type = "Synced clients with server. ";
-                                            db.syncAttempt(currentDateandTime,type);
+                                            db.syncAttempt(currentDateandTime,type,user);
                                         } else {
                                             //if there is some error
                                             //saving the name to sqlite with status unsynced
@@ -267,7 +269,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                                             String currentDateandTime = sdf.format(new Date());
                                             String type = "Did not Sync clients with server. ";
-                                            db.syncAttempt(currentDateandTime,type);
+                                            db.syncAttempt(currentDateandTime,type,user);
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -314,10 +316,10 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
     private void saveClientToLocalStorage(String client_fullName,int client_added_debt, String client_debt, String Number, String client_Email, int status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
         String currentDateandTime = sdf.format(new Date());
-        String type = "New client added. " + client_fullName + " by " + PreferenceHelper.getUsername();
+        String type = "New client added. " + client_fullName + " by " + getUsername();
 
 
-        db.addClient(client_fullName,client_added_debt, client_debt, Number, client_Email, status, currentDateandTime, type);
+        db.addClient(client_fullName,client_added_debt, client_debt, Number, client_Email, status, currentDateandTime, type,getUsername());
         Clients n = new Clients(client_fullName, client_debt, Number, client_Email, status);
         clients.add(n);
         refreshList();
@@ -335,7 +337,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = COLUMN_CLIENT_FULLNAME + " = ? " + " OR " + COLUMN_NUMBER + " = ? ";
-        String selectionArgs[] = {fullNames,phone};
+        String[] selectionArgs = {fullNames, phone};
 
         String[] vColumns = {
                 COLUMN_CLIENT_FULLNAME,
@@ -345,10 +347,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         mCursor.close();
         db.close();
 
-        if (cursorCount > 0){
-            return true;
-        }
-        return false;
+        return cursorCount > 0;
     }
 
     public void setEmpty(){

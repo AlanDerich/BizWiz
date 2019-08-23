@@ -21,9 +21,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.activities.NetworkStateChecker;
 import com.example.derich.bizwiz.activities.VolleySingleton;
+import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import org.json.JSONException;
@@ -53,6 +55,8 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
     public static final String URL_SAVE_TRANSACTION = "http://alanderich.info/bizwiz/saveTransaction.php";
     public static final String URL_SAVE_USER = "http://alanderich.info/bizwiz/saveUsers.php";
     public static final String URL_SAVE_MPESA = "http://alanderich.info/bizwiz/saveMpesa.php";
+    public static final String URL_SAVE_SALES = "http://alanderich.info/bizwiz/saveSales.php";
+    public static final String URL_SAVE_REPORTS = "http://alanderich.info/bizwiz/saveReports.php";
 
     //database helper object
     private DatabaseHelper db;
@@ -60,9 +64,7 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
 
     //View objects
     private Button buttonSave;
-    private EditText editTextName;
-    private EditText editTextQuantity;
-    private EditText editTextPrice;
+    private EditText editTextName,editTextQuantity,editTextBuyingPrice,editTextRetailPrice,editTextWholesalePrice;
     private ListView listViewProducts;
 
     //List to store all the products
@@ -72,7 +74,7 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
     public static final int PRODUCT_SYNCED_WITH_SERVER = 1;
     public static final int PRODUCT_NOT_SYNCED_WITH_SERVER = 0;
 
-    //a broadcast to know weather the data is synced or not
+    //a broadcast to know whether the data is synced or not
     public static final String DATA_SAVED_BROADCAST = "alanderich.info/bizwiz";
 
     //Broadcast receiver to know the sync status
@@ -96,7 +98,9 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
         buttonSave = findViewById(R.id.buttonSave);
         editTextName = findViewById(R.id.editTextName);
         editTextQuantity = findViewById(R.id.editTextQuantity);
-        editTextPrice = findViewById(R.id.editTextProductPrice);
+        editTextBuyingPrice = findViewById(R.id.editTextProductBuyingPrice);
+        editTextRetailPrice = findViewById(R.id.editTextProductRetailPrice);
+        editTextWholesalePrice = findViewById(R.id.editTextProductWholesalePrice);
         listViewProducts = findViewById(R.id.listViewProducts);
 
         //adding click listener to button
@@ -132,7 +136,9 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
                 Products product = new Products(
                         cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_NAME)),
                         cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_QUANTITY)),
-                        cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_PRICE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_BUYING_PRICE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_RETAIL_PRICE)),
+                        cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_WHOLESALE_PRICE)),
                         cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUS))
                 );
                 products.add(product);
@@ -158,12 +164,16 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
 
         final String product_name = editTextName.getText().toString().trim();
         final String quantity = editTextQuantity.getText().toString().trim();
-        final String product_price = editTextPrice.getText().toString().trim();
-        if (!(product_name.isEmpty()) && !(quantity.isEmpty()) && !(product_price.isEmpty()))
+        final String product_buying_price = editTextBuyingPrice.getText().toString().trim();
+        final String product_retail_price = editTextRetailPrice.getText().toString().trim();
+        final String product_wholesale_price = editTextWholesalePrice.getText().toString().trim();
+
+        if (!(product_name.isEmpty()) && !(quantity.isEmpty()) && !(product_buying_price.isEmpty()) && !(product_retail_price.isEmpty()) && !(product_wholesale_price.isEmpty()))
         {
             if (!checkIfProductExists(product_name)){
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("Saving Product...");
+            progressDialog.setCancelable(false);
             progressDialog.show();
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, URL_SAVE_PRODUCT,
@@ -176,11 +186,11 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
                             if (!obj.getBoolean("error")) {
                                 //if there is a success
                                 //storing the product to sqlite with status synced
-                                saveProductToLocalStorage(product_name,quantity,product_price, PRODUCT_SYNCED_WITH_SERVER);
+                                saveProductToLocalStorage(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, PRODUCT_SYNCED_WITH_SERVER);
                             } else {
                                 //if there is some error
                                 //saving the name to sqlite with status unsynced
-                                saveProductToLocalStorage(product_name,quantity,product_price, PRODUCT_NOT_SYNCED_WITH_SERVER);
+                                saveProductToLocalStorage(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, PRODUCT_NOT_SYNCED_WITH_SERVER);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -192,7 +202,7 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
                     public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
                         //on error storing the product to sqlite with status unsynced
-                        saveProductToLocalStorage(product_name,quantity,product_price, PRODUCT_NOT_SYNCED_WITH_SERVER);
+                        saveProductToLocalStorage(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, PRODUCT_NOT_SYNCED_WITH_SERVER);
                     }
                 }) {
             @Override
@@ -200,7 +210,9 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
                 Map<String, String> params = new HashMap<>();
                 params.put("product_name", product_name);
                 params.put("quantity", quantity);
-                params.put("product_price", product_price);
+                params.put("product_buying_price", product_buying_price);
+                params.put("product_retail_price", product_retail_price);
+                params.put("product_wholesale_price", product_wholesale_price);
                 return params;
             }
         };
@@ -218,19 +230,26 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
 
 
     //saving the product to local storage
-    private void saveProductToLocalStorage(String product_name, String quantity,String product_price, int status) {
+    private void saveProductToLocalStorage(String product_name, String quantity,String product_buying_price,String product_retail_price,String product_wholesale_price, int status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
         String currentDateandTime = sdf.format(new Date());
         String type = "New product added. " + product_name +". Initial quantity is " + quantity;
+        long timeMillis = System.currentTimeMillis();
+        String date = ReductedCash.getDate(timeMillis);
+        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+        Float amount = Float.valueOf(product_buying_price) * Integer.valueOf(quantity);
 
-
-        db.addProduct(product_name,quantity,product_price, status, currentDateandTime, type);
-        Products n = new Products(product_name,quantity,product_price, status);
+        db.addProduct(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, status, currentDateandTime, type, PreferenceHelper.getUsername());
+        db.insertSalesExpenses(String.valueOf(amount),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,product_name,quantity);
+        Products n = new Products(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, status);
         products.add(n);
         refreshList();
             editTextQuantity.setText("");
             editTextName.setText("");
-            editTextPrice.setText("");
+            editTextBuyingPrice.setText("");
+            editTextRetailPrice.setText("");
+            editTextWholesalePrice.setText("");
 
 
     }
@@ -245,7 +264,7 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String selection = COLUMN_PRODUCT_NAME + " = ? " ;
-        String selectionArgs[] = {productName};
+        String[] selectionArgs = {productName};
 
         String[] vColumns = {
                 COLUMN_PRODUCT_NAME};
@@ -254,9 +273,6 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
         mCursor.close();
         db.close();
 
-        if (cursorCount > 0){
-            return true;
-        }
-        return false;
+        return cursorCount > 0;
     }
 }

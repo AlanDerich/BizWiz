@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".mpesa.OpeningFloat">
+    tools:context=".sales.OpeningCashSales">
 
     <EditText
-        android:id="@+id/editText_opening_float"
+        android:id="@+id/editText_opening_cash_sales"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="224dp"
@@ -21,12 +21,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_opening_float"
+        android:id="@+id/button_opening_cash_sales"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/add"
-        app:layout_constraintEnd_toEndOf="@+id/editText_opening_float"
-        app:layout_constraintStart_toStartOf="@+id/editText_opening_float"
-        app:layout_constraintTop_toBottomOf="@+id/editText_opening_float" />
+        app:layout_constraintEnd_toEndOf="@+id/editText_opening_cash_sales"
+        app:layout_constraintStart_toStartOf="@+id/editText_opening_cash_sales"
+        app:layout_constraintTop_toBottomOf="@+id/editText_opening_cash_sales" />
+
 </android.support.constraint.ConstraintLayout>

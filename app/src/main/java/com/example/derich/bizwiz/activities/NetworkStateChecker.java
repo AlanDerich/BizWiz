@@ -68,7 +68,11 @@ public class NetworkStateChecker extends BroadcastReceiver {
                                 cur.getInt(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_ID)),
                                 cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_NAME)),
                                 cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_QUANTITY)),
-                                cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_PRICE))
+                                cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_BUYING_PRICE)),
+                                cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_RETAIL_PRICE)),
+                                cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_WHOLESALE_PRICE)),
+                                cur.getString(cur.getColumnIndex(DatabaseHelper.COLUMN_SOLD_PRODUCT))
+
                         );
                     } while (cur.moveToNext());
                 }
@@ -79,6 +83,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                         saveTransaction(
                                 trans.getInt(trans.getColumnIndex(DatabaseHelper.TRANSACTION_ID)),
                                 trans.getString(trans.getColumnIndex(DatabaseHelper.TRANSACTION_TYPE)),
+                                trans.getString(trans.getColumnIndex(DatabaseHelper.TRANSACTION_USER)),
                                 trans.getString(trans.getColumnIndex(DatabaseHelper.TRANSACTION_DATE))
                         );
                     } while (trans.moveToNext());
@@ -92,10 +97,30 @@ public class NetworkStateChecker extends BroadcastReceiver {
                                 users.getInt(users.getColumnIndex(DatabaseHelper.COLUMN_USER_ID)),
                                 users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_NAME)),
                                 users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_EMAIL)),
-                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_PASSWORD))
+                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_PASSWORD)),
+                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_QUESTION)),
+                                users.getString(users.getColumnIndex(DatabaseHelper.COLUMN_USER_ANSWER))
 
                         );
                     } while (users.moveToNext());
+                }
+                Cursor reports = db.getUnsyncedReports();
+                if (reports.moveToFirst()) {
+                    do {
+                        //calling the method to save the unsynced client to MySQL
+                        saveReport(
+                                reports.getInt(reports.getColumnIndex(DatabaseHelper.REPORT_ID)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_DATE)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_USER)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_PRODUCT)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_WHOLESALE_SALES)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_RETAIL_SALES)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_DEBT_SALES)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_ADDED_ITEMS)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_SOLD_ITEMS))
+
+                        );
+                    } while (reports.moveToNext());
                 }
 
                 Cursor mpesa = db.getUnsyncedMpesa();
@@ -118,6 +143,25 @@ public class NetworkStateChecker extends BroadcastReceiver {
                         );
                     } while (mpesa.moveToNext());
                 }
+                Cursor sales = db.getUnsyncedSales();
+                if (sales.moveToFirst()) {
+                    do {
+                        //calling the method to save the unsynced client to MySQL
+                        saveSales(
+                                sales.getInt(sales.getColumnIndex(DatabaseHelper.COLUMN_SALES_ID)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_OPENING_CASH_SALES)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_WHOLESALE_SALES)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_RETAIL_SALES)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_SALES_DATE)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_SALES_TIME)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_SALES_USER)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_DAILY_EXPENSE)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_DEBTS_PAID)),
+                                sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_DAILY_DEBT))
+
+                        );
+                    } while (mpesa.moveToNext());
+                }
             }
         }
 
@@ -127,52 +171,8 @@ public class NetworkStateChecker extends BroadcastReceiver {
 
 
 
-    /*
-     * method taking two arguments
-     * name that is to be saved and id of the name from SQLite
-     * if the name is successfully sent
-     * we will update the status as synced in SQLite
-     * */
-    public void saveClient(final int client_id, final String client_fullName, final String client_added_debt, final String client_debt, final String Number, final String client_Email) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, ClientsDetails.URL_SAVE_CLIENT,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject obj = new JSONObject(response);
-                            if (!obj.getBoolean("error")) {
-                                //updating the status in sqlite
-                                db.updateClientStatus(client_id, ClientsDetails.CLIENT_SYNCED_WITH_SERVER);
-                                //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(ClientsDetails.DATA_SAVED_BROADCAST));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
 
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("client_fullName", client_fullName);
-                params.put("client_added_debt", client_added_debt);
-                params.put("client_debt", client_debt);
-                params.put("Number", Number);
-                params.put("client_Email", client_Email);
-                return params;
-            }
-        };
-
-        VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
-    }
-
-    private void saveProduct(final int product_id,final String product_name, final String product_quantity, final String product_price) {
+    private void saveProduct(final int product_id,final String product_name, final String product_quantity, final String product_buying_price,final String product_retail_price,final String product_wholesale_price, final String product_sold_product) {
         StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_PRODUCT,
                 new Response.Listener<String>() {
                     @Override
@@ -202,7 +202,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                 Map<String, String> params = new HashMap<>();
                 params.put("product_name", product_name);
                 params.put("quantity", product_quantity);
-                params.put("product_price", product_price);
+                params.put("product_buying_price", product_buying_price);
+                params.put("product_retail_price", product_retail_price);
+                params.put("product_wholesale_price", product_wholesale_price);
+                params.put("product_sold_product", product_sold_product);
                 return params;
             }
         };
@@ -210,7 +213,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
 
-    private void saveTransaction(final int transaction_id,final String transaction_type, final String transaction_date) {
+    private void saveTransaction(final int transaction_id,final String transaction_type,final String transaction_user, final String transaction_date) {
         StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_TRANSACTION,
                 new Response.Listener<String>() {
                     @Override
@@ -240,13 +243,14 @@ public class NetworkStateChecker extends BroadcastReceiver {
                 Map<String, String> params = new HashMap<>();
                 params.put("transaction_type", transaction_type);
                 params.put("transaction_date", transaction_date);
+                params.put("transaction_user", transaction_user);
                 return params;
             }
         };
 
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
-    private void saveUser(final int user_id,final String user_name, final String user_email,final String user_password) {
+    private void saveUser(final int user_id,final String user_name, final String user_email,final String user_password,final String user_question,final String user_answer) {
         StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_USER,
                 new Response.Listener<String>() {
                     @Override
@@ -276,7 +280,51 @@ public class NetworkStateChecker extends BroadcastReceiver {
                 Map<String, String> params = new HashMap<>();
                 params.put("user_name", user_name);
                 params.put("user_email", user_email);
+                params.put("user_question",user_question);
+                params.put("user_answer",user_answer);
                 params.put("user_password", user_password);
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
+    }
+    private void saveReport(final int report_id,final String report_date, final String report_user,final String report_product,final String report_wholesale_sales,final String report_retail_sales,final String report_debt_sales,final String report_added_items,final String report_sold_items) {
+        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_REPORTS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                //updating the status in sqlite
+                                db.updateReportStatus(report_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+
+                                //sending the broadcast to refresh the list
+                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("report_date", report_date);
+                params.put("report_user", report_user);
+                params.put("report_product",report_product);
+                params.put("report_wholesale_sales",report_wholesale_sales);
+                params.put("report_retail_sales", report_retail_sales);
+                params.put("report_debt_sales",report_debt_sales);
+                params.put("report_added_items",report_added_items);
+                params.put("report_sold_items", report_sold_items);
                 return params;
             }
         };
@@ -327,6 +375,94 @@ public class NetworkStateChecker extends BroadcastReceiver {
         };
 
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
+    }
+    private void saveSales(final int sales_id,final String opening_cash_sales, final String wholesale_sales,final String retail_sales, final String sales_date,final String sales_time, final String sales_user,final String daily_expense, final String debts_paid,final String daily_debt) {
+        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_SALES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                //updating the status in sqlite
+                                db.updateSalesStatus(sales_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+
+                                //sending the broadcast to refresh the list
+                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("opening_cash_sales", opening_cash_sales);
+                params.put("wholesale_sales", wholesale_sales);
+                params.put("retail_sales", retail_sales);
+                params.put("sales_date", sales_date);
+                params.put("sales_time", sales_time);
+                params.put("sales_user", sales_user);
+                params.put("daily_expense", daily_expense);
+                params.put("debts_paid", debts_paid);
+                params.put("daily_debt", daily_debt);
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
+    }
+
+    /*
+     * method taking two arguments
+     * name that is to be saved and id of the name from SQLite
+     * if the name is successfully sent
+     * we will update the status as synced in SQLite
+     * */
+    public void saveClient(final int client_id, final String client_fullName, final String client_added_debt, final String client_debt, final String Number, final String client_Email) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, ClientsDetails.URL_SAVE_CLIENT,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject obj = new JSONObject(response);
+                            if (!obj.getBoolean("error")) {
+                                //updating the status in sqlite
+                                db.updateClientStatus(client_id, ClientsDetails.CLIENT_SYNCED_WITH_SERVER);
+                                //sending the broadcast to refresh the list
+                                context.sendBroadcast(new Intent(ClientsDetails.DATA_SAVED_BROADCAST));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("client_fullName", client_fullName);
+                params.put("client_debt", client_debt);
+                params.put("client_added_debt", client_added_debt);
+                params.put("Number", Number);
+                params.put("client_Email", client_Email);
+                return params;
+            }
+        };
+
+        VolleySingleton.getInstance(context).addToRequestQueue(stringRequest);
     }
 
 }

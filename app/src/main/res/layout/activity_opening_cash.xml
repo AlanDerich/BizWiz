@@ -14,7 +14,7 @@
         android:ems="10"
         android:gravity="center"
         android:hint="@string/amount"
-        android:inputType="textPersonName"
+        android:inputType="number"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,7 +1,7 @@
 package com.example.derich.bizwiz.products;
 
 import android.content.DialogInterface;
-import android.database.Cursor;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -16,11 +16,6 @@ import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.util.ArrayList;
-
-import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_ID;
-import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_NAME;
-import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_PRICE;
-import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_QUANTITY;
 
 public class DeleteProduct extends AppCompatActivity {
 
@@ -42,7 +37,7 @@ public class DeleteProduct extends AppCompatActivity {
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         mListPro = databaseHelper.getAllProducts();
         Spinner spinner= findViewById(R.id.spinner_delete_product);
-        mAdapter = new ArrayAdapter<>(this, R.layout.spinner_layout1, R.id.txts, mListPro);
+        mAdapter = new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, mListPro);
         spinner.setAdapter(mAdapter);
         DeleteProductMethod();
         viewAllProducts();
@@ -146,33 +141,13 @@ public class DeleteProduct extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Cursor res = databaseHelper.getAllQuantity();
-                        if (res.getCount() == 0) {
-                            showMessage("Error", "No products found");
-                            return;
-                        }
-                        StringBuffer buffer = new StringBuffer();
-                        while (res.moveToNext()) {
-                            buffer.append("Id :").append(res.getString(res.getColumnIndex(COLUMN_PRODUCT_ID))).append("\n");
-                            buffer.append("Product Name :").append(res.getString(res.getColumnIndex(COLUMN_PRODUCT_NAME))).append("\n");
-                            buffer.append("Quantity :").append(res.getString(res.getColumnIndex(COLUMN_QUANTITY))).append("\n");
-                            buffer.append("Price :").append(res.getString(res.getColumnIndex(COLUMN_PRODUCT_PRICE))).append("\n\n");
-                        }
-
-                        // Show all data
-                        showMessage("Products", buffer.toString());
+                        Intent intent = new Intent(DeleteProduct.this, DisplayProducts.class);
+                        startActivity(intent);
                     }
                 }
         );
     }
 
-    public void showMessage(String title, String Message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DeleteProduct.this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
-    }
 
     private void refreshList() {
         mAdapter.clear();

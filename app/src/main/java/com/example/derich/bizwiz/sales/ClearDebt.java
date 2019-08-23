@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.ViewClient;
+import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -42,7 +43,7 @@ public class ClearDebt extends AppCompatActivity {
         btnViewUpdate = findViewById(R.id.button_update_debt);
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         ArrayList<String> listPro = databaseHelper.getAllClients();
-        Spinner spinner=(Spinner) findViewById(R.id.client_Name);
+        Spinner spinner= findViewById(R.id.client_Name);
         ArrayAdapter<String> adapter= new ArrayAdapter<String>(this, R.layout.spinner_layout,R.id.txt,listPro);
         spinner.setAdapter(adapter);
         viewAll();
@@ -61,18 +62,25 @@ public class ClearDebt extends AppCompatActivity {
                         databaseHelper = new DatabaseHelper(getApplicationContext());
                         sqLiteDatabase = databaseHelper.getReadableDatabase();
                         int previousDebt=databaseHelper.previousDebt(client_name);
+                        int previousUnsyncedDebt = databaseHelper.previousUnsyncedDebt(client_name);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
                         String currentDateandTime = sdf.format(new Date());
+                            long timeMillis = System.currentTimeMillis();
+                            String date = ReductedCash.getDate(timeMillis);
+                            SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+                            String currentTimeOfAdd = sdfAdd.format(new Date());
 
                         if ( !(client_name.isEmpty()) && !(amount.isEmpty())) {
 
-                            int new_debt = Integer.valueOf(amount) - previousDebt;
-                            String type = amount + " Ksh Paid by " + client_name + " .Client's new debt is " + new_debt + " to " + PreferenceHelper.getUsername();;
+                            int new_debt = previousDebt -Integer.valueOf(amount) ;
+                            String type = amount + " Ksh Paid by " + client_name + " .Client new debt is " + new_debt;
+                            int new_unsynced_debt = previousUnsyncedDebt - Integer.valueOf(amount);
 
 
                             if (new_debt < previousDebt && new_debt >(-1)) {
-                                boolean Update = myDb.updateDebt(client_name, String.valueOf(new_debt), currentDateandTime, type);
-                                if (Update == true) {
+                                boolean Update = myDb.updateDebt(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), currentDateandTime, type,PreferenceHelper.getUsername());
+                                boolean updateDebtsPaid = myDb.insertDebtsPaid(amount,PreferenceHelper.getUsername(),date,currentTimeOfAdd);
+                                if (Update && updateDebtsPaid) {
                                     Toast.makeText(ClearDebt.this, "Debt Updated", Toast.LENGTH_LONG).show();
                                     emptyInputEditText();
                                 } else {

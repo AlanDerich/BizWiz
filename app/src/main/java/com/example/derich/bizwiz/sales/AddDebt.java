@@ -2,20 +2,22 @@ package com.example.derich.bizwiz.sales;
 
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.ViewClient;
+import com.example.derich.bizwiz.mpesa.ReductedCash;
+import com.example.derich.bizwiz.products.DisplayProducts;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.text.SimpleDateFormat;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class AddDebt extends AppCompatActivity {
+public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     EditText   editTextQuantity;
     Button btnViewAll;
     Button btnViewUpdate;
@@ -31,6 +33,9 @@ public class AddDebt extends AppCompatActivity {
     Button btnViewProducts;
     DatabaseHelper databaseHelper;
     SQLiteDatabase sqLiteDatabase;
+    String[] prices = {"Wholesale", "Retail"};
+    private Spinner mSpinnerPrices;
+    private int mAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +54,15 @@ public class AddDebt extends AppCompatActivity {
         spinner.setAdapter(adapter);
         ArrayList<String> listProducts = databaseHelper.getAllProducts();
         Spinner spinner1= findViewById(R.id.Prod_Name);
-        ArrayAdapter<String> adapter1= new ArrayAdapter<>(this, R.layout.spinner_layout1, R.id.txts, listProducts);
+        ArrayAdapter<String> adapter1= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listProducts);
         spinner1.setAdapter(adapter1);
+        mSpinnerPrices = findViewById(R.id.product_price_spinner);
+        mSpinnerPrices.setOnItemSelectedListener(this);
         viewAll();
         UpdateData();
         viewProducts();
+        CustomAdapter customAdapter= new CustomAdapter(AddDebt.this, prices);
+        mSpinnerPrices.setAdapter(customAdapter);
 
     }
 
@@ -62,31 +71,50 @@ public class AddDebt extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (editTextName.getSelectedItem() !=null && ProductName.getSelectedItem() != null){
+                        String quantity = editTextQuantity.getText().toString();
+                        if (editTextName.getSelectedItem() !=null && ProductName.getSelectedItem() != null && !(quantity.isEmpty())){
                         String client_name = editTextName.getSelectedItem().toString();
                         String productName = ProductName.getSelectedItem().toString();
-                        String quantity = editTextQuantity.getText().toString();
+                        String productPrice = mSpinnerPrices.getSelectedItem().toString();
                         databaseHelper = new DatabaseHelper(getApplicationContext());
                         sqLiteDatabase = databaseHelper.getReadableDatabase();
                         int previousBal=databaseHelper.previousBal(productName);
                         int previousDebt=databaseHelper.previousDebt(client_name);
+                        int previousUnsyncedDebt=databaseHelper.previousUnsyncedDebt(client_name);
+                        int previousSoldSales = databaseHelper.previousSoldBal(productName);
+                        int soldSales = previousSoldSales - Integer.valueOf(quantity);
+
                         int syncStatus = databaseHelper.syncStatus(client_name);
-                        int price = databaseHelper.productPrice(productName);
-                        int amount = price * Integer.valueOf(quantity);
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                        String currentDateandTime = sdf.format(new Date());
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
+                            String currentDateandTime = sdf.format(new Date());
+                            long timeMillis = System.currentTimeMillis();
+                            String date = ReductedCash.getDate(timeMillis);
+                            SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
+                            String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+                            int previousSalesDebt = databaseHelper.previousSalesDebt(PreferenceHelper.getUsername(),date);
+                            if (productPrice.equals("Wholesale")) {
+                            int price = databaseHelper.productWholesalePrice(productName);
+                            mAmount = price * Integer.valueOf(quantity);
+                        }
+                        else {
+                            int price = databaseHelper.productRetailPrice(productName);
+                            mAmount = price * Integer.valueOf(quantity);
+                        }
+
 
                         if ( !(productName.isEmpty()) && !(quantity.isEmpty())) {
 
                             if (syncStatus == 1){
                                 int new_value = previousBal - Integer.valueOf(quantity);
-                            int new_debt = previousDebt + amount;
+                            int new_debt = previousDebt + mAmount;
+                            int new_unsynced_debt = previousUnsyncedDebt + mAmount;
 
-                            String type = amount + " Ksh added to " + client_name + "'s debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
+                            String type = mAmount + " Ksh added to " + client_name + " debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
 
-                            if (new_value > 0) {
-                                boolean Update = databaseHelper.updateData(client_name, String.valueOf(amount), String.valueOf(new_debt), productName, String.valueOf(new_value), currentDateandTime, type);
-                                if (Update == true) {
+                            if (new_value > -1) {
+                                boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
+                               boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount + previousSalesDebt)),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
+                                if (Update && updateSales) {
                                     Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
                                     emptyInputEditText();
                                 } else {
@@ -99,11 +127,14 @@ public class AddDebt extends AppCompatActivity {
                             }
                             else{
                                 int new_value = previousBal - Integer.valueOf(quantity);
-                                int new_debt = previousDebt + amount;
-                                String type = amount + " Ksh added to " + client_name + "'s debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
-                                if (new_value > 0) {
-                                    boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_debt), String.valueOf(new_debt), productName, String.valueOf(new_value), currentDateandTime, type);
-                                    if (Update == true) {
+                                int new_debt = previousDebt + mAmount;
+                                int new_unsynced_debt = previousUnsyncedDebt + mAmount;
+                                String type = mAmount + " Ksh added to " + client_name + " debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
+
+                                if (new_value > -1) {
+                                    boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
+                                    boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount+ previousSalesDebt)),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
+                                    if (Update && updateSales) {
                                         Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
                                         emptyInputEditText();
                                     } else {
@@ -149,30 +180,20 @@ public class AddDebt extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Cursor res = databaseHelper.getProducts();
-                        if (res.getCount() == 0) {
-                            showMessage("Error", "No products found");
-                            return;
-                        }
-                        StringBuffer buffer = new StringBuffer();
-                        while (res.moveToNext()) {
-                            buffer.append("Id :").append(res.getString(0)).append("\n");
-                            buffer.append("Name :").append(res.getString(1)).append("\n");
-                            buffer.append("Quantity :").append(res.getString(2)).append("\n");
-                            buffer.append("Price :").append(res.getString(3)).append("\n\n");
-                        }
-
-                        // Show all data
-                        showMessage("Data", buffer.toString());
+                        Intent intent = new Intent(AddDebt.this, DisplayProducts.class);
+                        startActivity(intent);
                     }
                 }
         );
     }
-    public void showMessage(String title, String Message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(true);
-        builder.setTitle(title);
-        builder.setMessage(Message);
-        builder.show();
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(this, prices[position], Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

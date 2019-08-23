@@ -130,9 +130,11 @@ public class UserSyncronization extends AppCompatActivity {
 
                     String user_name = p.getString("user_name");
                     String user_email = p.getString("user_email");
+                    String user_question = p.getString("user_question");
+                    String user_answer = p.getString("user_answer");
                     String user_password = p.getString("user_password");
 
-                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_USER+" (user_name,user_email,user_password,user_status) VALUES('"+user_name+"', '"+user_email+"' , '"+user_password+"',  '"+1+"');";
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_USER+" (user_name,user_email,user_question,user_answer,user_password,user_status) VALUES('"+user_name+"', '"+user_email+"' ,'"+user_question+"' , '"+user_answer+"', '"+user_password+"',  '"+1+"');";
 
                     sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
 

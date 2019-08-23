@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark">
 
@@ -12,21 +11,33 @@
         android:id="@+id/debt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="selectOption"
         android:text="Add Debt" />
     <Button
         android:id="@+id/clearDebt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="selectOption"
         android:text="Clear Debt" />
 
     <Button
         android:id="@+id/paidSalesBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="selectOption"
         android:text="Cash Sale" />
+    <Button
+        android:id="@+id/addOpeningCashSalesBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Opening cash" />
+    <Button
+        android:id="@+id/dailyStatisticsBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Statistics" />
+    <Button
+        android:id="@+id/dailyReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Report" />
 
 
 </LinearLayout>

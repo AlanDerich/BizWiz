@@ -4,15 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.helper.InputValidation;
+import com.example.derich.bizwiz.sales.CustomAdapter;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 /**
@@ -21,30 +22,28 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 public class ForgotPassword extends AppCompatActivity {
 
-    private TextInputEditText textInputEditTextEmail;
-    private TextInputLayout textInputLayoutEmail;
-
+    private TextInputEditText textInputEditTextUsername,textInputEditTextAnswer;
     private AppCompatButton appCompatButtonConfirm;
-
     private InputValidation inputValidation;
+    Spinner mSpinnerQuestions;
     private DatabaseHelper databaseHelper;
-
     private NestedScrollView nestedScrollView;
-
+    String[] questions = {"What is your home city?", "What is the name of your pet?", "Who is your best friend?", "What is your nickname?","How old are you?"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgotpassword);
 
-
-        textInputEditTextEmail = (TextInputEditText) findViewById(R.id.textInputEditTextUsername);
-        appCompatButtonConfirm = (AppCompatButton) findViewById(R.id.appCompatButtonConfirm);
-        nestedScrollView = (NestedScrollView) findViewById(R.id.nestedScrollView);
-
+        textInputEditTextUsername = findViewById(R.id.textInputEditTextUsername);
+        appCompatButtonConfirm = findViewById(R.id.appCompatButtonConfirm);
+        textInputEditTextAnswer = findViewById(R.id.textInputEditTextAnswer);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
         databaseHelper = new DatabaseHelper(this);
+        mSpinnerQuestions= findViewById(R.id.spinnerForgotPass);
         inputValidation = new InputValidation(this);
-
+        CustomAdapter customAdapter= new CustomAdapter(ForgotPassword.this, questions);
+        mSpinnerQuestions.setAdapter(customAdapter);
         setTitle("Recover password");
         appCompatButtonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,23 +56,23 @@ public class ForgotPassword extends AppCompatActivity {
 
     private void verifyFromSQLite(){
 
-        if (textInputEditTextEmail.getText().toString().isEmpty()){
-            Toast.makeText(this, "Please fill your email", Toast.LENGTH_SHORT).show();
+        if (textInputEditTextUsername.getText().toString().isEmpty()){
+            Toast.makeText(this, "Please fill your username", Toast.LENGTH_SHORT).show();
             return;
         }
-
-
-        if (databaseHelper.checkUser(textInputEditTextEmail.getText().toString().trim())) {
+        String question = mSpinnerQuestions.getSelectedItem().toString();
+        if (databaseHelper.checkUserPassword(textInputEditTextUsername.getText().toString().trim(), question, textInputEditTextAnswer.getText().toString().trim())) {
             Intent accountsIntent = new Intent(this, ConfirmPassword.class);
-            accountsIntent.putExtra("EMAIL", textInputEditTextEmail.getText().toString().trim());
+            accountsIntent.putExtra("USERNAME", textInputEditTextUsername.getText().toString().trim());
             emptyInputEditText();
             startActivity(accountsIntent);
         } else {
-            Snackbar.make(nestedScrollView, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(nestedScrollView, getString(R.string.error_valid_username), Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void emptyInputEditText(){
-        textInputEditTextEmail.setText("");
+        textInputEditTextUsername.setText("");
+        textInputEditTextAnswer.setText("");
     }
 }

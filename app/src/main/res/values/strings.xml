@@ -20,10 +20,9 @@
     <string name="text_clients">View registered Clients</string>
     <string name="text_register">Register</string>
     <string name="text_addClient">Add client</string>
-    <string name="error_message_name">Enter Full Name</string>
-    <string name="error_message_clientFirstName">Enter First Name</string>
-    <string name="error_message_clientSecondName">Enter Second Name</string>
+    <string name="error_message_name">Enter User Name</string>
     <string name="error_message_email">Enter Valid Email</string>
+    <string name="error_message_valid_answer">Enter Valid Answer</string>
     <string name="error_message_clientEmail">Enter Valid Email</string>
     <string name="error_message_number">Enter Valid Number</string>
     <string name="error_message_client">Client already exists</string>
@@ -38,9 +37,10 @@
     <string name="error_username_exists">Username already exists</string>
     <string name="error_password_match">Password Does Not Match</string>
     <string name="error_valid_username_password">Wrong username or Password</string>
+    <string name="error_valid_username">Wrong username or answer</string>
     <string name="text_member">Already a member? Login</string>
     <string name="Mpesa">Mpesa Transactions</string>
-    <string name="error_valid_email_password">Wrong Email or Password</string>
+    <string name="error_valid_email_password">Wrong Username or Password</string>
     <string name="title_activity_user">UserActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -60,6 +60,7 @@
     <string name="textview">TextView</string>
     <string name="search_by_name">Search by name</string>
     <string name="mpesa_logs">Mpesa Logs</string>
+    <string name="_0">0</string>
 
 
 </resources>

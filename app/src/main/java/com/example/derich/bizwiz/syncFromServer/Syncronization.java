@@ -37,9 +37,12 @@ public class Syncronization extends AppCompatActivity {
     private static String urlTransactions = "https://alanderich.info/bizwiz/TransactionsFullForm.php";
     private static String urlMpesa = "https://alanderich.info/bizwiz/MpesaFullForm.php";
     private static String urlUsers = "https://alanderich.info/bizwiz/UsersFullForm.php";
+    private static String urlSales = "https://alanderich.info/bizwiz/salesFullForm.php";
+    private static String urlReports = "https://alanderich.info/bizwiz/reportsFullForm.php";
 
     ArrayList<HashMap<String, String>> clientList;
-    ArrayList<HashMap<String, String>> productList;
+    ArrayList<HashMap<String, String>> TransactionList;
+   // ArrayList<HashMap<String, String>> productList;
 
 
     @Override
@@ -49,16 +52,17 @@ public class Syncronization extends AppCompatActivity {
         SQLiteDataBaseBuild();
 
         clientList = new ArrayList<>();
+        TransactionList = new ArrayList<>();
 
         lv =  findViewById(R.id.listView1);
 
-        new GetClients().execute();
+        new GetFromServer().execute();
     }
 
     /**
      * Async task class to get json by making HTTP call
      */
-    private class GetClients extends AsyncTask<Void, Void, Void> {
+    private class GetFromServer extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -76,8 +80,10 @@ public class Syncronization extends AppCompatActivity {
             getClients();
             getProducts();
             getMpesaTransactions();
-            getUsers();
             getTransactions();
+            getSales();
+            getUsers();
+            getReports();
 
             return null;
         }
@@ -132,6 +138,14 @@ public class Syncronization extends AppCompatActivity {
     }
     public void DeletePreviousMpesaData(){
         sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_MPESA+"");
+
+    }
+    public void DeletePreviousSalesData(){
+        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_SALES+"");
+
+    }
+    public void DeletePreviousReportsData(){
+        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_REPORT+"");
 
     }
 
@@ -200,73 +214,11 @@ public class Syncronization extends AppCompatActivity {
 
         }
     }
-    public void getProducts(){
-
-        HttpHandler sh = new HttpHandler();
-
-        // Making a request to urlProducts and getting response
-        String jsonStr = sh.makeServiceCall(urlProducts);
-
-        Log.e(TAG, "Response from urlProducts: " + jsonStr);
-
-        if (jsonStr != null) {
-            try {
-                JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousProductssData();
-                // looping through All Products
-                for (int i = 0; i < jsonObj.length(); i++) {
-                    JSONObject p = jsonObj.getJSONObject(i);
-
-                    String product_name = p.getString("product_name");
-                    String quantity = p.getString("quantity");
-                    String product_price = p.getString("product_price");
-
-                    // tmp hash map for single client
-                    HashMap<String, String> product = new HashMap<>();
-
-                    // adding each child node to HashMap key => value
-                    product.put("product_name", product_name);
-                    product.put("quantity", quantity);
-                    product.put("product_price", product_price);
-
-                    // adding client to client list
-                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_PRODUCTS+" (product_name,product_quantity,product_price,status) VALUES('"+product_name+"', '"+quantity+"' , '"+product_price+"',  '"+1+"');";
-
-                    sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
-
-                }
-            } catch (final JSONException e) {
-                Log.e(TAG, "Json parsing error: " + e.getMessage());
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Json parsing error: " + e.getMessage(),
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-
-            }
-        } else {
-            Log.e(TAG, "Couldn't get json from server.");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),
-                            "Couldn't get Products from server. Check your internet connection and try again!",
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
-            });
-
-        }
-    }
     public void getTransactions(){
 
         HttpHandler sh = new HttpHandler();
 
-        // Making a request to urlProducts and getting response
+        // Making a request to urlClients and getting response
         String jsonStr = sh.makeServiceCall(urlTransactions);
 
         Log.e(TAG, "Response from urlTransactions: " + jsonStr);
@@ -275,16 +227,25 @@ public class Syncronization extends AppCompatActivity {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
                 DeletePreviousTransactionsData();
-                // looping through All Products
+                // looping through All Transactions
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject t = jsonObj.getJSONObject(i);
 
                     String transaction_type = t.getString("transaction_type");
                     String transaction_date = t.getString("transaction_date");
+                    String transaction_user = t.getString("transaction_user");
 
+                    // tmp hash map for single client
+                    HashMap<String, String> transaction = new HashMap<>();
+
+                    // adding each child node to HashMap key => value
+                    transaction.put("transaction_type", transaction_type);
+                    transaction.put("transaction_date", transaction_date);
+                    transaction.put("transaction_user", transaction_user);
 
                     // adding client to client list
-                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_TRANSACTIONS+" (transaction_type,transaction_date,transaction_status) VALUES('"+transaction_type+"', '"+transaction_date+"',  '"+1+"');";
+                    TransactionList.add(transaction);
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_TRANSACTIONS+" (transaction_type,transaction_date,transaction_user,transaction_status) VALUES('"+transaction_type+"', '"+transaction_date+"' ,'"+transaction_user+"' , '"+1+"');";
 
                     sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
 
@@ -316,6 +277,123 @@ public class Syncronization extends AppCompatActivity {
 
         }
     }
+    public void getProducts(){
+
+        HttpHandler sh = new HttpHandler();
+
+        // Making a request to urlProducts and getting response
+        String jsonStr = sh.makeServiceCall(urlProducts);
+
+        Log.e(TAG, "Response from urlProducts: " + jsonStr);
+
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonObj = new JSONArray(jsonStr);
+                DeletePreviousProductssData();
+                // looping through All Products
+                for (int i = 0; i < jsonObj.length(); i++) {
+                    JSONObject p = jsonObj.getJSONObject(i);
+
+                    String product_name = p.getString("product_name");
+                    String quantity = p.getString("quantity");
+                    String product_buying_price = p.getString("product_buying_price");
+                    String product_retail_price = p.getString("product_retail_price");
+                    String product_wholesale_price = p.getString("product_wholesale_price");
+
+                    // adding client to client list
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_PRODUCTS+" (product_name,product_quantity,product_buying_price,product_retail_price,product_wholesale_price,product_sold_product,status) VALUES('"+product_name+"', '"+quantity+"' , '"+product_buying_price+"', '"+product_retail_price+"', '"+product_wholesale_price+"','"+0+"', '"+1+"');";
+
+                    sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                }
+            } catch (final JSONException e) {
+                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Json parsing error: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+            }
+        } else {
+            Log.e(TAG, "Couldn't get json from server.");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),
+                            "Couldn't get Products from server. Check your internet connection and try again!",
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+            });
+
+        }
+    }
+    public void getReports(){
+
+        HttpHandler sh = new HttpHandler();
+
+        // Making a request to urlReports and getting response
+        String jsonStr = sh.makeServiceCall(urlReports);
+
+        Log.e(TAG, "Response from urlReports: " + jsonStr);
+
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonObj = new JSONArray(jsonStr);
+                DeletePreviousReportsData();
+                // looping through All Products
+                for (int i = 0; i < jsonObj.length(); i++) {
+                    JSONObject p = jsonObj.getJSONObject(i);
+
+                    String report_date = p.getString("report_date");
+                    String report_user = p.getString("report_user");
+                    String report_product = p.getString("report_product");
+                    String report_wholesale_sales = p.getString("report_wholesale_sales");
+                    String report_retail_sales = p.getString("report_retail_sales");
+                    String report_debt_sales = p.getString("report_debt_sales");
+                    String report_added_items = p.getString("report_added_items");
+                    String report_sold_items = p.getString("report_sold_items");
+
+
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_REPORT+" (report_date,report_user,report_product,report_wholesale_sales,report_retail_sales,report_debt_sales,report_added_items,report_sold_items,report_status) VALUES('"+report_date+"', '"+report_user+"' , '"+report_product+"', '"+report_wholesale_sales+"', '"+report_retail_sales+"','"+report_debt_sales+"','"+report_added_items+"','"+report_sold_items+"', '"+1+"');";
+
+                    sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                }
+            } catch (final JSONException e) {
+                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Json parsing error: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+            }
+        } else {
+            Log.e(TAG, "Couldn't get json from server.");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),
+                            "Couldn't get Reports from server. Check your internet connection and try again!",
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+            });
+
+        }
+    }
+
+
     public void getMpesaTransactions(){
 
         HttpHandler sh = new HttpHandler();
@@ -377,6 +455,66 @@ public class Syncronization extends AppCompatActivity {
 
         }
     }
+    public void getSales(){
+
+        HttpHandler sh = new HttpHandler();
+
+        // Making a request to urlProducts and getting response
+        String jsonStr = sh.makeServiceCall(urlSales);
+
+        Log.e(TAG, "Response from urlSales: " + jsonStr);
+
+        if (jsonStr != null) {
+            try {
+                JSONArray jsonObj = new JSONArray(jsonStr);
+                DeletePreviousSalesData();
+                // looping through All Products
+                for (int i = 0; i < jsonObj.length(); i++) {
+                    JSONObject m = jsonObj.getJSONObject(i);
+
+                    String opening_cash_sales = m.getString("opening_cash_sales");
+                    String wholesale_sales = m.getString("wholesale_sales");
+                    String retail_sales = m.getString("retail_sales");
+                    String sales_date = m.getString("sales_date");
+                    String sales_time = m.getString("sales_time");
+                    String sales_user = m.getString("sales_user");
+                    String daily_expense = m.getString("daily_expense");
+                    String debts_paid = m.getString("debts_paid");
+                    String daily_debt = m.getString("daily_debt");
+
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_SALES+" (opening_cash_sales,wholesale_sales,retail_sales,sales_date,sales_time,sales_user,daily_expense,debts_paid,daily_debt,sales_status) " +
+                            "VALUES('"+opening_cash_sales+"', '"+wholesale_sales+"' , '"+retail_sales+"', '"+sales_date+"', '"+sales_time+"' , '"+sales_user+"', '"+daily_expense+"', '"+debts_paid+"', '"+daily_debt+"',  '"+1+"');";
+
+                    sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+
+                }
+            } catch (final JSONException e) {
+                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Json parsing error: " + e.getMessage(),
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+            }
+        } else {
+            Log.e(TAG, "Couldn't get json from server.");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),
+                            "Couldn't get Sales from server. Check your internet connection and try again!",
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+            });
+
+        }
+    }
     public void getUsers(){
 
         HttpHandler sh = new HttpHandler();
@@ -396,9 +534,11 @@ public class Syncronization extends AppCompatActivity {
 
                     String user_name = p.getString("user_name");
                     String user_email = p.getString("user_email");
+                    String user_question = p.getString("user_question");
+                    String user_answer = p.getString("user_answer");
                     String user_password = p.getString("user_password");
 
-                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_USER+" (user_name,user_email,user_password,user_status) VALUES('"+user_name+"', '"+user_email+"' , '"+user_password+"',  '"+1+"');";
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_USER+" (user_name,user_email,user_question,user_answer,user_password,user_status) VALUES('"+user_name+"', '"+user_email+"' ,'"+user_question+"' , '"+user_answer+"', '"+user_password+"',  '"+1+"');";
 
                     sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
 

@@ -13,6 +13,12 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import java.util.ArrayList;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_TRANSACTION_STATUS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_ID;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
+
 public class Transactions extends AppCompatActivity {
     DatabaseHelper myDB;
 
@@ -31,9 +37,11 @@ public class Transactions extends AppCompatActivity {
         }else{
             StringBuffer bufferr = new StringBuffer();
             while(transact.moveToNext()){
-                theList.add("transaction id :" + transact.getString(0));
-                theList.add("Transaction type :" + transact.getString(1));
-                theList.add("Transaction date :" + transact.getString(2) + "\n\n");
+                theList.add("transaction id :" + transact.getString(transact.getColumnIndex(TRANSACTION_ID)));
+                theList.add("Transaction type :" + transact.getString(transact.getColumnIndex(TRANSACTION_TYPE)));
+                theList.add("Transaction User : " + transact.getString(transact.getColumnIndex(TRANSACTION_USER)));
+                theList.add("Transaction date :" + transact.getString(transact.getColumnIndex(TRANSACTION_DATE)));
+                theList.add("Transaction Status :" + transact.getString(transact.getColumnIndex(COLUMN_TRANSACTION_STATUS)) + "\n\n");
                 ListAdapter list1Adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,theList);
                 listView.setAdapter(list1Adapter);
             }
