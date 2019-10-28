@@ -15,9 +15,11 @@
         <item
             android:id="@+id/nav_mpesa_logs"
             android:icon="@drawable/ic_attach_money"
+            android:background="@color/colorMpesa"
             android:title="@string/mpesa_logs" />
         <item
             android:id="@+id/nav_mpesa"
+            android:background="@color/colorMpesa"
             android:icon="@drawable/ic_attach_money"
             android:title="@string/Mpesa" />
     </group>

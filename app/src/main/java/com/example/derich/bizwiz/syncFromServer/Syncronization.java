@@ -2,16 +2,18 @@ package com.example.derich.bizwiz.syncFromServer;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.activities.UserActivity;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import org.json.JSONArray;
@@ -48,13 +50,11 @@ public class Syncronization extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_data);
+        setContentView(R.layout.activity_sync_data);
         SQLiteDataBaseBuild();
 
         clientList = new ArrayList<>();
         TransactionList = new ArrayList<>();
-
-        lv =  findViewById(R.id.listView1);
 
         new GetFromServer().execute();
     }
@@ -95,18 +95,12 @@ public class Syncronization extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
             sqLiteDatabase.close();
+            Intent intent = new Intent(Syncronization.this, UserActivity.class);
+            startActivity(intent);
 
             /**
              * Updating parsed JSON data into ListView
              * */
-            SimpleAdapter adapter = new SimpleAdapter(
-                    Syncronization.this, clientList,
-                    R.layout.item_list_clients, new String[]{"client_fullName", "client_debt",
-                    "Number","client_Email"}, new int[]{R.id.list_full_name,
-                    R.id.list_debt, R.id.list_number, R.id.list_email});
-
-            lv.setAdapter(adapter);
-
         }
 
 
@@ -157,11 +151,11 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlClients);
 
         Log.e(TAG, "Response from urlClients: " + jsonStr);
-
+        DeletePreviousClientsData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousClientsData();
+
                 // looping through All Contacts
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject c = jsonObj.getJSONObject(i);
@@ -222,11 +216,11 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlTransactions);
 
         Log.e(TAG, "Response from urlTransactions: " + jsonStr);
-
+        DeletePreviousTransactionsData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousTransactionsData();
+
                 // looping through All Transactions
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject t = jsonObj.getJSONObject(i);
@@ -285,11 +279,11 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlProducts);
 
         Log.e(TAG, "Response from urlProducts: " + jsonStr);
-
+        DeletePreviousProductssData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousProductssData();
+
                 // looping through All Products
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject p = jsonObj.getJSONObject(i);
@@ -341,16 +335,16 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlReports);
 
         Log.e(TAG, "Response from urlReports: " + jsonStr);
-
+        DeletePreviousReportsData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousReportsData();
                 // looping through All Products
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject p = jsonObj.getJSONObject(i);
 
                     String report_date = p.getString("report_date");
+                    String report_time = p.getString("report_time");
                     String report_user = p.getString("report_user");
                     String report_product = p.getString("report_product");
                     String report_wholesale_sales = p.getString("report_wholesale_sales");
@@ -360,7 +354,7 @@ public class Syncronization extends AppCompatActivity {
                     String report_sold_items = p.getString("report_sold_items");
 
 
-                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_REPORT+" (report_date,report_user,report_product,report_wholesale_sales,report_retail_sales,report_debt_sales,report_added_items,report_sold_items,report_status) VALUES('"+report_date+"', '"+report_user+"' , '"+report_product+"', '"+report_wholesale_sales+"', '"+report_retail_sales+"','"+report_debt_sales+"','"+report_added_items+"','"+report_sold_items+"', '"+1+"');";
+                    String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_REPORT+" (report_date,report_time,report_user,report_product,report_wholesale_sales,report_retail_sales,report_debt_sales,report_added_items,report_sold_items,report_status) VALUES('"+report_date+"','"+report_time+"', '"+report_user+"' , '"+report_product+"', '"+report_wholesale_sales+"', '"+report_retail_sales+"','"+report_debt_sales+"','"+report_added_items+"','"+report_sold_items+"', '"+1+"');";
 
                     sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
 
@@ -402,11 +396,11 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlMpesa);
 
         Log.e(TAG, "Response from urlMpesa: " + jsonStr);
-
+        DeletePreviousMpesaData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousMpesaData();
+
                 // looping through All Products
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject m = jsonObj.getJSONObject(i);
@@ -463,11 +457,11 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlSales);
 
         Log.e(TAG, "Response from urlSales: " + jsonStr);
-
+        DeletePreviousSalesData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousSalesData();
+
                 // looping through All Products
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject m = jsonObj.getJSONObject(i);
@@ -523,11 +517,11 @@ public class Syncronization extends AppCompatActivity {
         String jsonStr = sh.makeServiceCall(urlUsers);
 
         Log.e(TAG, "Response from urlUsers: " + jsonStr);
-
+        DeletePreviousUserData();
         if (jsonStr != null) {
             try {
                 JSONArray jsonObj = new JSONArray(jsonStr);
-                DeletePreviousUserData();
+
                 // looping through All Products
                 for (int i = 0; i < jsonObj.length(); i++) {
                     JSONObject p = jsonObj.getJSONObject(i);

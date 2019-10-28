@@ -2,12 +2,13 @@ package com.example.derich.bizwiz.helper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.util.Patterns;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 
 public class InputValidation {

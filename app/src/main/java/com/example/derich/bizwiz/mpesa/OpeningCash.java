@@ -1,15 +1,18 @@
 package com.example.derich.bizwiz.mpesa;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -58,7 +61,7 @@ public class OpeningCash extends AppCompatActivity {
     }
 
 public void executeButton(){
-    long timeMillis = System.currentTimeMillis();
+    final long timeMillis = System.currentTimeMillis();
     if ((totalOpeningCash(getDate(timeMillis)))> 0){
         int openingCash = totalOpeningCash(getDate(timeMillis));
 
@@ -71,14 +74,50 @@ public void executeButton(){
             @Override
             public void onClick(View v) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-                String addedAmount = amount.getText().toString().trim();
+                final String addedAmount = amount.getText().toString().trim();
 
                 if (!(addedAmount.isEmpty())) {
-                    Integer addedCash = Integer.valueOf(addedAmount);
-                    long timeMillis = System.currentTimeMillis();
-                    insert(getDate(timeMillis), addedCash);
-                    amount.setText("");
-                    Toast.makeText(OpeningCash.this, "Added successfully", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder
+                            = new AlertDialog
+                            .Builder(OpeningCash.this);
+
+                    builder.setMessage("Do you want to add an opening cash of " + addedAmount + " Ksh ?");
+
+
+                    builder.setTitle("Alert !");
+                    builder.setCancelable(false);
+                    builder
+                            .setPositiveButton(
+                                    "Yes",
+                                    new DialogInterface
+                                            .OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which)
+                                        {
+                                            Integer addedCash = Integer.valueOf(addedAmount);
+                                            long timeMillis = System.currentTimeMillis();
+                                            insert(getDate(timeMillis), addedCash);
+                                            amount.setText("");
+                                            Toast.makeText(OpeningCash.this, "Added successfully", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                    builder
+                            .setNegativeButton(
+                                    "No",
+                                    new DialogInterface
+                                            .OnClickListener() {
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which)
+                                        {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 } else {
                     Toast.makeText(OpeningCash.this, "Amount cannot be empty", Toast.LENGTH_LONG).show();
                 }
@@ -91,7 +130,7 @@ public void executeButton(){
     public int totalOpeningCash(String date) {
         SQLiteOpenHelper dbHelper = new DatabaseHelper(OpeningCash.this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT SUM(opening_cash) FROM mpesa WHERE date_in_millis=?", new String[]{date});
+        Cursor cursor = db.rawQuery("SELECT SUM (DISTINCT opening_cash) FROM mpesa WHERE date_in_millis=?", new String[]{date});
         int openingCash;
         if (cursor.moveToFirst()) {
             openingCash = cursor.getInt(0);

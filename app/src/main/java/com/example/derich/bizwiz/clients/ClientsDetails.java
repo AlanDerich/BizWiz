@@ -3,14 +3,13 @@ package com.example.derich.bizwiz.clients;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -18,13 +17,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.derich.bizwiz.R;
-import com.example.derich.bizwiz.activities.NetworkStateChecker;
 import com.example.derich.bizwiz.activities.VolleySingleton;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
@@ -89,7 +90,6 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.client_details);
-        registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", MODE_PRIVATE);
          user = getUsername();
         //initializing views and objects
@@ -329,7 +329,43 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        saveClientToServer();
+        AlertDialog.Builder builder
+                = new AlertDialog
+                .Builder(ClientsDetails.this);
+
+        builder.setMessage("Do you want to insert the new client " + "  ?");
+
+
+        builder.setTitle("Alert !");
+        builder.setCancelable(false);
+        builder
+                .setPositiveButton(
+                        "Yes",
+                        new DialogInterface
+                                .OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which)
+                            {
+                                saveClientToServer();
+                            }
+                        });
+        builder
+                .setNegativeButton(
+                        "No",
+                        new DialogInterface
+                                .OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which)
+                            {
+                                dialog.cancel();
+                            }
+                        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     public boolean checkClientDetails(String fullNames, String phone) {

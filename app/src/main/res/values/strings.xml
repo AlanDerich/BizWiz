@@ -11,7 +11,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
-    <string name="hint_confirm_password">Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
     <string name="hint_clientFirstName">First Name</string>
     <string name="hint_clientSecondName">Second Name</string>
     <string name="hint_clientEmail">Email</string>
@@ -61,6 +61,7 @@
     <string name="search_by_name">Search by name</string>
     <string name="mpesa_logs">Mpesa Logs</string>
     <string name="_0">0</string>
+    <string name="_0_0">0.0</string>
 
 
 </resources>

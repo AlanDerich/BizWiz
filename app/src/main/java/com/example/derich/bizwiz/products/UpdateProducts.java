@@ -1,16 +1,18 @@
 package com.example.derich.bizwiz.products;
 
 
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -52,38 +54,75 @@ public class UpdateProducts extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String stock = editStock.getText().toString();
-                        if (productName.getSelectedItem() != null){
-                        String product_name = productName.getSelectedItem().toString();
+                        final String stock = editStock.getText().toString();
+                        if (productName.getSelectedItem() != null && !(stock.isEmpty())){
+                        final String product_name = productName.getSelectedItem().toString();
                         databaseHelper = new DatabaseHelper(getApplicationContext());
                         sqLiteDatabase = databaseHelper.getReadableDatabase();
-                        int product_buying_price = myDb.getProductsPrice(product_name);
+                        Float product_buying_price = myDb.getProductsPrice(product_name);
                         int previousStock=databaseHelper.previousBal(product_name);
                         int previousSoldSales = databaseHelper.previousSoldBal(product_name);
-                        int soldSales = previousSoldSales + Integer.valueOf(stock);
+                        final int soldSales = previousSoldSales + Integer.valueOf(stock);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                        String currentDateandTime = sdf.format(new Date());
+                        final String currentDateandTime = sdf.format(new Date());
                             long timeMillis = System.currentTimeMillis();
-                            String date = ReductedCash.getDate(timeMillis);
+                            final String date = ReductedCash.getDate(timeMillis);
                             SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                            String currentDateandTimeOfAdd = sdfAdd.format(new Date());
-                            Integer amount = product_buying_price * Integer.valueOf(stock);
+                            final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+                            final Float amount = product_buying_price * Float.valueOf(stock);
 
                         if ( !(product_name.isEmpty()) && !(stock.isEmpty())) {
 
-                            int new_stock = Integer.valueOf(stock) + previousStock;
-                            String type = stock + " " + product_name +" added. New balance is " + new_stock  ;
+                            final int new_stock = Integer.valueOf(stock) + previousStock;
+                            final String type = stock + " " + product_name +" added. New balance is " + new_stock  ;
 
 
                             if (Integer.valueOf(stock) > 0) {
-                                boolean Update = myDb.increaseQuantity(product_name, String.valueOf(new_stock),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
-                                myDb.insertSalesExpenses(String.valueOf(amount),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,product_name,stock);
-                                if (Update == true) {
-                                    Toast.makeText(UpdateProducts.this, "Quantities Updated", Toast.LENGTH_LONG).show();
-                                    emptyInputEditText();
-                                } else {
-                                    Toast.makeText(UpdateProducts.this, "Quantities not Updated", Toast.LENGTH_LONG).show();
-                                }
+                                AlertDialog.Builder builder
+                                        = new AlertDialog
+                                        .Builder(UpdateProducts.this);
+
+                                builder.setMessage("Do you want to insert a  of " + stock + " "+ product_name + " items ?");
+
+
+                                builder.setTitle("Alert !");
+                                builder.setCancelable(false);
+                                builder
+                                        .setPositiveButton(
+                                                "Yes",
+                                                new DialogInterface
+                                                        .OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int which)
+                                                    {
+                                                        boolean Update = myDb.increaseQuantity(product_name, String.valueOf(new_stock),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
+                                                        myDb.insertSalesExpenses(String.valueOf(amount),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,product_name,stock);
+                                                        if (Update == true) {
+                                                            Toast.makeText(UpdateProducts.this, "Quantities Updated", Toast.LENGTH_LONG).show();
+                                                            emptyInputEditText();
+                                                        } else {
+                                                            Toast.makeText(UpdateProducts.this, "Quantities not Updated", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    }
+                                                });
+                                builder
+                                        .setNegativeButton(
+                                                "No",
+                                                new DialogInterface
+                                                        .OnClickListener() {
+
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int which)
+                                                    {
+                                                        dialog.cancel();
+                                                    }
+                                                });
+
+                                AlertDialog alertDialog = builder.create();
+                                alertDialog.show();
+
                             } else {
                                 Toast.makeText(UpdateProducts.this, "Error! Stock cannot be less than 1", Toast.LENGTH_LONG).show();
                                 emptyInputEditText();

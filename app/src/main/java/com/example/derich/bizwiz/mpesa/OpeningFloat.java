@@ -1,15 +1,18 @@
 package com.example.derich.bizwiz.mpesa;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -65,13 +68,50 @@ public class OpeningFloat extends AppCompatActivity {
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String addedAmount = amount.getText().toString().trim();
+                final String addedAmount = amount.getText().toString().trim();
                 if (!(addedAmount.isEmpty())){
-                Integer addedCash = Integer.valueOf(addedAmount);
-                long timeMillis = System.currentTimeMillis();
-                insert( getDate(timeMillis),addedCash);
-                amount.setText("");
-                    Toast.makeText(OpeningFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder
+                            = new AlertDialog
+                            .Builder(OpeningFloat.this);
+
+                    builder.setMessage("Do you want to add an opening float of " + addedAmount + " Ksh ?");
+
+
+                    builder.setTitle("Alert !");
+                    builder.setCancelable(false);
+                    builder
+                            .setPositiveButton(
+                                    "Yes",
+                                    new DialogInterface
+                                            .OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which)
+                                        {
+                                            Integer addedCash = Integer.valueOf(addedAmount);
+                                            long timeMillis = System.currentTimeMillis();
+                                            insert( getDate(timeMillis),addedCash);
+                                            amount.setText("");
+                                            Toast.makeText(OpeningFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                    builder
+                            .setNegativeButton(
+                                    "No",
+                                    new DialogInterface
+                                            .OnClickListener() {
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which)
+                                        {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+
                 }
                 else {
                     Toast.makeText(OpeningFloat.this, "Sorry amount field cannot be empty", Toast.LENGTH_SHORT).show();
@@ -82,19 +122,19 @@ public class OpeningFloat extends AppCompatActivity {
     }
 
     public int totalOpeningFloat(String date) {
+        String[] params = new String[] {date};
         SQLiteOpenHelper dbHelper = new DatabaseHelper(OpeningFloat.this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT SUM(opening_float) FROM mpesa WHERE date_in_millis=?", new String[]{date});
-        int openingFloat;
-        if (cursor.moveToFirst()) {
-            openingFloat = cursor.getInt(0);
+        String sql = "SELECT SUM (DISTINCT opening_float) FROM " + TABLE_MPESA + " WHERE " + DATE_MILLIS + " = ? " + " ORDER BY " + DATE_MILLIS + " ASC;";
+        Cursor cursorOpeningCash = db.rawQuery(sql,params);
+        int opening_float;
+        if (cursorOpeningCash.moveToFirst()) {
+            opening_float = cursorOpeningCash.getInt(0);
         } else {
-            openingFloat = 0;
+            opening_float = 0;
         }
-        cursor.close();
-        return openingFloat;
-
-
+        cursorOpeningCash.close();
+        return opening_float;
     }
     public static String getDate(long milliseconds){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");

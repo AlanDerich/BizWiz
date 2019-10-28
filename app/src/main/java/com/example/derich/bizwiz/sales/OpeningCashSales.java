@@ -1,14 +1,17 @@
 package com.example.derich.bizwiz.sales;
 
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -47,14 +50,52 @@ public class OpeningCashSales extends AppCompatActivity {
             btn_insert.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String addedAmount = amount.getText().toString().trim();
+                    final String addedAmount = amount.getText().toString().trim();
                     if (!(addedAmount.isEmpty())){
-                        long timeMillis = System.currentTimeMillis();
+                        final long timeMillis = System.currentTimeMillis();
                         SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
-                        db.insertOpeningCashSales(addedAmount,PreferenceHelper.getUsername(),getDate(timeMillis), currentDateandTimeOfAdd);
-                        amount.setText("");
-                        Toast.makeText(OpeningCashSales.this,"Added successfully",Toast.LENGTH_SHORT).show();
+                        final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+                        AlertDialog.Builder builder
+                                = new AlertDialog
+                                .Builder(OpeningCashSales.this);
+
+                        builder.setMessage("Do you want to add an opening cash of " + addedAmount + " ksh ?");
+
+
+                        builder.setTitle("Alert !");
+                        builder.setCancelable(false);
+                        builder
+                                .setPositiveButton(
+                                        "Yes",
+                                        new DialogInterface
+                                                .OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog,
+                                                                int which)
+                                            {
+                                                db.insertOpeningCashSales(addedAmount,PreferenceHelper.getUsername(),getDate(timeMillis), currentDateandTimeOfAdd);
+                                                amount.setText("");
+                                                Toast.makeText(OpeningCashSales.this,"Added successfully",Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                        builder
+                                .setNegativeButton(
+                                        "No",
+                                        new DialogInterface
+                                                .OnClickListener() {
+
+                                            @Override
+                                            public void onClick(DialogInterface dialog,
+                                                                int which)
+                                            {
+                                                dialog.cancel();
+                                            }
+                                        });
+
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+
+
                     }
                     else {
                         Toast.makeText(OpeningCashSales.this, "Sorry amount field cannot be empty", Toast.LENGTH_SHORT).show();

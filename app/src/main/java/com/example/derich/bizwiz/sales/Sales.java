@@ -2,12 +2,13 @@ package com.example.derich.bizwiz.sales;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.derich.bizwiz.PreferenceHelper;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.derich.bizwiz.R;
+import com.example.derich.bizwiz.activities.SalesTransactions;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 /**
@@ -15,7 +16,7 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
  */
 public class Sales extends AppCompatActivity {
     DatabaseHelper myDb;
-    Button paidSales,addDebt,clearDebt,stats,openingCash, dailyReport;
+    Button paidSales,addDebt,clearDebt,stats,openingCash, dailyReport,transactions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -26,16 +27,12 @@ public class Sales extends AppCompatActivity {
         clearDebt = findViewById(R.id.clearDebt);
         stats = findViewById(R.id.dailyStatisticsBtn);
         openingCash = findViewById(R.id.addOpeningCashSalesBtn);
+        transactions = findViewById(R.id.transactionsSales);
         dailyReport = findViewById(R.id.dailyReport);
         myDb = new DatabaseHelper(this);
 
 
-if (PreferenceHelper.getUsername().equals("Admin")){
-    dailyReport.setVisibility(View.VISIBLE);
-}
-else {
-    dailyReport.setVisibility(View.GONE);
-}
+
         paidSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,6 +72,13 @@ else {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Sales.this, DailyReport.class);
+                startActivity(intent);
+            }
+        });
+        transactions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Sales.this, SalesTransactions.class);
                 startActivity(intent);
             }
         });

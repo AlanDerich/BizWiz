@@ -1,14 +1,17 @@
 package com.example.derich.bizwiz.mpesa;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -55,19 +58,55 @@ public class AddedFloat extends AppCompatActivity {
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String addedAmount = amount.getText().toString().trim();
-                String comment = comments.getText().toString().trim();
+                final String addedAmount = amount.getText().toString().trim();
+                final String comment = comments.getText().toString().trim();
 
 
                 if (!(addedAmount.isEmpty()))
                 {
-                    Integer addedCash = Integer.valueOf(addedAmount);
+                    AlertDialog.Builder builder
+                            = new AlertDialog
+                            .Builder(AddedFloat.this);
 
-                long timeMillis = System.currentTimeMillis();
-                insert( getDate(timeMillis),addedCash, comment);
-                amount.setText("");
-                comments.setText("");
-                    Toast.makeText(AddedFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
+                    builder.setMessage("Do you want to insert Added float of " + addedAmount + " Ksh ?");
+
+
+                    builder.setTitle("Alert !");
+                    builder.setCancelable(false);
+                    builder
+                            .setPositiveButton(
+                                    "Yes",
+                                    new DialogInterface
+                                            .OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which)
+                                        {
+                                            Integer addedCash = Integer.valueOf(addedAmount);
+                                            long timeMillis = System.currentTimeMillis();
+                                            insert( getDate(timeMillis),addedCash, comment);
+                                            amount.setText("");
+                                            comments.setText("");
+                                            Toast.makeText(AddedFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    });
+                    builder
+                            .setNegativeButton(
+                                    "No",
+                                    new DialogInterface
+                                            .OnClickListener() {
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which)
+                                        {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
                 }
                 else{
                     Toast.makeText(AddedFloat.this,"Amount cannot be empty",Toast.LENGTH_SHORT).show();

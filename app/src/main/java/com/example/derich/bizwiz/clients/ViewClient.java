@@ -2,8 +2,9 @@ package com.example.derich.bizwiz.clients;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;

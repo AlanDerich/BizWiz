@@ -6,10 +6,11 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
@@ -43,9 +44,9 @@ public class UserSyncronization extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_data);
+        setContentView(R.layout.activity_sync_data);
         SQLiteDataBaseBuild();
-
+        db = new DatabaseHelper(this);
         clientList = new ArrayList<>();
 
         lv =  findViewById(R.id.listView1);
@@ -105,7 +106,7 @@ public class UserSyncronization extends AppCompatActivity {
 
     public void DeletePreviousUserData(){
 
-        sqLiteDatabase.execSQL("DELETE FROM "+DatabaseHelper.TABLE_USER+"");
+        sqLiteDatabase.execSQL("DELETE FROM "+ DatabaseHelper.TABLE_USER +"");
 
     }
 

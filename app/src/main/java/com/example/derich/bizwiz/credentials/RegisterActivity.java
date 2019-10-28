@@ -1,23 +1,21 @@
 package com.example.derich.bizwiz.credentials;
 
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
 import android.view.View;
 import android.widget.Spinner;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.widget.NestedScrollView;
+
 import com.example.derich.bizwiz.R;
-import com.example.derich.bizwiz.activities.NetworkStateChecker;
 import com.example.derich.bizwiz.helper.InputValidation;
 import com.example.derich.bizwiz.model.User;
 import com.example.derich.bizwiz.sales.CustomAdapter;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * Created by group 7 CS project on 3/11/18.
@@ -45,7 +43,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         getSupportActionBar().hide();
         mSpinnerQuestions = findViewById(R.id.spinner_register_question);
         initViews();

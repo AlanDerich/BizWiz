@@ -11,16 +11,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +19,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.AllClients;
@@ -45,6 +44,8 @@ import com.example.derich.bizwiz.sales.Sales;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 import com.example.derich.bizwiz.syncFromServer.Main;
 import com.example.derich.bizwiz.utils.PreferenceUtils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import static com.example.derich.bizwiz.PreferenceHelper.getUsername;
 import static com.example.derich.bizwiz.credentials.LoginActivity.sharedPreferences;
@@ -170,12 +171,10 @@ public class UserActivity extends AppCompatActivity
 
 
 if (Administrator.equals(Admin)){
-    transactionss.setVisibility(View.VISIBLE);
     addUser.setVisibility(View.VISIBLE);
     delete_client.setVisibility(View.VISIBLE);
 }
 else {
-    transactionss.setVisibility(View.GONE);
     addUser.setVisibility(View.GONE);
     delete_client.setVisibility(View.GONE);
 }
@@ -278,6 +277,12 @@ else {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -371,7 +376,6 @@ else {
 
         switch (item.getItemId()) {
             case R.id.log_out:
-                PreferenceUtils.savePassword(null, this);
                 PreferenceUtils.saveEmail(null, this);
                 PreferenceUtils.saveUsername(null, this);
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -379,8 +383,45 @@ else {
                 finish();
                 return true;
             case R.id.refresh:
-                Intent intent1 = new Intent(this, UserActivity.class);
-                startActivity(intent1);
+                AlertDialog.Builder builder
+                        = new AlertDialog
+                        .Builder(UserActivity.this);
+
+                builder.setMessage("Remaining items = " + getUnsynced());
+
+
+                builder.setTitle("Sync !");
+                builder.setCancelable(false);
+                builder
+                        .setPositiveButton(
+                                "Refresh",
+                                new DialogInterface
+                                        .OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which)
+                                    {
+                                        finish();
+                                        startActivity(getIntent());
+                                       dialog.cancel();
+                                    }
+                                });
+
+                builder
+                        .setNegativeButton(
+                                "Cancel",
+                                new DialogInterface
+                                        .OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which)
+                                    {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
                 return true;
 
         }
@@ -445,7 +486,17 @@ else {
                 new String[]{permissionName}, permissionRequestCode);
     }
 
-
+    private int getUnsynced(){
+        int remainingClients = db.unsyncedClients();
+        int remainingProducts = db.unsyncedProducts();
+        int remainingMpesa = db.unsyncedMpesa();
+        int remainingSales = db.unsyncedSales();
+        int remainingUsers = db.unsyncedUsers();
+        int remainingReports = db.unsyncedReports();
+        int remainingTransactions = db.unsyncedTransactions();
+        int totalCount = remainingClients + remainingProducts + remainingMpesa + remainingSales + remainingUsers + remainingReports + remainingTransactions;
+        return totalCount;
+    }
 
 
 }

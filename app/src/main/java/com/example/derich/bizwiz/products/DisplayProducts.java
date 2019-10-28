@@ -2,9 +2,11 @@ package com.example.derich.bizwiz.products;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
@@ -26,6 +28,7 @@ public class DisplayProducts extends AppCompatActivity {
         myDB = new DatabaseHelper(this);
 
         //populate an ArrayList<String> from the database and then view it
+        if (PreferenceHelper.getUsername().equals("Admin")){
         products.clear();
         Cursor cursor = myDB.getProducts();
         if (cursor.moveToFirst()) {
@@ -45,6 +48,26 @@ public class DisplayProducts extends AppCompatActivity {
         productAdapter = new ProductAdapter(this, R.layout.display_products, products);
         listView.setAdapter(productAdapter);
     }
+        else {
+            products.clear();
+            Cursor cursor = myDB.getProducts();
+            if (cursor.moveToFirst()) {
+                do {
+                    Products product = new Products(
+                            cursor.getString(cursor.getColumnIndex(COLUMN_PRODUCT_NAME)),
+                            cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_QUANTITY)),
+                            "Null",
+                            cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_RETAIL_PRICE)),
+                            cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PRODUCT_WHOLESALE_PRICE)),
+                            cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_STATUSS))
+                    );
+                    products.add(product);
+                } while (cursor.moveToNext());
+            }
 
+            productAdapter = new ProductAdapter(this, R.layout.display_products, products);
+            listView.setAdapter(productAdapter);
+        }
+    }
 
 }

@@ -21,30 +21,51 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".sales.DailyReport"></activity>
-        <activity android:name=".sales.OpeningCashSales" />
-        <activity android:name=".sales.Statistics" />
-        <activity android:name=".products.DisplayProducts" />
-        <activity android:name=".products.DeleteProduct" />
-        <activity android:name=".activities.MpesaLogs" />
-        <activity android:name=".clients.DeleteClient" />
-        <activity android:name=".syncFromServer.ShowData" />
+        <activity android:name=".syncFromServer.UnsyncedData"
+            android:label="Unsynced Data"></activity>
+        <activity android:name=".activities.SalesTransactions"
+            android:label="Sales Transactions"/>
+        <activity android:name=".sales.DailyReport"
+            android:label="Daily Reports"/>
+        <activity android:name=".sales.OpeningCashSales"
+            android:label="Opening Cash"/>
+        <activity android:name=".sales.Statistics"
+            android:label="Stats"/>
+        <activity android:name=".products.DisplayProducts"
+            android:label="Products" />
+        <activity android:name=".products.DeleteProduct"
+            android:label="Delete Product"/>
+        <activity android:name=".activities.MpesaLogs"
+            android:label="Mpesa Logs"/>
+        <activity android:name=".clients.DeleteClient"
+            android:label="Delete a Client"/>
         <activity
             android:name=".syncFromServer.Main"
             android:noHistory="true" />
         <activity
             android:name=".clients.importContactClient"
             android:noHistory="true" />
-        <activity android:name=".mpesa.ClosingCash" />
-        <activity android:name=".mpesa.ReductedCash" />
-        <activity android:name=".mpesa.ReductedFloat" />
-        <activity android:name=".mpesa.AddedCash" />
-        <activity android:name=".mpesa.AddedFloat" />
-        <activity android:name=".mpesa.OpeningFloat" />
-        <activity android:name=".mpesa.OpeningCash" />
-        <activity android:name=".syncFromServer.Syncronization" />
+        <activity android:name=".mpesa.ClosingCash"
+            android:label="Closing Cash"/>
+        <activity android:name=".mpesa.ReductedCash"
+            android:label="Reducted Cash"/>
+        <activity android:name=".mpesa.ReductedFloat"
+            android:label="Reducted Float"/>
+        <activity android:name=".mpesa.AddedCash"
+            android:label="Added Cash"/>
+        <activity android:name=".mpesa.AddedFloat"
+            android:label="Added Float"/>
+        <activity android:name=".mpesa.OpeningFloat"
+            android:label="Opening Float"/>
+        <activity android:name=".mpesa.OpeningCash"
+            android:label="Opening Cash"/>
+        <activity
+            android:name=".syncFromServer.Syncronization"
+            android:label="Sync "
+            android:noHistory="true" />
         <activity
             android:name=".credentials.UserSyncronization"
+            android:label="Sync Users"
             android:noHistory="true" />
         <activity
             android:name=".activities.UserActivity"
@@ -53,17 +74,25 @@
         <activity
             android:name=".mpesa.Mpesa"
             android:label="@string/Mpesa" />
-        <activity android:name=".activities.Transactions" />
+        <activity android:name=".activities.Transactions"
+            android:label="Transactions"/>
         <activity android:name=".products.SpinnerProducts" />
-        <activity android:name=".products.ProductsOffered" />
-        <activity android:name=".products.UpdateProducts" />
-        <activity android:name=".sales.ClearDebt" />
-        <activity android:name=".sales.PaidSale" />
-        <activity android:name=".clients.AllClients" />
-        <activity android:name=".sales.Sales" />
+        <activity android:name=".products.ProductsOffered"
+            android:label="Products Offered"/>
+        <activity android:name=".products.UpdateProducts"
+            android:label="Update Products"/>
+        <activity android:name=".sales.ClearDebt"
+            android:label="Clear Debt"/>
+        <activity android:name=".sales.PaidSale"
+            android:label="Cash Sale"/>
+        <activity android:name=".clients.AllClients"
+            android:label="Clients"/>
+        <activity android:name=".sales.Sales"
+            android:label="Sales"/>
         <activity
             android:name=".credentials.LoginActivity"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:label="BizWiz">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
 

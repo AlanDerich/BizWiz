@@ -111,6 +111,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                         saveReport(
                                 reports.getInt(reports.getColumnIndex(DatabaseHelper.REPORT_ID)),
                                 reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_DATE)),
+                                reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_TIME)),
                                 reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_USER)),
                                 reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_PRODUCT)),
                                 reports.getString(reports.getColumnIndex(DatabaseHelper.REPORT_WHOLESALE_SALES)),
@@ -160,7 +161,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
                                 sales.getString(sales.getColumnIndex(DatabaseHelper.COLUMN_DAILY_DEBT))
 
                         );
-                    } while (mpesa.moveToNext());
+                    } while (sales.moveToNext());
                 }
             }
         }
@@ -289,7 +290,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
 
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
-    private void saveReport(final int report_id,final String report_date, final String report_user,final String report_product,final String report_wholesale_sales,final String report_retail_sales,final String report_debt_sales,final String report_added_items,final String report_sold_items) {
+    private void saveReport(final int report_id,final String report_date,final String report_time, final String report_user,final String report_product,final String report_wholesale_sales,final String report_retail_sales,final String report_debt_sales,final String report_added_items,final String report_sold_items) {
         StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_REPORTS,
                 new Response.Listener<String>() {
                     @Override
@@ -318,6 +319,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("report_date", report_date);
+                params.put("report_time", report_time);
                 params.put("report_user", report_user);
                 params.put("report_product",report_product);
                 params.put("report_wholesale_sales",report_wholesale_sales);

@@ -3,9 +3,10 @@ package com.example.derich.bizwiz.products;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -31,10 +32,12 @@ public class ProductsOffered extends AppCompatActivity {
         String administrator = PreferenceHelper.getUsername();
 
         if (administrator.equals(Admin)){
+            AddProduct.setVisibility(View.VISIBLE);
             deleteProduct.setVisibility(View.VISIBLE);
         }
         else{
             deleteProduct.setVisibility(View.GONE);
+            AddProduct.setVisibility(View.GONE);
         }
 
 

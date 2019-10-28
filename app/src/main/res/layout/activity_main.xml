@@ -17,16 +17,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="177dp"
+        android:layout_marginTop="100dp"
         android:text="Sync" />
-
     <Button
-        android:id="@+id/showList"
-        android:layout_width="match_parent"
+        android:id="@+id/checkUnsyncedData"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/savefromDatabase"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp"
-        android:text="List after sync" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="150dp"
+        android:text="Unsynced data" />
 
 </RelativeLayout>

@@ -10,58 +10,58 @@
     android:padding="5dp"
     tools:context="activities.UserActivity">
 
-    <android.support.v7.widget.LinearLayoutCompat
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp" >
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextFullName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Full Names"
                 android:inputType="text"
                 android:maxLines="1"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp" >
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextClientDebt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="debt"
                 android:inputType="number"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:passwordToggleEnabled="true"
             android:layout_marginTop="2dp" >
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Number"
                 android:inputType="number"
                 android:maxLines="1" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutConfirmPassword"
             app:passwordToggleEnabled="true"
             android:layout_width="match_parent"
@@ -69,16 +69,16 @@
             android:layout_marginTop="2dp" >
 
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextClientEmail"
                 android:layout_width="match_parent"
                 android:inputType="textEmailAddress"
                 android:layout_height="wrap_content"
                 android:hint="Email"
                 android:maxLines="1"/>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/buttonSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
 
 
 
-    </android.support.v7.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
 </RelativeLayout>

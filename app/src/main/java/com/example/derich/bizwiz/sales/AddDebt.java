@@ -1,10 +1,10 @@
 package com.example.derich.bizwiz.sales;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,6 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
@@ -71,27 +74,28 @@ public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSele
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String quantity = editTextQuantity.getText().toString();
+                        final String quantity = editTextQuantity.getText().toString();
+
                         if (editTextName.getSelectedItem() !=null && ProductName.getSelectedItem() != null && !(quantity.isEmpty())){
-                        String client_name = editTextName.getSelectedItem().toString();
-                        String productName = ProductName.getSelectedItem().toString();
-                        String productPrice = mSpinnerPrices.getSelectedItem().toString();
+                        final String client_name = editTextName.getSelectedItem().toString();
+                        final String productName = ProductName.getSelectedItem().toString();
+                        final String productPrice = mSpinnerPrices.getSelectedItem().toString();
                         databaseHelper = new DatabaseHelper(getApplicationContext());
                         sqLiteDatabase = databaseHelper.getReadableDatabase();
                         int previousBal=databaseHelper.previousBal(productName);
                         int previousDebt=databaseHelper.previousDebt(client_name);
                         int previousUnsyncedDebt=databaseHelper.previousUnsyncedDebt(client_name);
                         int previousSoldSales = databaseHelper.previousSoldBal(productName);
-                        int soldSales = previousSoldSales - Integer.valueOf(quantity);
+                        final int soldSales = previousSoldSales - Integer.valueOf(quantity);
 
                         int syncStatus = databaseHelper.syncStatus(client_name);
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                            String currentDateandTime = sdf.format(new Date());
+                            final String currentDateandTime = sdf.format(new Date());
                             long timeMillis = System.currentTimeMillis();
-                            String date = ReductedCash.getDate(timeMillis);
+                            final String date = ReductedCash.getDate(timeMillis);
                             SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                            String currentDateandTimeOfAdd = sdfAdd.format(new Date());
-                            int previousSalesDebt = databaseHelper.previousSalesDebt(PreferenceHelper.getUsername(),date);
+                            final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+                          //  final int previousSalesDebt = databaseHelper.previousSalesDebt(PreferenceHelper.getUsername(),date);
                             if (productPrice.equals("Wholesale")) {
                             int price = databaseHelper.productWholesalePrice(productName);
                             mAmount = price * Integer.valueOf(quantity);
@@ -105,41 +109,117 @@ public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSele
                         if ( !(productName.isEmpty()) && !(quantity.isEmpty())) {
 
                             if (syncStatus == 1){
-                                int new_value = previousBal - Integer.valueOf(quantity);
-                            int new_debt = previousDebt + mAmount;
-                            int new_unsynced_debt = previousUnsyncedDebt + mAmount;
+                                final int new_value = previousBal - Integer.valueOf(quantity);
+                            final int new_debt = previousDebt + mAmount;
+                            final int new_unsynced_debt = previousUnsyncedDebt + mAmount;
 
-                            String type = mAmount + " Ksh added to " + client_name + " debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
+                            final String type = mAmount + " Ksh added to " + client_name + " debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
 
                             if (new_value > -1) {
-                                boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
-                               boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount + previousSalesDebt)),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
-                                if (Update && updateSales) {
-                                    Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
-                                    emptyInputEditText();
-                                } else {
-                                    Toast.makeText(AddDebt.this, "Data not Updated", Toast.LENGTH_LONG).show();
-                                }
+                                AlertDialog.Builder builder
+                                            = new AlertDialog
+                                            .Builder(AddDebt.this);
+
+                                    builder.setMessage("Do you want to add a debt of " + mAmount +" ksh to " +client_name +" ?");
+
+
+                                    builder.setTitle("Alert !");
+                                    builder.setCancelable(false);
+                                    builder
+                                            .setPositiveButton(
+                                                    "Yes",
+                                                    new DialogInterface
+                                                            .OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which)
+                                                        {
+                                                            boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
+                                                            boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount )),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
+                                                            if (Update && updateSales) {
+                                                                Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
+                                                                emptyInputEditText();
+                                                            } else {
+                                                                Toast.makeText(AddDebt.this, "Data not Updated", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }
+                                                    });
+                                    builder
+                                            .setNegativeButton(
+                                                    "No",
+                                                    new DialogInterface
+                                                            .OnClickListener() {
+
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which)
+                                                        {
+                                                            dialog.cancel();
+                                                        }
+                                                    });
+
+                                    AlertDialog alertDialog = builder.create();
+                                    alertDialog.show();
+
+
                             } else {
                                 Toast.makeText(AddDebt.this, "No items left", Toast.LENGTH_LONG).show();
                                 emptyInputEditText();
                             }
                             }
                             else{
-                                int new_value = previousBal - Integer.valueOf(quantity);
-                                int new_debt = previousDebt + mAmount;
-                                int new_unsynced_debt = previousUnsyncedDebt + mAmount;
-                                String type = mAmount + " Ksh added to " + client_name + " debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
+                                final int new_value = previousBal - Integer.valueOf(quantity);
+                                final int new_debt = previousDebt + mAmount;
+                                final int new_unsynced_debt = previousUnsyncedDebt + mAmount;
+                                final String type = mAmount + " Ksh added to " + client_name + " debt " + " from " + productName + " ." + new_value + " " +  productName + " left." ;
 
                                 if (new_value > -1) {
-                                    boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
-                                    boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount+ previousSalesDebt)),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
-                                    if (Update && updateSales) {
-                                        Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
-                                        emptyInputEditText();
-                                    } else {
-                                        Toast.makeText(AddDebt.this, "Data not Updated", Toast.LENGTH_LONG).show();
-                                    }
+                                    AlertDialog.Builder builder
+                                            = new AlertDialog
+                                            .Builder(AddDebt.this);
+
+                                    builder.setMessage("Do you want to add a debt of " + mAmount +" ksh to " +client_name +" ?");
+
+
+                                    builder.setTitle("Alert !");
+                                    builder.setCancelable(false);
+                                    builder
+                                            .setPositiveButton(
+                                                    "Yes",
+                                                    new DialogInterface
+                                                            .OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which)
+                                                        {
+                                                            boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
+                                                            boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount)),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
+                                                            if (Update && updateSales) {
+                                                                Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
+                                                                emptyInputEditText();
+                                                            } else {
+                                                                Toast.makeText(AddDebt.this, "Data not Updated", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }
+                                                    });
+                                    builder
+                                            .setNegativeButton(
+                                                    "No",
+                                                    new DialogInterface
+                                                            .OnClickListener() {
+
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int which)
+                                                        {
+                                                            dialog.cancel();
+                                                        }
+                                                    });
+
+                                    AlertDialog alertDialog = builder.create();
+                                    alertDialog.show();
+
+
                                 } else {
                                     Toast.makeText(AddDebt.this, "No items left", Toast.LENGTH_LONG).show();
                                     emptyInputEditText();
