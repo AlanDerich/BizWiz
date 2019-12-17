@@ -31,15 +31,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.AllClients;
-import com.example.derich.bizwiz.clients.ClientsDetails;
 import com.example.derich.bizwiz.clients.DeleteClient;
 import com.example.derich.bizwiz.clients.ViewClient;
 import com.example.derich.bizwiz.credentials.LoginActivity;
 import com.example.derich.bizwiz.credentials.RegisterActivity;
+import com.example.derich.bizwiz.credentials.ViewUsers;
 import com.example.derich.bizwiz.mpesa.Mpesa;
-import com.example.derich.bizwiz.products.BackupData;
 import com.example.derich.bizwiz.products.ProductsOffered;
-import com.example.derich.bizwiz.sales.AddDebt;
 import com.example.derich.bizwiz.sales.Sales;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 import com.example.derich.bizwiz.syncFromServer.Main;
@@ -49,18 +47,20 @@ import com.google.android.material.navigation.NavigationView;
 
 import static com.example.derich.bizwiz.PreferenceHelper.getUsername;
 import static com.example.derich.bizwiz.credentials.LoginActivity.sharedPreferences;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_ID;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_STATUSS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
 
 public class UserActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    FloatingActionButton fab_plus,fab_client,fab_product,fab_debt;
-    TextView add_product,add_debt,add_client;
+    FloatingActionButton fab_plus,fab_product;
     Animation FabOpen,FabClose,FabClockwise,FabAntiClockwise;
     boolean isOpen = false;
     DatabaseHelper myDb;
     public DatabaseHelper db;
 
-    Button viewClients,clients,sales,products,transactionss, sync, delete_client, addUser;
+    Button viewClients,clients,sales,products,transactionss, sync, delete_client, addUser,viewUsers;
     private final int REQUEST_PERMISSION_READ_CONTACTS = 1;
 
     private TextView textViewName;
@@ -75,6 +75,7 @@ public class UserActivity extends AppCompatActivity
     Account mAccount;
     private Cursor mCursor;
     private String Admin = "Admin";
+    private String mSql;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -88,15 +89,11 @@ public class UserActivity extends AppCompatActivity
         products = findViewById(R.id.products);
         transactionss = findViewById(R.id.transactionss);
         sync = findViewById(R.id.sync);
-        add_client= findViewById(R.id.add_client_text);
-        add_debt= findViewById(R.id.add_debt_text);
-        add_product= findViewById(R.id.add_product_text);
         fab_plus = findViewById(R.id.add);
-        fab_client =findViewById(R.id.addClient);
-        fab_debt = findViewById(R.id.addDebt);
         fab_product= findViewById(R.id.addProduct);
         delete_client = findViewById(R.id.delete_client);
         addUser = findViewById(R.id.addClientButton);
+        viewUsers = findViewById(R.id.buttonViewUsers);
         FabOpen = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
         FabClose = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
         FabClockwise = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_clockwise);
@@ -106,61 +103,6 @@ public class UserActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         showPhoneStatePermission();
 
-
-
-        fab_plus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isOpen)
-                {
-                    fab_client.startAnimation(FabClose);
-                    add_client.startAnimation(FabClose);
-                    fab_debt.startAnimation(FabClose);
-                    add_debt.startAnimation(FabClose);
-                    fab_product.startAnimation(FabClose);
-                    add_product.startAnimation(FabClose);
-                    fab_plus.startAnimation(FabAntiClockwise);
-                    fab_debt.setClickable(false);
-                    fab_client.setClickable(false);
-                    fab_product.setClickable(false);
-                    isOpen= false;
-                }
-
-                else {
-                    fab_client.startAnimation(FabOpen);
-                    add_client.startAnimation(FabOpen);
-                    fab_debt.startAnimation(FabOpen);
-                    add_debt.startAnimation(FabOpen);
-                    fab_product.startAnimation(FabOpen);
-                    add_product.startAnimation(FabOpen);
-                    fab_plus.startAnimation(FabClockwise);
-                    fab_client.setClickable(true);
-                    fab_debt.setClickable(true);
-                    fab_product.setClickable(true);
-                    isOpen= true;
-                    fab_client.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(UserActivity.this, ClientsDetails.class);
-                            startActivity(intent);
-                        }
-                    });
-                    fab_debt.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(UserActivity.this, AddDebt.class);
-                            startActivity(intent);
-                        }
-                    });
-                    fab_product.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(UserActivity.this, BackupData.class);
-                            startActivity(intent);
-                        }
-                    });
-                }
-            }});
         myDb = new DatabaseHelper(this);
 
         textViewName = findViewById(R.id.text1);
@@ -183,6 +125,13 @@ else {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UserActivity.this, AllClients.class);
+                startActivity(intent);
+            }
+        });
+        viewUsers.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+                Intent intent = new Intent(UserActivity.this, ViewUsers.class);
                 startActivity(intent);
             }
         });
@@ -376,23 +325,61 @@ else {
 
         switch (item.getItemId()) {
             case R.id.log_out:
-                PreferenceUtils.saveEmail(null, this);
-                PreferenceUtils.saveUsername(null, this);
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-                return true;
-            case R.id.refresh:
                 AlertDialog.Builder builder
                         = new AlertDialog
                         .Builder(UserActivity.this);
 
-                builder.setMessage("Remaining items = " + getUnsynced());
+                builder.setMessage("Logout ?");
 
 
-                builder.setTitle("Sync !");
+                builder.setTitle("Alert !");
                 builder.setCancelable(false);
                 builder
+                        .setPositiveButton(
+                                "Yes",
+                                new DialogInterface
+                                        .OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which)
+                                    {
+                                        PreferenceUtils.saveEmail(null, UserActivity.this);
+                                        PreferenceUtils.saveUsername(null, UserActivity.this);
+                                        Intent intent = new Intent(UserActivity.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+
+                                    }
+                                });
+                builder
+                        .setNegativeButton(
+                                "No",
+                                new DialogInterface
+                                        .OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dialog,
+                                                        int which)
+                                    {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                return true;
+
+            case R.id.refresh:
+                AlertDialog.Builder builder1
+                        = new AlertDialog
+                        .Builder(UserActivity.this);
+
+                builder1.setMessage("Remaining items = " + getUnsynced());
+
+
+                builder1.setTitle("Sync !");
+                builder1.setCancelable(false);
+                builder1
                         .setPositiveButton(
                                 "Refresh",
                                 new DialogInterface
@@ -407,7 +394,7 @@ else {
                                     }
                                 });
 
-                builder
+                builder1
                         .setNegativeButton(
                                 "Cancel",
                                 new DialogInterface
@@ -420,8 +407,8 @@ else {
                                         dialog.cancel();
                                     }
                                 });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                AlertDialog alertDialog1 = builder1.create();
+                alertDialog1.show();
                 return true;
 
         }
@@ -487,15 +474,31 @@ else {
     }
 
     private int getUnsynced(){
-        int remainingClients = db.unsyncedClients();
-        int remainingProducts = db.unsyncedProducts();
-        int remainingMpesa = db.unsyncedMpesa();
-        int remainingSales = db.unsyncedSales();
-        int remainingUsers = db.unsyncedUsers();
-        int remainingReports = db.unsyncedReports();
-        int remainingTransactions = db.unsyncedTransactions();
+        Cursor unsyncedMpesa = db.getUnsyncedMpesa();
+        Cursor unsyncedClients = db.getUnsyncedClients();
+        mSql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " =0 "+ " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
+        Cursor unsyncedProducts = db.getProducts(mSql);
+        Cursor unsyncedSales = db.getUnsyncedSales();
+        Cursor unsyncedUsers = db.getUnsyncedUsers();
+        Cursor unsyncedReports = db.getUnsyncedReports();
+        Cursor unsyncedTransactions = db.getUnsyncedTransactions();
+        int remainingClients = unsyncedClients.getCount();
+        int remainingProducts = unsyncedProducts.getCount();
+        int remainingMpesa = unsyncedMpesa.getCount();
+        int remainingSales = unsyncedSales.getCount();
+        int remainingUsers = unsyncedUsers.getCount();
+        int remainingReports = unsyncedReports.getCount();
+        int remainingTransactions = unsyncedTransactions.getCount();
         int totalCount = remainingClients + remainingProducts + remainingMpesa + remainingSales + remainingUsers + remainingReports + remainingTransactions;
+        unsyncedMpesa.close();
+        unsyncedClients.close();
+        unsyncedProducts.close();
+        unsyncedSales.close();
+        unsyncedUsers.close();
+        unsyncedReports.close();
+        unsyncedTransactions.close();
         return totalCount;
+
     }
 
 

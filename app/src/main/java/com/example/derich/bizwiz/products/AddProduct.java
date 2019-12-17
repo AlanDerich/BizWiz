@@ -39,13 +39,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_ID;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_NAME;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
 
 /**
  * Created by group 7 CS project on 3/11/18.
  */
-public class BackupData extends AppCompatActivity implements View.OnClickListener {
+public class AddProduct extends AppCompatActivity implements View.OnClickListener {
 
     /*
      * this is the url to our webservice
@@ -83,12 +84,13 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
 
     //adapterobject for list view
     private ProductAdapter productAdapter;
+    private String mSql ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_backup_data);
+        setContentView(R.layout.activity_add_product);
 
         //initializing views and objects
         db = new DatabaseHelper(this);
@@ -130,7 +132,8 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
      * */
     private void loadProducts() {
         products.clear();
-        Cursor cursor = db.getProducts();
+        mSql = "SELECT * FROM " + TABLE_PRODUCTS + " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
+        Cursor cursor = db.getProducts(mSql);
         if (cursor.moveToFirst()) {
             do {
                 Products product = new Products(
@@ -220,11 +223,11 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
         VolleySingleton.getInstance(this).addToRequestQueue(stringRequest);
         }
             else {
-                Toast.makeText(BackupData.this, "Product already exists.", Toast.LENGTH_LONG).show();
+                Toast.makeText(AddProduct.this, "Product already exists.", Toast.LENGTH_LONG).show();
             }
         }
         else {
-            Toast.makeText(BackupData.this, "All fields are required.", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddProduct.this, "All fields are required.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -258,7 +261,7 @@ public class BackupData extends AppCompatActivity implements View.OnClickListene
     public void onClick(View view) {
         AlertDialog.Builder builder
                 = new AlertDialog
-                .Builder(BackupData.this);
+                .Builder(AddProduct.this);
 
         builder.setMessage("Do you want to insert the new product " + "  ?");
 

@@ -88,7 +88,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundImage" value="$USER_HOME$/android_studio/bizwiz.jpeg" />
-                                      <entry key="foregroundImage" value="$USER_HOME$/android_studio/bizwiz.jpeg" />
+                                      <entry key="backgroundLayerName" value="background_bg" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/Downloads/44923115-trading-graph-on-the-cityscape-at-night-and-world-map-background-business-financial-concept.jpg" />
+                                      <entry key="foregroundLayerName" value="background_fg" />
+                                      <entry key="outputName" value="background" />
                                     </map>
                                   </option>
                                 </PersistentState>

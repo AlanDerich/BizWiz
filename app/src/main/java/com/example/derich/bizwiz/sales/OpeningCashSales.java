@@ -55,6 +55,10 @@ public class OpeningCashSales extends AppCompatActivity {
                         final long timeMillis = System.currentTimeMillis();
                         SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
                         final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
+                        final String currentDateandTime = sdf.format(new Date());
+                        final String type = "Inserted opening cash of "+addedAmount + " ksh. " + " Transacted by " + PreferenceHelper.getUsername();
+
                         AlertDialog.Builder builder
                                 = new AlertDialog
                                 .Builder(OpeningCashSales.this);
@@ -73,7 +77,7 @@ public class OpeningCashSales extends AppCompatActivity {
                                             public void onClick(DialogInterface dialog,
                                                                 int which)
                                             {
-                                                db.insertOpeningCashSales(addedAmount,PreferenceHelper.getUsername(),getDate(timeMillis), currentDateandTimeOfAdd);
+                                                db.insertOpeningCashSales(addedAmount,PreferenceHelper.getUsername(),getDate(timeMillis), currentDateandTimeOfAdd,currentDateandTime,type);
                                                 amount.setText("");
                                                 Toast.makeText(OpeningCashSales.this,"Added successfully",Toast.LENGTH_SHORT).show();
                                             }
@@ -108,10 +112,19 @@ public class OpeningCashSales extends AppCompatActivity {
     public int totalOpeningCash(String date, String user) {
         SQLiteOpenHelper dbHelper = new DatabaseHelper(OpeningCashSales.this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT SUM(opening_cash_sales) FROM sales WHERE sales_date=? AND sales_user=? ", new String[]{date, user});
+        Cursor cursor = db.rawQuery("SELECT opening_cash_sales FROM sales WHERE sales_date=? AND sales_user=? ", new String[]{date, user});
         int openingCash;
         if (cursor.moveToFirst()) {
-            openingCash = cursor.getInt(0);
+            openingCash = 0;
+            do{
+                int initOpeningCash = cursor.getInt(0);
+                if (initOpeningCash>0){
+                    openingCash = cursor.getInt(0);
+                }
+                else {
+                }
+            }while (cursor.moveToNext());
+
         } else {
             openingCash = 0;
         }

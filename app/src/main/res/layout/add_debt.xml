@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorWhite"
+    android:background="@drawable/bg2"
     android:padding="20dp"
     tools:context=".sales.AddDebt">
 
@@ -75,10 +75,10 @@
                 android:hint="Quantity"
                 android:inputType="number"
                 android:maxLines="1"
-                android:textColor="@color/colorText"
-                android:textColorHint="@color/colorText" />
+                android:textColor="#0C0E0D"
+                android:textColorHint="@color/colorText"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
 
         <androidx.appcompat.widget.AppCompatButton
@@ -86,25 +86,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@color/colorTextHint"
+            android:background="#F5EAEE"
             android:text="View All Clients"
-            android:textColor="@color/colorText" />
+            android:textColor="#070908" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@color/colorTextHint"
+            android:background="#EEE4E7"
             android:text="Update"
-            android:textColor="@color/colorText" />
+            android:textColor="#181A19" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_viewProdkts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@color/colorTextHint"
+            android:background="#F1ECEE"
             android:text="View Products"
-            android:textColor="@color/colorText" />
+            android:textColor="#060707" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

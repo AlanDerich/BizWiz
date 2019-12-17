@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:padding="@dimen/activity_horizontal_margin"
+    android:background="@drawable/bg2"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/textViewClientfName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:hint="Client first Name"
-        android:layout_alignParentStart="true" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewClientsDebt"
@@ -19,27 +21,30 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="5dp"
-        android:hint="Client Debt" />
+        android:hint="Client Debt"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewClientsPhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewClientsDebt"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="5dp"
         android:hint="Client Phone"
-        android:layout_alignParentStart="true" />
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewClientsEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textViewClientsPhone"
+        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="5dp"
         android:hint="Client Email"
-        android:layout_alignParentStart="true" />
+        android:textStyle="bold" />
 
     <ImageView
         android:background="@drawable/success"

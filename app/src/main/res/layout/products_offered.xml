@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/bg2"
     android:padding="20dp"
     tools:context=".credentials.LoginActivity">
 
@@ -20,30 +20,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp" >
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/t_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="product Id"
-                android:textColorHint="@color/colorText"
-                android:inputType="text"
-                android:maxLines="1"
-                android:textColor="@color/colorText" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/t_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="product Id"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="#0C0E0D"
+                    android:textColorHint="#080908"
+                    android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutProductName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp" >
+
         <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/t_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="product Name"
-                android:textColorHint="@color/colorText"
-                android:inputType="text"
-                android:maxLines="1"
-                android:textColor="@color/colorText" />
+            android:id="@+id/t_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="product Name"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="#080908"
+            android:textColorHint="#0A0A0A"
+            android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutProductPrice"
@@ -56,10 +60,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="product price"
-                android:textColorHint="@color/colorText"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="#080908"
+                android:textColorHint="#080908"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -73,10 +78,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="product Quantity"
-                android:textColorHint="@color/colorText"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="#090A0A"
+                android:textColorHint="#030303"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -85,10 +91,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:background="#EBE0E4"
             android:onClick="addProduct"
-            android:textColor="@color/colorText"
-            android:background="@color/colorTextHint"
-            android:text="Add product" />
+            android:text="Add product"
+            android:textColor="#0D0E0E" />
 
 
 </androidx.appcompat.widget.LinearLayoutCompat>

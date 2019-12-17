@@ -33,12 +33,12 @@ public class Statistics extends AppCompatActivity {
     Spinner mSpinnerDate,mSpinnerUser;
     TextView textView_stats_Ocash,textView_stats_Wsale,textView_stats_Rsale,textView_stats_expenses,textView_expected_closing_cash,textView_stats_given_debts,textView_stats_debts_paid;
     DatabaseHelper database;
-    int openingCash = 0;
-    int wholesaleSales = 0;
-    int retail_sales =0;
+    float openingCash = 0;
+    float wholesaleSales = 0;
+    float retail_sales =0;
     float daily_expense =0;
-    int debts_paid =0;
-    int daily_debt =0;
+    float debts_paid =0;
+    float daily_debt =0;
  //   private String Admin = "Admin";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,34 +55,38 @@ public class Statistics extends AppCompatActivity {
         textView_stats_debts_paid = findViewById(R.id.textView_stats_debts_paid);
         textView_expected_closing_cash = findViewById(R.id.textView_expected_closing_cash);
         populateSpinner();
-        String Administrator = getUsername();
-        mSpinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String date = mSpinnerDate.getSelectedItem().toString();
-                String user = mSpinnerUser.getSelectedItem().toString();
-                getdata(date,user);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         populateUserSpinner();
-        mSpinnerUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String date = mSpinnerDate.getSelectedItem().toString();
-                String user = mSpinnerUser.getSelectedItem().toString();
-                getdata(date,user);
-            }
+        String Administrator = getUsername();
+       if (mSpinnerDate.getSelectedItem() != null && mSpinnerUser.getSelectedItem() != null){
+           mSpinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+               @Override
+               public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                   String date = mSpinnerDate.getSelectedItem().toString();
+                   String user = mSpinnerUser.getSelectedItem().toString();
+                   getdata(date,user);
+               }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+               @Override
+               public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
+               }
+           });
+       }
+       if (mSpinnerUser.getSelectedItem() != null && mSpinnerDate.getSelectedItem() != null) {
+           mSpinnerUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+               @Override
+               public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                   String date = mSpinnerDate.getSelectedItem().toString();
+                   String user = mSpinnerUser.getSelectedItem().toString();
+                   getdata(date,user);
+               }
+
+               @Override
+               public void onNothingSelected(AdapterView<?> parent) {
+
+               }
+           });
+       }
     }
 
 
@@ -94,10 +98,10 @@ public class Statistics extends AppCompatActivity {
     }
     public void populateUserSpinner(){
 
-
         if (PreferenceHelper.getUsername().equals("Admin"))
         {
-            ArrayList<String> listPro = database.getAllSalesUsers();
+            String mSelectQuery = "SELECT DISTINCT " + COLUMN_SALES_USER + " FROM " + TABLE_SALES;
+            ArrayList<String> listPro = database.getAllSalesUsers(mSelectQuery);
             ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
             mSpinnerUser.setAdapter(adapter);
         }
@@ -137,7 +141,7 @@ public class Statistics extends AppCompatActivity {
             Cursor cursorQUery = db.rawQuery(sqli,param);
             while(cursorQUery.moveToNext()){
                 String openCash = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_OPENING_CASH_SALES));
-                openingCash = Integer.valueOf(openCash) + openingCash;
+                openingCash = Float.valueOf(openCash) + openingCash;
             }
         } else {
             openingCash = openingCash;
@@ -149,7 +153,7 @@ public class Statistics extends AppCompatActivity {
             Cursor cursorQUery = db.rawQuery(sqli,param);
             while(cursorQUery.moveToNext()){
                 String wholesale = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_WHOLESALE_SALES));
-                wholesaleSales = Integer.valueOf(wholesale) + wholesaleSales;
+                wholesaleSales = Float.valueOf(wholesale) + wholesaleSales;
             }
         } else {
            wholesaleSales = wholesaleSales;
@@ -161,7 +165,7 @@ public class Statistics extends AppCompatActivity {
             Cursor cursorQUery = db.rawQuery(sqli,param);
             while(cursorQUery.moveToNext()){
                 String retail = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_RETAIL_SALES));
-                retail_sales = Integer.valueOf(retail) + retail_sales;
+                retail_sales = Float.valueOf(retail) + retail_sales;
             }
         } else {
             retail_sales = retail_sales;
@@ -184,7 +188,7 @@ public class Statistics extends AppCompatActivity {
             Cursor cursorQUery = db.rawQuery(sqli,param);
             while(cursorQUery.moveToNext()){
                 String paidDebts = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_DEBTS_PAID));
-                debts_paid = Integer.valueOf(paidDebts) + debts_paid;
+                debts_paid = Float.valueOf(paidDebts) + debts_paid;
             }
           //  debts_paid = cursorPaidDebts.getInt(0);
         } else {
@@ -196,7 +200,7 @@ public class Statistics extends AppCompatActivity {
             Cursor cursorQUery = db.rawQuery(sqli,param);
             while(cursorQUery.moveToNext()){
                 String debtsGiven = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_DAILY_DEBT));
-                daily_debt = Integer.valueOf(debtsGiven) + daily_debt;
+                daily_debt = Float.valueOf(debtsGiven) + daily_debt;
             }
            // daily_debt = cursorGivenDebts.getInt(0);
         } else {

@@ -1,5 +1,6 @@
 package com.example.derich.bizwiz.sales;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_PRODUCT;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_RETAIL_SALES;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_SOLD_ITEMS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_STATUS;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_USER;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.REPORT_WHOLESALE_SALES;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
@@ -56,11 +58,17 @@ public class DailyReport extends AppCompatActivity {
     float buyingPrice = 0;
     float expectedTotalCash = 0;
     int mOpeningSales =0;
+    private String mStatus;
+    private Cursor mCursor;
+    private String mSelectQuery;
+    private String[] mArrg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_report);
+        Intent intent = getIntent();
+        mStatus = intent.getStringExtra("status");
         userSpinner= findViewById(R.id.spinner_daily_report_user);
         dateSpinner= findViewById(R.id.spinner_daily_report_date);
         totalCash = findViewById(R.id.daily_report_total_cash);
@@ -74,6 +82,7 @@ public class DailyReport extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 populateRecyclerView();
+                populateDateUserSpinner();
             }
 
             @Override
@@ -97,7 +106,13 @@ public class DailyReport extends AppCompatActivity {
     public void populateUserSpinner(){
       if (PreferenceHelper.getUsername().equals("Admin"))
       {
-          ArrayList<String> listPro = database.getAllReportsUsers();
+          if (mStatus == null){
+              mSelectQuery = "SELECT DISTINCT " + REPORT_USER + " FROM " + TABLE_REPORT;
+          }
+          else {
+              mSelectQuery = "SELECT DISTINCT " + REPORT_USER + " FROM " + TABLE_REPORT + " WHERE "+REPORT_STATUS + " = 0 " + " ORDER BY " + REPORT_DATE + " ASC;";
+          }
+          ArrayList<String> listPro = database.getAllReportsUsers(mSelectQuery);
           ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
           userSpinner.setAdapter(adapter);
       }
@@ -109,7 +124,25 @@ public class DailyReport extends AppCompatActivity {
 
     }
     public void populateDateSpinner(){
-        ArrayList<String> listPro = database.getAllReportsDates();
+        if (mStatus == null){
+            mSelectQuery = "SELECT DISTINCT " + REPORT_DATE + " FROM " + TABLE_REPORT + " ORDER BY " + REPORT_DATE + " ASC;";
+        }
+        else {
+            mSelectQuery = "SELECT DISTINCT " + REPORT_DATE + " FROM " + TABLE_REPORT + " WHERE "+REPORT_STATUS + " = 0 " + " ORDER BY " + REPORT_DATE + " ASC;";
+        }
+        ArrayList<String> listPro = database.getAllReportsDates(mSelectQuery);
+        ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
+        dateSpinner.setAdapter(adapter);
+    }
+    public void populateDateUserSpinner(){
+        mArrg = new String[]{userSpinner.getSelectedItem().toString()};
+        if (mStatus == null){
+            mSelectQuery = "SELECT DISTINCT " + REPORT_DATE + " FROM " + TABLE_REPORT+ " WHERE "+REPORT_USER + " = ? " + " ORDER BY " + REPORT_DATE + " ASC;";
+        }
+        else {
+            mSelectQuery = "SELECT DISTINCT " + REPORT_DATE + " FROM " + TABLE_REPORT + " WHERE "+REPORT_STATUS + " = 0 " +" AND "+REPORT_USER + " = ? " + " ORDER BY " + REPORT_DATE + " ASC;";
+        }
+        ArrayList<String> listPro = database.getAllReportsDatesUser(mSelectQuery,mArrg);
         ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
         dateSpinner.setAdapter(adapter);
     }
@@ -129,8 +162,15 @@ public class DailyReport extends AppCompatActivity {
         List<ReportModel> data=new ArrayList<>();
         SQLiteDatabase db = database.getWritableDatabase();
         String[] params = new String[] {date, user};
+        String[] params1 = new String[] {date, user, " 0 "};
         String sql = "SELECT DISTINCT report_product FROM " + TABLE_REPORT + " WHERE " + REPORT_DATE + " = ? " +" AND " + REPORT_USER + " = ? " + " ORDER BY " + REPORT_DATE + " DESC;";
-        Cursor cursor = db.rawQuery(sql,params);
+        String sql1 = "SELECT DISTINCT report_product FROM " + TABLE_REPORT + " WHERE " + REPORT_DATE + " = ? " +" AND " + REPORT_USER + " = ? " +" AND " + REPORT_STATUS + " = ? " + " ORDER BY " + REPORT_DATE + " DESC;";
+        if (mStatus == null){
+            mCursor = db.rawQuery(sql,params);
+        }
+        else {
+            mCursor = db.rawQuery(sql1,params1);
+        }
         String sqlOpeningTime = "SELECT DISTINCT sales_time FROM " + TABLE_SALES + " WHERE " + COLUMN_SALES_DATE + " = ? " +" AND " + COLUMN_SALES_USER + " = ? " + " ORDER BY " + COLUMN_SALES_DATE + " DESC;";
         Cursor cursorOpeningTime = db.rawQuery(sqlOpeningTime,params);
         StringBuffer stringBuffer = new StringBuffer();
@@ -149,9 +189,9 @@ public class DailyReport extends AppCompatActivity {
         }while (cursorOpeningTime.moveToNext());
 
         }
-        if (cursor.moveToFirst()){
+        if (mCursor.moveToFirst()){
             do{
-            String productName = cursor.getString(cursor.getColumnIndexOrThrow(REPORT_PRODUCT));
+            String productName = mCursor.getString(mCursor.getColumnIndexOrThrow(REPORT_PRODUCT));
             reportModel= new ReportModel();
             String[] param = new String[] {date,user,productName};
             String sqli = "SELECT report_sold_items FROM " + TABLE_REPORT + " WHERE " + REPORT_DATE + " = ? " + " AND " + REPORT_USER + " = ? "+ " AND " + REPORT_PRODUCT + " = ? " + " ORDER BY " + REPORT_DATE + " ASC;";
@@ -215,7 +255,7 @@ public class DailyReport extends AppCompatActivity {
             remainingItems=0;
             buyingPrice = 0;
         }
-            while (cursor.moveToNext());
+            while (mCursor.moveToNext());
         }
 
 

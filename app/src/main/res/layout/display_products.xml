@@ -4,19 +4,22 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <TextView
-        android:hint="Product's name"
-        android:layout_alignParentLeft="true"
         android:id="@+id/textViewProductName"
-        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:hint="Quantity"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_marginTop="10dp"
+        android:hint="Product's name"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/textViewQuantity"
-        android:layout_marginTop="30dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="30dp"
+        android:hint="Quantity"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/textViewProductBuyingPrice"
@@ -24,21 +27,26 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="50dp"
-        android:hint="Product's buying price" />
+        android:hint="Product's buying price"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/textViewProductRetailPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="70dp"
-        android:hint="Product's retail price" />
+        android:hint="Product's retail price"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/textViewProductWholesalePrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="90dp"
-        android:hint="Product's wholesale price" />
+        android:hint="Product's wholesale price"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/imageViewStatus"

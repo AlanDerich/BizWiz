@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/bg2"
     android:padding="5dp"
     tools:context="activities.UserActivity">
 
@@ -27,7 +27,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Full Names"
                 android:inputType="text"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -42,7 +43,8 @@
                 android:layout_height="wrap_content"
                 android:hint="debt"
                 android:inputType="number"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -58,7 +60,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Number"
                 android:inputType="number"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -72,10 +75,11 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextClientEmail"
                 android:layout_width="match_parent"
-                android:inputType="textEmailAddress"
                 android:layout_height="wrap_content"
                 android:hint="Email"
-                android:maxLines="1"/>
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton

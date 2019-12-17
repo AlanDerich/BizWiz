@@ -85,7 +85,7 @@ public class UserSyncronization extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
             sqLiteDatabase.close();
-            Toast.makeText(UserSyncronization.this, "Successful You can now Login", Toast.LENGTH_LONG).show();
+
 
             /**
              * Updating parsed JSON data into ListView
@@ -138,6 +138,7 @@ public class UserSyncronization extends AppCompatActivity {
                     String SQLiteDataBaseQueryHolder = "INSERT INTO "+ DatabaseHelper.TABLE_USER+" (user_name,user_email,user_question,user_answer,user_password,user_status) VALUES('"+user_name+"', '"+user_email+"' ,'"+user_question+"' , '"+user_answer+"', '"+user_password+"',  '"+1+"');";
 
                     sqLiteDatabase.execSQL(SQLiteDataBaseQueryHolder);
+                    Toast.makeText(UserSyncronization.this, "Successful You can now Login", Toast.LENGTH_LONG).show();
 
                 }
             } catch (final JSONException e) {

@@ -2,6 +2,7 @@ package com.example.derich.bizwiz.activities;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -48,11 +49,15 @@ public class MpesaLogs extends AppCompatActivity implements LoaderManager.Loader
     Spinner spinnerLogs;
     List<DataModel> datamodel;
     private Cursor mDates,mTransactions;
+    private String mStatus;
+    private String[] mParam;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mpesa_logs);
+        Intent intent = getIntent();
+        mStatus = intent.getStringExtra("status");
         datamodel =new ArrayList<>();
         recyclerView =  findViewById(R.id.recyclerView_log);
         database = new DatabaseHelper(MpesaLogs.this);
@@ -107,9 +112,20 @@ public class MpesaLogs extends AppCompatActivity implements LoaderManager.Loader
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         CursorLoader loader = null;
         if (id == LOADER_TRANSACTION_DATES)
-            loader = getMpesaDates();
+            if (mStatus == null){
+                loader = getMpesaDates();
+            }
+            else {
+                loader = getUnsyncedMpesaDates();
+            }
+
         else if (id == LOADER_TRANSACTIONS){
-            loader = getTransactions();
+            if (mStatus == null){
+                loader = getTransactions();
+            }
+            else {
+                loader = getUnsyncedTransactions();
+            }
         }
         return loader;
     }
@@ -125,6 +141,17 @@ public class MpesaLogs extends AppCompatActivity implements LoaderManager.Loader
             }
         };
     }
+    private CursorLoader getUnsyncedTransactions() {
+        return new CursorLoader(this){
+            @Override
+            public Cursor loadInBackground() {
+                String date = spinnerLogs.getSelectedItem().toString();
+                String[] params = new String[] {date, "0"};
+                String sql = "SELECT DISTINCT time_of_transaction FROM " + TABLE_MPESA + " WHERE " + DATE_MILLIS + " = ? " + " AND " + COLUMN_MPESA_STATUS + " = ? " + " ORDER BY " + TIME_OF_TRANSACTION + " ASC;";
+                return db.rawQuery(sql,params);
+            }
+        };
+    }
 
     private CursorLoader getMpesaDates() {
         return new CursorLoader(this){
@@ -134,6 +161,19 @@ public class MpesaLogs extends AppCompatActivity implements LoaderManager.Loader
                 SQLiteDatabase db = database.getReadableDatabase();
                 String selectQuery = "SELECT DISTINCT " + DATE_MILLIS + " FROM " + TABLE_MPESA + " ORDER BY " + DATE_MILLIS + " ASC;";
                 return db.rawQuery(selectQuery, null);
+            }
+        };
+
+    }
+    private CursorLoader getUnsyncedMpesaDates() {
+        return new CursorLoader(this){
+            @Override
+            public Cursor loadInBackground() {
+
+                SQLiteDatabase db = database.getReadableDatabase();
+                mParam = new String[]{"0"};
+                String selectQuery = "SELECT DISTINCT " + DATE_MILLIS + " FROM " + TABLE_MPESA + " WHERE " + COLUMN_MPESA_STATUS + " = ? "+ " ORDER BY " + DATE_MILLIS + " ASC;";
+                return db.rawQuery(selectQuery, mParam);
             }
         };
 

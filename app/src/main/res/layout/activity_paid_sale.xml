@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorWhite"
+    android:background="@drawable/bg2"
     android:padding="20dp"
     tools:context=".sales.PaidSale">
 

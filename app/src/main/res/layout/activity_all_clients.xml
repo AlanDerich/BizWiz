@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorDark">
-
+    android:background="@drawable/bg2"
+    android:orientation="vertical">
 
 
     <Button
@@ -15,21 +14,20 @@
         android:onClick="selectOption"
         android:text="Add Client" />
 
-      <Button
+    <Button
         android:id="@+id/viewClients"
-          android:layout_marginTop="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
         android:onClick="selectOption"
         android:text="View Clients" />
 
     <Button
         android:id="@+id/addClientFromContacts"
-        android:layout_marginTop="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
         android:text="Add client from Contacts" />
-
 
 
 </LinearLayout>

@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark">
+    android:background="@drawable/bg2">
 
 
 
@@ -43,6 +43,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Transactions list" />
+    <Button
+        android:id="@+id/reductCash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reduct Cash" />
+
+    <Button
+        android:id="@+id/summaryBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Summary" />
 
 
 </LinearLayout>

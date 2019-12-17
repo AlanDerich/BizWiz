@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorPrimaryDark"
     android:padding="20dp"
-    tools:context=".products.UpdateProducts">
+    android:background="@drawable/bg2">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -41,8 +39,9 @@
                 android:hint="Quantity Added"
                 android:inputType="number"
                 android:maxLines="1"
-                android:textColor="@color/colorText"
-                android:textColorHint="@color/colorText" />
+                android:textColor="#050908"
+                android:textColorHint="@color/colorText"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -51,10 +50,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:background="#F3E7EB"
             android:onClick="addProduct"
-            android:textColor="@color/colorText"
-            android:background="@color/colorTextHint"
-            android:text="Add Stock" />
+            android:text="Add Stock"
+            android:textColor="#070F0E" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

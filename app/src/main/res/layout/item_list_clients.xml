@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@drawable/bg2"
     android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
@@ -27,6 +28,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:text="Full name"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -37,6 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Debt"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/list_full_name"
                 app:layout_constraintHorizontal_bias="0.486"
                 app:layout_constraintStart_toStartOf="@+id/list_full_name"
@@ -48,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Number"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/list_debt"
                 app:layout_constraintHorizontal_bias="0.545"
                 app:layout_constraintStart_toStartOf="@+id/list_debt"
@@ -59,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/hint_email"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/list_number"
                 app:layout_constraintHorizontal_bias="0.534"
                 app:layout_constraintStart_toStartOf="@+id/list_number"

@@ -278,16 +278,15 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         return cursorCount > 0;
     }
 
-    public Cursor getAllTransactions() {
+    public Cursor getAllTransactions(String sql) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cur = db.rawQuery("select * from " + TABLE_TRANSACTIONS+ " ORDER BY " + TRANSACTION_DATE + " DESC;", null);
+        Cursor cur = db.rawQuery(sql, null);
         return cur;
     }
 
-    public Cursor getAllTransactionsUser(String username) {
+    public Cursor getAllTransactionsUser(String sql,String username) {
         String[] params = new String[] {username};
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = "SELECT * FROM " + TABLE_TRANSACTIONS + " WHERE " + TRANSACTION_USER + " = ? "  + " ORDER BY " + TRANSACTION_DATE + " DESC;";
         Cursor cur = db.rawQuery(sql,params);
         return cur;
 
@@ -386,44 +385,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         return debt;
 
     }
-  /*  public int previousSalesDebt(String username,String date) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select daily_debt from sales where sales_user=? and sales_date=? order by null desc limit 1", new String[]{username,date});
-        int debt;
-        if (cursor.moveToFirst()) {
-            debt = cursor.getInt(cursor.getColumnIndex("daily_debt"));
-        } else {
-            debt = 0;
-        }
-        return debt;
 
-    }
-
-    public int previousWholesaleAmount(String username,String date) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select wholesale_sales from sales where sales_user=? and sales_date=? order by null desc limit 1", new String[]{username,date});
-        int amount;
-        if (cursor.moveToFirst()) {
-            amount = cursor.getInt(cursor.getColumnIndex("wholesale_sales"));
-        } else {
-            amount = 0;
-        }
-        return amount;
-
-    }
-    public int previousRetailAmount(String username,String date) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select retail_sales from sales where sales_user=? and sales_date=? order by null desc limit 1", new String[]{username,date});
-        int debt;
-        if (cursor.moveToFirst()) {
-            debt = cursor.getInt(cursor.getColumnIndex("retail_sales"));
-        } else {
-            debt = 0;
-        }
-        return debt;
-
-    }
-*/
     public void deleteClient(String client_name) {
         SQLiteDatabase db = this.getReadableDatabase();
         db.execSQL("DELETE FROM clients where client_fullName=? ", new String[]{client_name});
@@ -539,27 +501,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         return c;
     }
 
-  /*  public boolean updateDebt(String amount,String username,String date,String time){
-        if (getSales( amount, username, date, time).moveToFirst()){
-            updateDebtSales( amount, username, date, time);
-            return true;
-        }
-        else {
-            insertDebtSales( amount, username, date, time);
-            return true;
-        }
-    }
-    public void updateDebtSales (String amount, String username, String date, String time){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put((COLUMN_DAILY_DEBT ),amount );
-        contentValues.put(COLUMN_SALES_USER,username );
-        contentValues.put(COLUMN_SALES_DATE,date);
-        contentValues.put(COLUMN_SALES_TIME,time);
-        contentValues.put(COLUMN_SALES_STATUS,0);
-        db.update(TABLE_SALES,contentValues,"sales_date = ? AND sales_user = ?",new String[] {date, username});
-    }
-    */
     public boolean insertDebtSales (String amount, String username, String date, String time, String product_name, String quantity){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -591,9 +532,10 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
     }
 
 
-    public void insertOpeningCashSales (String amount, String username, String date, String time){
+    public void insertOpeningCashSales (String amount, String username, String date, String time,String fullDate,String type){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        ContentValues contentValues1 = new ContentValues();
         contentValues.put((COLUMN_OPENING_CASH_SALES ),amount );
         contentValues.put(COLUMN_DAILY_DEBT,0 );
         contentValues.put(COLUMN_RETAIL_SALES,0 );
@@ -604,7 +546,33 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         contentValues.put(COLUMN_SALES_DATE,date);
         contentValues.put(COLUMN_SALES_TIME,time);
         contentValues.put(COLUMN_SALES_STATUS,0);
+        contentValues1.put(TRANSACTION_DATE,fullDate);
+        contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(TRANSACTION_USER,username);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_SALES,null,contentValues);
+        db.insert(TABLE_TRANSACTIONS,null,contentValues1);
+    }
+    public void ReductCashSales (String amount, String username, String date, String time,String fullDate,String type){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        ContentValues contentValues1 = new ContentValues();
+        contentValues.put((COLUMN_OPENING_CASH_SALES ), (-Float.valueOf(amount)));
+        contentValues.put(COLUMN_DAILY_DEBT,0 );
+        contentValues.put(COLUMN_RETAIL_SALES,0 );
+        contentValues.put(COLUMN_WHOLESALE_SALES,0 );
+        contentValues.put(COLUMN_DEBTS_PAID,0 );
+        contentValues.put(COLUMN_DAILY_EXPENSE,0 );
+        contentValues.put(COLUMN_SALES_USER,username );
+        contentValues.put(COLUMN_SALES_DATE,date);
+        contentValues.put(COLUMN_SALES_TIME,time);
+        contentValues.put(COLUMN_SALES_STATUS,0);
+        contentValues1.put(TRANSACTION_DATE,fullDate);
+        contentValues1.put(TRANSACTION_TYPE,type);
+        contentValues1.put(TRANSACTION_USER,username);
+        contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
+        db.insert(TABLE_SALES,null,contentValues);
+        db.insert(TABLE_TRANSACTIONS,null,contentValues1);
     }
 
     public boolean insertDebtsPaid (String amount, String username, String date, String time){
@@ -784,13 +752,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
-    public int unsyncedClients() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_CLIENT + " WHERE " + COLUMN_STATUS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        int count = c.getCount();
-        return count;
-    }
 
 
 
@@ -870,33 +831,11 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
     /*
      * this method will give us all the name stored in sqlite
      * */
-    public Cursor getProducts() {
+    public Cursor getProducts(String sql) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_PRODUCTS + " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
-
-    /*
-     * this method is for getting all the unsynced name
-     * so that we can sync it with database
-     * */
-
-
-    public Cursor getUnsyncedProducts() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
-    }
-    public int unsyncedProducts() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        int count = c.getCount();
-        return count;
-    }
-
     public Cursor getUnsyncedTransactions() {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] param = new String[]{"0"};
@@ -904,13 +843,14 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         Cursor cursor = db.rawQuery(sql, param);
         return cursor;
     }
-    public int unsyncedTransactions() {
+    public Cursor getAllUsersAdmin(String sql) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] param = new String[]{"0"};
-        String sql = "SELECT * FROM " + TABLE_TRANSACTIONS + " WHERE " + COLUMN_TRANSACTION_STATUS + " = ?;";
-        Cursor cursor = db.rawQuery(sql, param);
-        int count = cursor.getCount();
-        return count;
+        return db.rawQuery(sql, null);
+    }
+    public Cursor getAllUsers(String sql, String username) {
+        String[] params = new String[] {username};
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery(sql, params);
     }
 
     public Cursor getUnsyncedUsers() {
@@ -919,26 +859,11 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         String sql = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_STATUS + " = ?;";
         return db.rawQuery(sql, param);
     }
-    public int unsyncedUsers() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_STATUS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        int count = c.getCount();
-        return count;
-
-    }
     public Cursor getUnsyncedReports() {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] param = new String[]{"0"};
         String sql = "SELECT * FROM " + TABLE_REPORT + " WHERE " + REPORT_STATUS + " = ?;";
         return db.rawQuery(sql, param);
-    }
-    public int unsyncedReports() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_REPORT + " WHERE " + REPORT_STATUS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        int count = c.getCount();
-        return count;
     }
 
     public Cursor getUnsyncedMpesa() {
@@ -947,25 +872,11 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         String sql = "SELECT * FROM " + TABLE_MPESA + " WHERE " + COLUMN_MPESA_STATUS + " = ?;";
         return db.rawQuery(sql, param);
     }
-    public int unsyncedMpesa() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_MPESA + " WHERE " + COLUMN_MPESA_STATUS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        int count = c.getCount();
-        return count;
-    }
     public Cursor getUnsyncedSales() {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] param = new String[]{"0"};
         String sql = "SELECT * FROM " + TABLE_SALES + " WHERE " + COLUMN_SALES_STATUS + " = ?;";
         return db.rawQuery(sql, param);
-    }
-    public int unsyncedSales() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_SALES + " WHERE " + COLUMN_SALES_STATUS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        int count = c.getCount();
-        return count;
     }
 
     public ArrayList<String> getAllClients() {
@@ -981,6 +892,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
                     String clientName = cursor.getString(cursor.getColumnIndex("client_fullName"));
                     list.add(clientName);
                 }
+                cursor.close();
             }
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -1004,6 +916,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
                     String productName = cur.getString(cur.getColumnIndex("product_name"));
                     list1.add(productName);
                 }
+                cur.close();
             }
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -1016,7 +929,9 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
     }
 
 
-    public ArrayList<String> getAllSalesDates() {
+
+
+     public ArrayList<String> getAllSalesDates() {
         ArrayList<String> list = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
         db.beginTransaction();
@@ -1029,6 +944,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
                     String dateOfTransaction = cursor.getString(cursor.getColumnIndex("sales_date"));
                     list.add(dateOfTransaction);
                 }
+                cursor.close();
             }
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -1039,19 +955,20 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         }
         return list;
     }
-    public ArrayList<String> getAllReportsDates() {
+
+    public ArrayList<String> getAllReportsDates(String selectQuery) {
         ArrayList<String> list = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
         db.beginTransaction();
 
         try {
-            String selectQuery = "SELECT DISTINCT " + REPORT_DATE + " FROM " + TABLE_REPORT + " ORDER BY " + REPORT_DATE + " ASC;";
             Cursor cursor = db.rawQuery(selectQuery, null);
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
                     String dateOfTransaction = cursor.getString(cursor.getColumnIndex("report_date"));
                     list.add(dateOfTransaction);
                 }
+                cursor.close();
             }
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -1062,19 +979,19 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         }
         return list;
     }
-    public ArrayList<String> getAllSalesUsers() {
+    public ArrayList<String> getAllReportsDatesUser(String selectQuery,String[] arrg) {
         ArrayList<String> list = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
         db.beginTransaction();
 
         try {
-            String selectQuery = "SELECT DISTINCT " + COLUMN_SALES_USER + " FROM " + TABLE_SALES;
-            Cursor cursor = db.rawQuery(selectQuery, null);
+            Cursor cursor = db.rawQuery(selectQuery, arrg);
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
-                    String dateOfTransaction = cursor.getString(cursor.getColumnIndex("sales_user"));
+                    String dateOfTransaction = cursor.getString(cursor.getColumnIndex("report_date"));
                     list.add(dateOfTransaction);
                 }
+                cursor.close();
             }
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -1085,13 +1002,36 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         }
         return list;
     }
-    public ArrayList<String> getAllReportsUsers() {
+    public ArrayList<String> getAllSalesUsers(String selectQuery) {
+        ArrayList<String> list = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.beginTransaction();
+
+        try {
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+                    String user = cursor.getString(cursor.getColumnIndex("sales_user"));
+                    list.add(user);
+                }
+                cursor.close();
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            db.close();
+
+        }
+        return list;
+    }
+    public ArrayList<String> getAllReportsUsers(String selectQuery) {
         ArrayList<String> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         db.beginTransaction();
 
         try {
-            String selectQuery = "SELECT DISTINCT " + REPORT_USER + " FROM " + TABLE_REPORT;
             Cursor cursor = db.rawQuery(selectQuery, null);
             if (cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
@@ -1108,7 +1048,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         }
         return list;
     }
-    public ArrayList<String> getAllReportProducts() {
+   /* public ArrayList<String> getAllReportProducts() {
         ArrayList<String> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         db.beginTransaction();
@@ -1131,6 +1071,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         }
         return list;
     }
+    */
 
 
     @NonNull

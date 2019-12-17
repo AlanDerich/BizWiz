@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorWhite"
+    android:background="@drawable/bg2"
     android:padding="20dp"
     tools:context=".sales.ClearDebt">
 
@@ -47,10 +47,10 @@
                 android:hint="AMOUNT"
                 android:inputType="number"
                 android:maxLines="1"
-                android:textColor="@color/colorText"
-                android:textColorHint="@color/colorText" />
+                android:textColor="#101111"
+                android:textColorHint="@color/colorText"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
 
         <androidx.appcompat.widget.AppCompatButton
@@ -60,7 +60,8 @@
             android:layout_marginTop="10dp"
             android:background="@color/colorTextHint"
             android:text="View All Clients"
-            android:textColor="@color/colorText" />
+            android:textColor="#1A1B1B" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_update_debt"
             android:layout_width="match_parent"
@@ -68,7 +69,7 @@
             android:layout_marginTop="10dp"
             android:background="@color/colorTextHint"
             android:text="Update"
-            android:textColor="@color/colorText" />
+            android:textColor="#060707" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

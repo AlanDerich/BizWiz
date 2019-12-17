@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorPrimaryDark"
+    android:background="@drawable/bg2"
     android:padding="20dp"
     tools:context=".credentials.LoginActivity">
 
@@ -24,9 +24,9 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutName"
             android:layout_width="match_parent"
-            android:textColorHint="#FFF"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp" >
+            android:layout_marginTop="40dp"
+            android:textColorHint="#1B0303">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditTextName"
@@ -35,15 +35,17 @@
                 android:hint="@string/hint_name"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="#070707"
+                android:textColorHighlight="#001B0505"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="#FFF"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp"
+            android:textColorHint="#1B0202">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditTextUsername"
@@ -52,14 +54,16 @@
                 android:hint="@string/hint_email"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="@color/colorText"
+                android:textColorHint="#001D0404" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="#FFF"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp"
+            android:textColorHint="#050000">
 
             <Spinner
                 android:id="@+id/spinner_register_question"
@@ -67,14 +71,15 @@
                 android:layout_height="wrap_content"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="#0D0E0E" />
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutAnswer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="#FFF"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp"
+            android:textColorHint="#1A0404">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditTextRegisterAnswer"
@@ -90,8 +95,8 @@
             android:id="@+id/textInputLayoutPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="#FFF"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp"
+            android:textColorHint="#140303">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditTextPassword"
@@ -107,8 +112,8 @@
             android:id="@+id/textInputLayoutConfirmPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColorHint="#FFF"
-            android:layout_marginTop="20dp" >
+            android:layout_marginTop="20dp"
+            android:textColorHint="#0F0202">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/textInputEditTextConfirmPassword"
@@ -125,9 +130,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:textColor="@color/colorText"
-            android:background="@color/colorTextHint"
-            android:text="@string/text_register" />
+            android:background="#E7CFD8"
+            android:text="@string/text_register"
+            android:textColor="@color/colorText" />
 
 
 

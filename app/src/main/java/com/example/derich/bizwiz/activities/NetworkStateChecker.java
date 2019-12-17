@@ -13,7 +13,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.derich.bizwiz.clients.ClientsDetails;
-import com.example.derich.bizwiz.products.BackupData;
+import com.example.derich.bizwiz.products.AddProduct;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import org.json.JSONException;
@@ -22,13 +22,15 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_ID;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_STATUSS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
+
 public class NetworkStateChecker extends BroadcastReceiver {
 
     private DatabaseHelper db;
     public Context context;
-
-
-
+    public String mSql;
 
 
     @Override
@@ -60,7 +62,8 @@ public class NetworkStateChecker extends BroadcastReceiver {
                     } while (cursor.moveToNext());
                 }
                 //getting all the unsynced products
-                Cursor cur = db.getUnsyncedProducts();
+                mSql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " =0 "+ " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
+                Cursor cur = db.getProducts(mSql);
                 if (cur.moveToFirst()) {
                     do {
                         //calling the method to save the unsynced client to MySQL
@@ -163,18 +166,22 @@ public class NetworkStateChecker extends BroadcastReceiver {
                         );
                     } while (sales.moveToNext());
                 }
+                mpesa.close();
+                users.close();
+                cur.close();
+                cursor.close();
+                trans.close();
+                reports.close();
+                sales.close();
             }
         }
-
-
-
     }
 
 
 
 
     private void saveProduct(final int product_id,final String product_name, final String product_quantity, final String product_buying_price,final String product_retail_price,final String product_wholesale_price, final String product_sold_product) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_PRODUCT,
+        StringRequest stringReq = new StringRequest(Request.Method.POST, AddProduct.URL_SAVE_PRODUCT,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -182,10 +189,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateProductStatus(product_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateProductStatus(product_id, AddProduct.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                                context.sendBroadcast(new Intent(AddProduct.DATA_SAVED_BROADCAST));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -215,7 +222,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
     }
 
     private void saveTransaction(final int transaction_id,final String transaction_type,final String transaction_user, final String transaction_date) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_TRANSACTION,
+        StringRequest stringReq = new StringRequest(Request.Method.POST, AddProduct.URL_SAVE_TRANSACTION,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -223,10 +230,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateTransactionStatus(transaction_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateTransactionStatus(transaction_id, AddProduct.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                                context.sendBroadcast(new Intent(AddProduct.DATA_SAVED_BROADCAST));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -252,7 +259,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
     private void saveUser(final int user_id,final String user_name, final String user_email,final String user_password,final String user_question,final String user_answer) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_USER,
+        StringRequest stringReq = new StringRequest(Request.Method.POST, AddProduct.URL_SAVE_USER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -260,10 +267,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateUSerStatus(user_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateUSerStatus(user_id, AddProduct.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                                context.sendBroadcast(new Intent(AddProduct.DATA_SAVED_BROADCAST));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -291,7 +298,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
     private void saveReport(final int report_id,final String report_date,final String report_time, final String report_user,final String report_product,final String report_wholesale_sales,final String report_retail_sales,final String report_debt_sales,final String report_added_items,final String report_sold_items) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_REPORTS,
+        StringRequest stringReq = new StringRequest(Request.Method.POST, AddProduct.URL_SAVE_REPORTS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -299,10 +306,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateReportStatus(report_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateReportStatus(report_id, AddProduct.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                                context.sendBroadcast(new Intent(AddProduct.DATA_SAVED_BROADCAST));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -335,7 +342,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
     }
 
     private void saveMpesa(final int mpesa_id,final String date_in_millis, final String opening_float,final String opening_cash, final String added_float,final String added_cash, final String reducted_float,final String reducted_cash, final String closing_cash,final String time_of_transaction,final String comment) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_MPESA,
+        StringRequest stringReq = new StringRequest(Request.Method.POST, AddProduct.URL_SAVE_MPESA,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -343,10 +350,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateMpesaStatus(mpesa_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateMpesaStatus(mpesa_id, AddProduct.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                                context.sendBroadcast(new Intent(AddProduct.DATA_SAVED_BROADCAST));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -379,7 +386,7 @@ public class NetworkStateChecker extends BroadcastReceiver {
         VolleySingleton.getInstance(context).addToRequestQueue(stringReq);
     }
     private void saveSales(final int sales_id,final String opening_cash_sales, final String wholesale_sales,final String retail_sales, final String sales_date,final String sales_time, final String sales_user,final String daily_expense, final String debts_paid,final String daily_debt) {
-        StringRequest stringReq = new StringRequest(Request.Method.POST, BackupData.URL_SAVE_SALES,
+        StringRequest stringReq = new StringRequest(Request.Method.POST, AddProduct.URL_SAVE_SALES,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -387,10 +394,10 @@ public class NetworkStateChecker extends BroadcastReceiver {
                             JSONObject obj = new JSONObject(response);
                             if (!obj.getBoolean("error")) {
                                 //updating the status in sqlite
-                                db.updateSalesStatus(sales_id, BackupData.PRODUCT_SYNCED_WITH_SERVER);
+                                db.updateSalesStatus(sales_id, AddProduct.PRODUCT_SYNCED_WITH_SERVER);
 
                                 //sending the broadcast to refresh the list
-                                context.sendBroadcast(new Intent(BackupData.DATA_SAVED_BROADCAST));
+                                context.sendBroadcast(new Intent(AddProduct.DATA_SAVED_BROADCAST));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

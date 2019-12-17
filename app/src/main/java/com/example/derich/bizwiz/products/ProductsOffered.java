@@ -45,7 +45,7 @@ public class ProductsOffered extends AppCompatActivity {
         AddProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ProductsOffered.this, BackupData.class);
+                Intent intent = new Intent(ProductsOffered.this, com.example.derich.bizwiz.products.AddProduct.class);
                 startActivity(intent);
             }
         });

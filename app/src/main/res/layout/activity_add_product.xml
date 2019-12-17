@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/nestedScrollView"
-    android:background="@color/colorWhite"
+    android:background="@drawable/bg2"
     android:padding="5dp"
     tools:context="activities.UserActivity">
 
@@ -26,7 +26,9 @@
                 android:layout_height="wrap_content"
                 android:hint="Product Name"
                 android:inputType="text"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                android:textColor="#000C0B0B"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutQuantity"
@@ -40,7 +42,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Quantity"
                 android:inputType="number"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -55,7 +58,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Buying Price"
                 android:inputType="numberDecimal"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutRetailPrice"
@@ -69,7 +73,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Retail Price"
                 android:inputType="number"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayoutWholesalePrice"
@@ -83,7 +88,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Wholesale Price"
                 android:inputType="number"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
 

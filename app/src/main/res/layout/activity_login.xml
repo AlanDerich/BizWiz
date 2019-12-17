@@ -37,7 +37,7 @@
                 android:hint="@string/hint_username"
                 android:inputType="text"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="#E0E7E5" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -54,7 +54,7 @@
                 android:hint="@string/hint_password"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:textColor="@color/colorText" />
+                android:textColor="#E8F3EF" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -62,9 +62,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:textColor="@color/colorText"
             android:background="@color/colorTextHint"
-            android:text="@string/text_login" />
+            android:text="@string/text_login"
+            android:textColor="#D9E6E1" />
 
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -73,9 +73,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:text="Get Users From Database"
-            android:textSize="16sp"
-            android:textColor="@color/colorText" />
+            android:text="Click here to get Users From Database"
+            android:textColor="#DDF0EA"
+            android:textSize="16sp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/forgotPassword"
@@ -84,8 +84,8 @@
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="Forgot password?"
-            android:textSize="16sp"
-            android:textColor="@color/colorText" />
+            android:textColor="#E8ECEB"
+            android:textSize="16sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.core.widget.NestedScrollView>

@@ -1,5 +1,6 @@
 package com.example.derich.bizwiz.syncFromServer;
 
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,10 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_ID;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_STATUSS;
+import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
+
 public class UnsyncedData extends AppCompatActivity {
     public DatabaseHelper db;
     RecyclerView unsyncedRecycler;
@@ -20,6 +25,9 @@ public class UnsyncedData extends AppCompatActivity {
     List<UnsyncedDataModel> datamodel;
     StringBuffer stringBuffer;
     UnsyncedDataModel unsyncedDataModel;
+    private Cursor mRem;
+    private String mSql;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,80 +39,11 @@ public class UnsyncedData extends AppCompatActivity {
         unsyncedDataModel = new UnsyncedDataModel();
         unsyncedList();
     }
-    /*public List<DataModel> getdata(String date){
-        // DataModel dataModel = new DataModel();
 
-        String[] params = new String[] {date};
-        String sql = "SELECT DISTINCT time_of_transaction FROM " + TABLE_MPESA + " WHERE " + DATE_MILLIS + " = ? " + " ORDER BY " + TIME_OF_TRANSACTION + " ASC;";
-        Cursor cursor = db.rawQuery(sql,params);
-        StringBuffer stringBuffer = new StringBuffer();
-        DataModel dataModel;
-        if (cursor.moveToFirst()) {
-            do {
-                String time = cursor.getString(cursor.getColumnIndexOrThrow(TIME_OF_TRANSACTION));
-                String[] parameter = new String[]{date, time};
-                String sqlite = "SELECT DISTINCT date_in_millis,time_of_transaction,opening_float,opening_cash,added_float,added_cash,reducted_float,reducted_cash,closing_cash,comment,status FROM " + TABLE_MPESA + " WHERE " + DATE_MILLIS + " = ? " + " AND " + TIME_OF_TRANSACTION + " = ? " + " ORDER BY " + TIME_OF_TRANSACTION + " ASC;";
-                Cursor cur = db.rawQuery(sqlite, parameter);
-                if (cur.moveToFirst()) {
-                    do {
-                        dataModel = new DataModel();
-                        String openingFloat = cur.getString(cur.getColumnIndexOrThrow(COLUMN_OPENING_FLOAT));
-                        String openingCash = cur.getString(cur.getColumnIndexOrThrow(COLUMN_OPENING_CASH));
-                        // String dateMillis = cursor.getString(cursor.getColumnIndexOrThrow(DATE_MILLIS));
-                        String addedFloat = cur.getString(cur.getColumnIndexOrThrow(COLUMN_ADDED_FLOAT));
-                        String addedCash = cur.getString(cur.getColumnIndexOrThrow(COLUMN_ADDED_CASH));
-                        String reductedFloat = cur.getString(cur.getColumnIndexOrThrow(COLUMN_REDUCTED_FLOAT));
-                        String reductedCash = cur.getString(cur.getColumnIndexOrThrow(COLUMN_REDUCTED_CASH));
-                        String closingCash = cur.getString(cur.getColumnIndexOrThrow(COLUMN_CLOSING_CASH));
-                        String comment = cur.getString(cur.getColumnIndexOrThrow(COLUMN_COMMENT));
-                        String timeOfTransaction = cur.getString(cur.getColumnIndexOrThrow(TIME_OF_TRANSACTION));
-                        String syncStatus = cur.getString(cur.getColumnIndexOrThrow(COLUMN_MPESA_STATUS));
-                        if (!openingFloat.equals("0")) {
-                            dataModel.setAmount(openingFloat);
-                            dataModel.setTypeOfTransaction("Added opening float");
-
-                        } else if (!openingCash.equals("0")) {
-                            dataModel.setAmount(openingCash);
-                            dataModel.setTypeOfTransaction("Added opening cash");
-                        } else if (!addedFloat.equals("0")) {
-                            dataModel.setAmount(addedFloat);
-                            dataModel.setTypeOfTransaction("Added float");
-                        } else if (!addedCash.equals("0")) {
-                            dataModel.setAmount(addedCash);
-                            dataModel.setTypeOfTransaction("Added cash");
-                        } else if (!reductedFloat.equals("0")) {
-                            dataModel.setAmount(reductedFloat);
-                            dataModel.setTypeOfTransaction("Reducted float");
-                        } else if (!reductedCash.equals("0")) {
-                            dataModel.setAmount(reductedCash);
-                            dataModel.setTypeOfTransaction("Reducted cash");
-                        } else if (!closingCash.equals("0")) {
-                            dataModel.setAmount(closingCash);
-                            dataModel.setTypeOfTransaction("Closing cash");
-                        } else {
-                            dataModel.setAmount("none");
-                        }
-
-                        dataModel.setComment(comment);
-                        dataModel.setTimeOfTransaction(timeOfTransaction);
-                        dataModel.setSyncStatus(syncStatus);
-                        stringBuffer.append(dataModel);
-                        // stringBuffer.append(dataModel);
-                        data.add(dataModel);
-                    } while (cur.moveToNext());
-                }
-            } while (cursor.moveToNext());
-        }
-
-
-        //
-
-        return data;
-    }*/
     public void unsyncedList(){
 
         datamodel = getUnsynced();
-        recycler =new UnsyncedDataAdapter(datamodel);
+        recycler =new UnsyncedDataAdapter(this,datamodel);
         RecyclerView.LayoutManager reLayoutManager =new LinearLayoutManager(getApplicationContext());
         unsyncedRecycler.setLayoutManager(reLayoutManager);
         unsyncedRecycler.setItemAnimator(new DefaultItemAnimator());
@@ -134,11 +73,13 @@ public class UnsyncedData extends AppCompatActivity {
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
         String type = "Clients";
-        int remainingClients = db.unsyncedClients();
+        mRem = db.getUnsyncedClients();
+        int remainingClients = mRem.getCount();
         dataModel.setTransactionType(type);
         dataModel.setItemsRemaining(String.valueOf(remainingClients));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
     private List<UnsyncedDataModel> remainingProducts(){
@@ -146,11 +87,14 @@ public class UnsyncedData extends AppCompatActivity {
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
         String type = "Products";
-        int remainingProducts = db.unsyncedProducts();
+        mSql = "SELECT * FROM " + TABLE_PRODUCTS + " WHERE " + COLUMN_STATUSS + " =0 "+ " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
+        mRem = db.getProducts(mSql);
+        int remainingProducts = mRem.getCount();
         dataModel.setTransactionType(type);
         dataModel.setItemsRemaining(String.valueOf(remainingProducts));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
     private List<UnsyncedDataModel> remainingMpesa(){
@@ -158,23 +102,27 @@ public class UnsyncedData extends AppCompatActivity {
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
         String type = "Mpesa Transactions";
-        int remainingMpesa = db.unsyncedMpesa();
+        mRem = db.getUnsyncedMpesa();
+        int remainingMpesas = mRem.getCount();
         dataModel.setTransactionType(type);
-        dataModel.setItemsRemaining(String.valueOf(remainingMpesa));
+        dataModel.setItemsRemaining(String.valueOf(remainingMpesas));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
     private List<UnsyncedDataModel> remainingSales(){
         List<UnsyncedDataModel> data = new ArrayList<>();
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
-        int remainingSales = db.unsyncedSales();
+        mRem = db.getUnsyncedSales();
+        int remainingSales = mRem.getCount();
         String type = "Sales";
         dataModel.setTransactionType(type);
         dataModel.setItemsRemaining(String.valueOf(remainingSales));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
     private List<UnsyncedDataModel> remainingUsers(){
@@ -182,11 +130,13 @@ public class UnsyncedData extends AppCompatActivity {
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
         String type = "Users";
-        int remainingUsers = db.unsyncedUsers();
+        mRem = db.getUnsyncedUsers();
+        int remainingUsers = mRem.getCount();
         dataModel.setTransactionType(type);
         dataModel.setItemsRemaining(String.valueOf(remainingUsers));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
     private List<UnsyncedDataModel> remainingReports(){
@@ -194,11 +144,13 @@ public class UnsyncedData extends AppCompatActivity {
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
         String type = "Reports";
-        int remainingReports = db.unsyncedReports();
+        mRem = db.getUnsyncedReports();
+        int remainingReports = mRem.getCount();
         dataModel.setTransactionType(type);
         dataModel.setItemsRemaining(String.valueOf(remainingReports));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
     private List<UnsyncedDataModel> remainingTransactions(){
@@ -206,11 +158,13 @@ public class UnsyncedData extends AppCompatActivity {
         UnsyncedDataModel dataModel;
         dataModel = new UnsyncedDataModel();
         String type = "Transactions Log";
-        int remainingTransactions = db.unsyncedTransactions();
+        mRem = db.getUnsyncedTransactions();
+        int remainingTransactions = mRem.getCount();
         dataModel.setTransactionType(type);
         dataModel.setItemsRemaining(String.valueOf(remainingTransactions));
         stringBuffer.append(dataModel);
         data.add(dataModel);
+        mRem.close();
         return data;
     }
 
