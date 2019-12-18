@@ -37,9 +37,8 @@ public class DeleteClient extends AppCompatActivity {
         viewAll = findViewById(R.id.button_view_allC);
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         mListPro = databaseHelper.getAllClients();
-        Spinner spinner= findViewById(R.id.spinner_delete_client);
         mAdapter = new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, mListPro);
-        spinner.setAdapter(mAdapter);
+        delete_client_spinner.setAdapter(mAdapter);
         DeleteClientMethod();
         viewAllClients();
 

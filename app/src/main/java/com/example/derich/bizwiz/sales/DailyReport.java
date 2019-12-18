@@ -186,6 +186,7 @@ public class DailyReport extends AppCompatActivity {
                 mOpeningSales = mOpeningSales + openingSales;
 
             }
+                cursorOpening.close();
         }while (cursorOpeningTime.moveToNext());
 
         }
@@ -254,12 +255,17 @@ public class DailyReport extends AppCompatActivity {
             expectRetailCash =0;
             remainingItems=0;
             buyingPrice = 0;
+                cursorQUery.close();
+                cursorAdded.close();
+                cursorExpectedWholesale.close();
+                cursorExpectedRetail.close();
+                cursorBP.close();
+                cursorRemainingItems.close();
         }
             while (mCursor.moveToNext());
         }
-
-
-        //
+        cursorOpeningTime.close();
+        mCursor.close();
         openingCash.setText(String.valueOf(mOpeningSales));
         totalCash.setText(String.valueOf(expectedTotalCash + mOpeningSales));
         expectedTotalCash = 0;

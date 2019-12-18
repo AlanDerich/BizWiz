@@ -37,9 +37,8 @@ public class DeleteProduct extends AppCompatActivity {
         viewAll = findViewById(R.id.button_delete_product_view_all);
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         mListPro = databaseHelper.getAllProducts();
-        Spinner spinner= findViewById(R.id.spinner_delete_product);
         mAdapter = new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, mListPro);
-        spinner.setAdapter(mAdapter);
+        delete_product_spinner.setAdapter(mAdapter);
         DeleteProductMethod();
         viewAllProducts();
 

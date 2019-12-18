@@ -18,10 +18,6 @@ import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_CASH;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_FLOAT;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLOSING_CASH;
@@ -39,6 +35,9 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 public class OpeningFloat extends AppCompatActivity {
     EditText amount;
@@ -50,15 +49,13 @@ public class OpeningFloat extends AppCompatActivity {
         setContentView(R.layout.activity_opening_float);
         amount = findViewById(R.id.editText_opening_float);
         btn_insert = findViewById(R.id.button_opening_float);
-        long timeMillis = System.currentTimeMillis();
         enterOpeningFloat();
 
     }
 
     private void enterOpeningFloat() {
-        long timeMillis = System.currentTimeMillis();
-        if ((totalOpeningFloat(getDate(timeMillis)))> 0){
-            int openingFloat = totalOpeningFloat(getDate(timeMillis));
+        if ((totalOpeningFloat(getDate()))> 0){
+            int openingFloat = totalOpeningFloat(getDate());
 
             Toast.makeText(this,"Today's opening float of " + openingFloat + " has already been inserted",Toast.LENGTH_LONG).show();
         }
@@ -89,8 +86,7 @@ public class OpeningFloat extends AppCompatActivity {
                                                             int which)
                                         {
                                             Integer addedCash = Integer.valueOf(addedAmount);
-                                            long timeMillis = System.currentTimeMillis();
-                                            insert( getDate(timeMillis),addedCash);
+                                            insert( getDate(),addedCash);
                                             amount.setText("");
                                             Toast.makeText(OpeningFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
                                         }
@@ -136,18 +132,9 @@ public class OpeningFloat extends AppCompatActivity {
         cursorOpeningCash.close();
         return opening_float;
     }
-    public static String getDate(long milliseconds){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Calendar vCalendar = Calendar.getInstance();
-        vCalendar.setTimeInMillis(milliseconds);
-        return sdf.format(vCalendar.getTime());
-    }
 
     public void insert(String date,Integer openingCash) {
-        SimpleDateFormat sdif = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-        String currentDateandTime = sdif.format(new Date());
-        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+
         String type = "An opening float of " + openingCash + " Ksh was added.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(OpeningFloat.this);
@@ -158,7 +145,7 @@ public class OpeningFloat extends AppCompatActivity {
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_OPENING_FLOAT, openingCash);
-        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
+        contentValue.put(TIME_OF_TRANSACTION, currentTimeOfAdd);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 
         contentValue.put(COLUMN_ADDED_CASH, 0);

@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginTop="20dp"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/cardview_bg">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -45,7 +32,7 @@
                         android:layout_height="wrap_content"
                         android:text="Transaction Type"
                         android:textColor="@color/colorGray"
-                        android:textSize="18dp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:id="@+id/textView_transaction_type"
                         />
@@ -54,7 +41,7 @@
                         android:layout_height="wrap_content"
                         android:text="Transaction Amount"
                         android:textColor="@color/colorGray"
-                        android:textSize="15dp"
+                        android:textSize="15sp"
                         android:textStyle="bold"
                         android:id="@+id/textView_transaction_amount_list"
 
@@ -67,7 +54,7 @@
                         android:text="Comment"
                         android:id="@+id/textView_transaction_comment"
                         android:textColor="@color/colorLightGray"
-                        android:textSize="14dp" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -88,7 +75,5 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
 
 </RelativeLayout>

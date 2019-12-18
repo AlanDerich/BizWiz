@@ -245,11 +245,13 @@ public class MpesaLogs extends AppCompatActivity implements LoaderManager.Loader
                         stringBuffer.append(dataModel);
                         // stringBuffer.append(dataModel);
                         datas.add(dataModel);
-                    } while (cur.moveToNext());
+                    }
+                    while (cur.moveToNext());
                 }
-            } while (mTransactions.moveToNext());
+                cur.close();
+            }
+            while (mTransactions.moveToNext());
         }
-
         datamodel= datas;
         recycler =new MpesaAdapter(datamodel);
         RecyclerView.LayoutManager reLayoutManager =new LinearLayoutManager(getApplicationContext());
@@ -268,8 +270,7 @@ public class MpesaLogs extends AppCompatActivity implements LoaderManager.Loader
                 list.add(dateOfTransaction);
             }
         }
-        ArrayList<String> listPro = list;
-        ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
+        ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, list);
         spinnerLogs.setAdapter(adapter);
 
 

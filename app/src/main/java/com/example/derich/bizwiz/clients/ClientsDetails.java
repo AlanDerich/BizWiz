@@ -32,9 +32,7 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +41,7 @@ import static com.example.derich.bizwiz.PreferenceHelper.getUsername;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLIENT_FULLNAME;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_NUMBER;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_CLIENT;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
 
 /**
  * Created by group 7 CS project on 3/11/18.
@@ -60,8 +59,6 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
     DatabaseHelper dbHelper;
 
 
-    //View objects
-    private Button buttonSave;
     private EditText editTextFullName;
     private EditText editTextClientDebt;
     private EditText editTextNumber;
@@ -98,7 +95,8 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
         sqLiteDatabase = db.getReadableDatabase();
         clients = new ArrayList<>();
 
-        buttonSave = findViewById(R.id.buttonSave);
+        //View objects
+        Button buttonSave = findViewById(R.id.buttonSave);
         editTextFullName = findViewById(R.id.editTextFullName);
         editTextClientDebt = findViewById(R.id.editTextClientDebt);
         editTextNumber = findViewById(R.id.editTextNumber);
@@ -199,16 +197,12 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                                         //if there is a success
                                         //storing the CLIENT to sqlite with status synced
                                         saveClientToLocalStorage(client_fullName, client_added_debt, client_debt, Number, client_Email, CLIENT_SYNCED_WITH_SERVER);
-                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                                        String currentDateandTime = sdf.format(new Date());
                                         String type = "Synced clients with server. ";
                                         db.syncAttempt(currentDateandTime,type,user);
                                     } else {
                                         //if there is some error
                                         //saving the name to sqlite with status unsynced
                                         saveClientToLocalStorage(client_fullName,client_added_debt, client_debt, Number, client_Email, CLIENT_NOT_SYNCED_WITH_SERVER);
-                                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                                        String currentDateandTime = sdf.format(new Date());
                                         String type = "Did not Sync clients with server. ";
                                         db.syncAttempt(currentDateandTime,type,user);
                                     }
@@ -258,16 +252,12 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
                                             //if there is a success
                                             //storing the CLIENT to sqlite with status synced
                                             saveClientToLocalStorage(client_fullName, client_added_debt, client_debt, Number, client_Email, CLIENT_SYNCED_WITH_SERVER);
-                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                                            String currentDateandTime = sdf.format(new Date());
                                             String type = "Synced clients with server. ";
                                             db.syncAttempt(currentDateandTime,type,user);
                                         } else {
                                             //if there is some error
                                             //saving the name to sqlite with status unsynced
                                             saveClientToLocalStorage(client_fullName,client_added_debt, client_debt, Number, client_Email, CLIENT_NOT_SYNCED_WITH_SERVER);
-                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                                            String currentDateandTime = sdf.format(new Date());
                                             String type = "Did not Sync clients with server. ";
                                             db.syncAttempt(currentDateandTime,type,user);
                                         }
@@ -314,11 +304,7 @@ public class ClientsDetails extends AppCompatActivity implements View.OnClickLis
 
     //saving the client to local storage
     private void saveClientToLocalStorage(String client_fullName,int client_added_debt, String client_debt, String Number, String client_Email, int status) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-        String currentDateandTime = sdf.format(new Date());
         String type = "New client added. " + client_fullName + " by " + getUsername();
-
-
         db.addClient(client_fullName,client_added_debt, client_debt, Number, client_Email, status, currentDateandTime, type,getUsername());
         Clients n = new Clients(client_fullName, client_debt, Number, client_Email, status);
         clients.add(n);

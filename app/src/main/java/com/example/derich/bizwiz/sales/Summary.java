@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_BUYING_PRICE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_NAME;
@@ -50,7 +51,7 @@ public class Summary extends AppCompatActivity implements LoaderManager.LoaderCa
     private static final int LOADER_SALES = 1;
     RecyclerView recyclerSummary;
     SummaryAdapter recycler;
-    static Spinner spinnerPeriod,spinnerUser;
+    Spinner spinnerPeriod,spinnerUser;
     static DatabaseHelper database;
     TextView totalCash,dates;
     String[] period =  {"This month","This Week","Last 1 week","Last Month","This Year","Last Year"};
@@ -99,7 +100,7 @@ public class Summary extends AppCompatActivity implements LoaderManager.LoaderCa
         database = new DatabaseHelper(this);
         mDb = database.getReadableDatabase();
         summaryModel = new ArrayList<>();
-        mSdf = new SimpleDateFormat("yyyy/MM/dd");
+        mSdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         mC = Calendar.getInstance();
 
         CustomAdapter customAdapter = new CustomAdapter(this,period);
@@ -272,7 +273,6 @@ public class Summary extends AppCompatActivity implements LoaderManager.LoaderCa
                                     String soldItems = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(REPORT_SOLD_ITEMS));
                                     saleItems = Integer.valueOf(soldItems) + saleItems;
                                 }
-
                                 String sqliAdded = "SELECT report_added_items FROM " + TABLE_REPORT + " WHERE " + REPORT_DATE + " = ? " + " AND " + REPORT_USER + " = ? "+ " AND " + REPORT_PRODUCT + " = ? " + " ORDER BY " + REPORT_DATE + " ASC;";
                                 Cursor cursorAdded = mDb.rawQuery(sqliAdded,param);
                                 while(cursorAdded.moveToNext()){
@@ -330,6 +330,7 @@ public class Summary extends AppCompatActivity implements LoaderManager.LoaderCa
                                 cursorExpectedRetail.close();
                                 cursorExpectedWholesale.close();
                                 cursorRemainingItems.close();
+                                cursorQUery.close();
 
                             }
                             while (cursorProduct.moveToNext());
@@ -383,8 +384,7 @@ public class Summary extends AppCompatActivity implements LoaderManager.LoaderCa
                 list.add(dateOfTransaction);
             }
         }
-        ArrayList<String> listPro = list;
-        ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
+        ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, list);
         spinnerUser.setAdapter(adapter);
     }
 

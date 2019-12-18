@@ -26,15 +26,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.activities.VolleySingleton;
-import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +39,9 @@ import java.util.Map;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_ID;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_PRODUCT_NAME;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 /**
  * Created by group 7 CS project on 3/11/18.
@@ -64,8 +64,6 @@ public class AddProduct extends AppCompatActivity implements View.OnClickListene
     private DatabaseHelper db;
     DatabaseHelper dbHelper;
 
-    //View objects
-    private Button buttonSave;
     private EditText editTextName,editTextQuantity,editTextBuyingPrice,editTextRetailPrice,editTextWholesalePrice;
     private ListView listViewProducts;
 
@@ -79,12 +77,8 @@ public class AddProduct extends AppCompatActivity implements View.OnClickListene
     //a broadcast to know whether the data is synced or not
     public static final String DATA_SAVED_BROADCAST = "alanderich.info/bizwiz";
 
-    //Broadcast receiver to know the sync status
-    private BroadcastReceiver broadcastReceiver;
-
     //adapterobject for list view
     private ProductAdapter productAdapter;
-    private String mSql ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +91,8 @@ public class AddProduct extends AppCompatActivity implements View.OnClickListene
         dbHelper = new DatabaseHelper(this);
         products = new ArrayList<>();
 
-        buttonSave = findViewById(R.id.buttonSave);
+        //View objects
+        Button buttonSave = findViewById(R.id.buttonSave);
         editTextName = findViewById(R.id.editTextName);
         editTextQuantity = findViewById(R.id.editTextQuantity);
         editTextBuyingPrice = findViewById(R.id.editTextProductBuyingPrice);
@@ -112,7 +107,9 @@ public class AddProduct extends AppCompatActivity implements View.OnClickListene
         loadProducts();
 
         //the broadcast receiver to update sync status
-        broadcastReceiver = new BroadcastReceiver() {
+        //loading the products again
+        //Broadcast receiver to know the sync status
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 
@@ -132,8 +129,8 @@ public class AddProduct extends AppCompatActivity implements View.OnClickListene
      * */
     private void loadProducts() {
         products.clear();
-        mSql = "SELECT * FROM " + TABLE_PRODUCTS + " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
-        Cursor cursor = db.getProducts(mSql);
+        String sql = "SELECT * FROM " + TABLE_PRODUCTS + " ORDER BY " + COLUMN_PRODUCT_ID + " ASC;";
+        Cursor cursor = db.getProducts(sql);
         if (cursor.moveToFirst()) {
             do {
                 Products product = new Products(
@@ -234,17 +231,11 @@ public class AddProduct extends AppCompatActivity implements View.OnClickListene
 
     //saving the product to local storage
     private void saveProductToLocalStorage(String product_name, String quantity,String product_buying_price,String product_retail_price,String product_wholesale_price, int status) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-        String currentDateandTime = sdf.format(new Date());
         String type = "New product added. " + product_name +". Initial quantity is " + quantity;
-        long timeMillis = System.currentTimeMillis();
-        String date = ReductedCash.getDate(timeMillis);
-        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         Float amount = Float.valueOf(product_buying_price) * Integer.valueOf(quantity);
 
         db.addProduct(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, status, currentDateandTime, type, PreferenceHelper.getUsername());
-        db.insertSalesExpenses(String.valueOf(amount),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,product_name,quantity);
+        db.insertSalesExpenses(String.valueOf(amount),PreferenceHelper.getUsername(), getDate(), currentTimeOfAdd,product_name,quantity);
         Products n = new Products(product_name,quantity,product_buying_price,product_retail_price,product_wholesale_price, status);
         products.add(n);
         refreshList();

@@ -15,19 +15,17 @@ public class PreferenceUtils {
 
     }
 
-    public static boolean saveEmail(String email, Context context) {
+    public static void saveEmail(String email, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor prefsEditor = prefs.edit();
         prefsEditor.putString(Constants.KEY_EMAIL, email);
         prefsEditor.apply();
-        return true;
     }
-    public static boolean saveUsername(String username, Context context) {
+    public static void saveUsername(String username, Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor prefsEditor = prefs.edit();
         prefsEditor.putString(Constants.KEY_USERNAME, username);
         prefsEditor.apply();
-        return true;
     }
 
     public static String getEmail(Context context) {

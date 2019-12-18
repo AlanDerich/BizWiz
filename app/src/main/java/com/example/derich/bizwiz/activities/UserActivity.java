@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +40,6 @@ import com.example.derich.bizwiz.sales.Sales;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 import com.example.derich.bizwiz.syncFromServer.Main;
 import com.example.derich.bizwiz.utils.PreferenceUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
 import static com.example.derich.bizwiz.PreferenceHelper.getUsername;
@@ -53,10 +50,6 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TABLE_PRODUCTS;
 
 public class UserActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    FloatingActionButton fab_plus,fab_product;
-    Animation FabOpen,FabClose,FabClockwise,FabAntiClockwise;
-    boolean isOpen = false;
     DatabaseHelper myDb;
     public DatabaseHelper db;
 
@@ -73,7 +66,6 @@ public class UserActivity extends AppCompatActivity
     public static final String ACCOUNT = "dummyaccount";
     // Instance fields
     Account mAccount;
-    private Cursor mCursor;
     private String Admin = "Admin";
     private String mSql;
 
@@ -89,15 +81,9 @@ public class UserActivity extends AppCompatActivity
         products = findViewById(R.id.products);
         transactionss = findViewById(R.id.transactionss);
         sync = findViewById(R.id.sync);
-        fab_plus = findViewById(R.id.add);
-        fab_product= findViewById(R.id.addProduct);
         delete_client = findViewById(R.id.delete_client);
         addUser = findViewById(R.id.addClientButton);
         viewUsers = findViewById(R.id.buttonViewUsers);
-        FabOpen = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_open);
-        FabClose = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
-        FabClockwise = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_clockwise);
-        FabAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_anticlockwise);
         registerReceiver(new NetworkStateChecker(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -442,14 +428,13 @@ else {
             int requestCode,
             String[] permissions,
             int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_PERMISSION_READ_CONTACTS:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
-                }
+        if (requestCode == REQUEST_PERMISSION_READ_CONTACTS) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permission Granted!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -17,8 +17,9 @@ import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 public class SalesReductedCash extends AppCompatActivity {
     Button btnAdd;
@@ -37,9 +38,6 @@ public class SalesReductedCash extends AppCompatActivity {
             public void onClick(View v) {
                 final String reductedAmount = editTextAmount.getText().toString().trim();
                 if (!(reductedAmount.isEmpty())){
-                    final long timeMillis = System.currentTimeMillis();
-                    SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                    final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
                     AlertDialog.Builder builder
                             = new AlertDialog
                             .Builder(SalesReductedCash.this);
@@ -58,15 +56,13 @@ public class SalesReductedCash extends AppCompatActivity {
                                         public void onClick(DialogInterface dialog,
                                                             int which)
                                         {
-                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                                            final String currentDateandTime = sdf.format(new Date());
-                                            long timeMillis = System.currentTimeMillis();
+
                                             final String type = reductedAmount + " ksh deducted. " ;
-                                            float cash = totalOpeningCash(OpeningCashSales.getDate(timeMillis),PreferenceHelper.getUsername());
+                                            float cash = totalOpeningCash(getDate(),PreferenceHelper.getUsername());
                                             float reducted = Float.valueOf(reductedAmount);
                                             if ( reducted> 0){
                                                 if ((cash - reducted) >= 0){
-                                                    db.ReductCashSales(reductedAmount, PreferenceHelper.getUsername(),OpeningCashSales.getDate(timeMillis), currentDateandTimeOfAdd,currentDateandTime,type);
+                                                    db.ReductCashSales(reductedAmount, PreferenceHelper.getUsername(),getDate(), currentTimeOfAdd,currentDateandTime,type);
                                                     editTextAmount.setText("");
                                                     Toast.makeText(SalesReductedCash.this,"Reducted successfully",Toast.LENGTH_SHORT).show();
                                                 }

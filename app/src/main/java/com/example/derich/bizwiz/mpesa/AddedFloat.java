@@ -16,10 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import com.example.derich.bizwiz.utils.DateAndTime;
 
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_CASH;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_FLOAT;
@@ -38,6 +35,8 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 public class AddedFloat extends AppCompatActivity {
     EditText amount, comments;
@@ -84,7 +83,7 @@ public class AddedFloat extends AppCompatActivity {
                                         {
                                             Integer addedCash = Integer.valueOf(addedAmount);
                                             long timeMillis = System.currentTimeMillis();
-                                            insert( getDate(timeMillis),addedCash, comment);
+                                            insert( getDate(),addedCash, comment);
                                             amount.setText("");
                                             comments.setText("");
                                             Toast.makeText(AddedFloat.this,"Added successfully",Toast.LENGTH_SHORT).show();
@@ -115,19 +114,8 @@ public class AddedFloat extends AppCompatActivity {
         });
     }
 
-
-    public static String getDate(long milliseconds){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Calendar vCalendar = Calendar.getInstance();
-        vCalendar.setTimeInMillis(milliseconds);
-        return sdf.format(vCalendar.getTime());
-    }
-
     public void insert(String date,Integer addedCash, String comment) {
-        SimpleDateFormat sdif = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-        String currentDateandTime = sdif.format(new Date());
-        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
+
         String type = "A float of " + addedCash + " Ksh was added.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(AddedFloat.this);
@@ -136,7 +124,7 @@ public class AddedFloat extends AppCompatActivity {
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_ADDED_FLOAT, addedCash);
-        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
+        contentValue.put(TIME_OF_TRANSACTION, DateAndTime.currentTimeOfAdd);
         contentValue.put(COLUMN_COMMENT,comment);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 

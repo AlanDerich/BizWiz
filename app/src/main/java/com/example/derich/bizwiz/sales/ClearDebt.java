@@ -18,12 +18,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.ViewClient;
-import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 
 public class ClearDebt extends AppCompatActivity {
@@ -46,9 +47,8 @@ public class ClearDebt extends AppCompatActivity {
         btnViewUpdate = findViewById(R.id.button_update_debt);
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         ArrayList<String> listPro = databaseHelper.getAllClients();
-        Spinner spinner= findViewById(R.id.client_Name);
         ArrayAdapter<String> adapter= new ArrayAdapter<String>(this, R.layout.spinner_layout,R.id.txt,listPro);
-        spinner.setAdapter(adapter);
+        clientName.setAdapter(adapter);
         viewAll();
         UpdateData();
 
@@ -66,12 +66,6 @@ public class ClearDebt extends AppCompatActivity {
                         sqLiteDatabase = databaseHelper.getReadableDatabase();
                         int previousDebt=databaseHelper.previousDebt(client_name);
                         int previousUnsyncedDebt = databaseHelper.previousUnsyncedDebt(client_name);
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                        final String currentDateandTime = sdf.format(new Date());
-                            long timeMillis = System.currentTimeMillis();
-                            final String date = ReductedCash.getDate(timeMillis);
-                            SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                            final String currentTimeOfAdd = sdfAdd.format(new Date());
 
                         if ( !(client_name.isEmpty()) && !(amount.isEmpty())) {
 
@@ -100,7 +94,7 @@ public class ClearDebt extends AppCompatActivity {
                                                                         int which)
                                                     {
                                                         boolean Update = myDb.updateDebt(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), currentDateandTime, type,PreferenceHelper.getUsername());
-                                                        boolean updateDebtsPaid = myDb.insertDebtsPaid(amount,PreferenceHelper.getUsername(),date,currentTimeOfAdd);
+                                                        boolean updateDebtsPaid = myDb.insertDebtsPaid(amount,PreferenceHelper.getUsername(), getDate(),currentTimeOfAdd);
                                                         if (Update && updateDebtsPaid) {
                                                             Toast.makeText(ClearDebt.this, "Debt Updated", Toast.LENGTH_LONG).show();
                                                             emptyInputEditText();

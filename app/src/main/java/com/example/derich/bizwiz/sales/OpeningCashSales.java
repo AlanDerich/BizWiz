@@ -17,9 +17,9 @@ import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 public class OpeningCashSales extends AppCompatActivity {
     EditText amount;
@@ -39,8 +39,8 @@ public class OpeningCashSales extends AppCompatActivity {
 
     private void enterOpeningCash() {
         long timeMillis = System.currentTimeMillis();
-        if ((totalOpeningCash(getDate(timeMillis), PreferenceHelper.getUsername()))> 0){
-            int openingCash = totalOpeningCash(getDate(timeMillis),PreferenceHelper.getUsername());
+        if ((totalOpeningCash(getDate(), PreferenceHelper.getUsername()))> 0){
+            int openingCash = totalOpeningCash(getDate(),PreferenceHelper.getUsername());
 
             Toast.makeText(this,"Today opening cash of " + openingCash + " has already been inserted",Toast.LENGTH_LONG).show();
         }
@@ -52,11 +52,6 @@ public class OpeningCashSales extends AppCompatActivity {
                 public void onClick(View v) {
                     final String addedAmount = amount.getText().toString().trim();
                     if (!(addedAmount.isEmpty())){
-                        final long timeMillis = System.currentTimeMillis();
-                        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                        final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                        final String currentDateandTime = sdf.format(new Date());
                         final String type = "Inserted opening cash of "+addedAmount + " ksh. " + " Transacted by " + PreferenceHelper.getUsername();
 
                         AlertDialog.Builder builder
@@ -77,7 +72,7 @@ public class OpeningCashSales extends AppCompatActivity {
                                             public void onClick(DialogInterface dialog,
                                                                 int which)
                                             {
-                                                db.insertOpeningCashSales(addedAmount,PreferenceHelper.getUsername(),getDate(timeMillis), currentDateandTimeOfAdd,currentDateandTime,type);
+                                                db.insertOpeningCashSales(addedAmount,PreferenceHelper.getUsername(),getDate(), currentTimeOfAdd,currentDateandTime,type);
                                                 amount.setText("");
                                                 Toast.makeText(OpeningCashSales.this,"Added successfully",Toast.LENGTH_SHORT).show();
                                             }
@@ -132,12 +127,6 @@ public class OpeningCashSales extends AppCompatActivity {
         return openingCash;
 
 
-    }
-    public static String getDate(long milliseconds){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Calendar vCalendar = Calendar.getInstance();
-        vCalendar.setTimeInMillis(milliseconds);
-        return sdf.format(vCalendar.getTime());
     }
 
 

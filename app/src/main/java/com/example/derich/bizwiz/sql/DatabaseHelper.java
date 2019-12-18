@@ -280,15 +280,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
 
     public Cursor getAllTransactions(String sql) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cur = db.rawQuery(sql, null);
-        return cur;
+        return db.rawQuery(sql, null);
     }
 
     public Cursor getAllTransactionsUser(String sql,String username) {
         String[] params = new String[] {username};
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cur = db.rawQuery(sql,params);
-        return cur;
+        return db.rawQuery(sql,params);
 
     }
 
@@ -309,6 +307,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             balance = 0;
         }
+        cursor.close();
         return balance;
 
     }
@@ -321,6 +320,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             balance = 0;
         }
+        cursor.close();
         return balance;
 
     }
@@ -333,6 +333,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             balance = 0;
         }
+        cursor.close();
         return balance;
 
     }
@@ -346,6 +347,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             price = 0;
         }
+        cursor.close();
         return price;
 
     }
@@ -358,6 +360,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             price = 0;
         }
+        cursor.close();
         return price;
 
     }
@@ -370,6 +373,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             debt = 0;
         }
+        cursor.close();
         return debt;
 
     }
@@ -382,6 +386,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             debt = 0;
         }
+        cursor.close();
         return debt;
 
     }
@@ -406,6 +411,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             status = 0;
         }
+        cursor.close();
         return status;
 
     }
@@ -419,6 +425,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         } else {
             status = 0;
         }
+        cursor.close();
         return status;
 
     }
@@ -497,8 +504,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         SQLiteDatabase db = this.getReadableDatabase();
         String[] params = new String[] {username,date};
         String sql = "SELECT * FROM " + TABLE_SALES + " WHERE " + COLUMN_SALES_USER + " = ? " + " AND " + COLUMN_SALES_DATE + " = ? " + " ORDER BY " + COLUMN_SALES_DATE + " ASC;";
-        Cursor c = db.rawQuery(sql,params);
-        return c;
+        return db.rawQuery(sql,params);
     }
 
     public boolean insertDebtSales (String amount, String username, String date, String time, String product_name, String quantity){
@@ -682,7 +688,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
     }
 
 
-    public boolean addClient(String client_fullName,int added_debt, String client_debt,String Number,String client_Email, int status, String currentDateandTime, String type, String user) {
+    public void addClient(String client_fullName,int added_debt, String client_debt,String Number,String client_Email, int status, String currentDateandTime, String type, String user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         ContentValues contentValues1 = new ContentValues();
@@ -700,10 +706,9 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.insert(TABLE_CLIENT, null, contentValues);
         db.close();
-        return true;
     }
 
-    public boolean syncAttempt(String currentDateandTime, String type, String user) {
+    public void syncAttempt(String currentDateandTime, String type, String user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues1 = new ContentValues();
         contentValues1.put(TRANSACTION_DATE,currentDateandTime);
@@ -712,7 +717,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         contentValues1.put(COLUMN_TRANSACTION_STATUS, 0);
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.close();
-        return true;
     }
 
     /*
@@ -736,8 +740,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
     public Cursor getClients() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_CLIENT + " ORDER BY " + COLUMN_CLIENT_ID + " ASC;";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
+        return db.rawQuery(sql, null);
     }
 
 
@@ -749,13 +752,12 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
     public Cursor getUnsyncedClients() {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "SELECT * FROM " + TABLE_CLIENT + " WHERE " + COLUMN_STATUS + " = 0;";
-        Cursor c = db.rawQuery(sql, null);
-        return c;
+        return db.rawQuery(sql, null);
     }
 
 
 
-    public boolean addProduct(String product_name,String Quantity,String product_buying_price,String product_retail_price,String product_wholesale_price, int status, String currentDateandTime, String type, String user) {
+    public void addProduct(String product_name,String Quantity,String product_buying_price,String product_retail_price,String product_wholesale_price, int status, String currentDateandTime, String type, String user) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         ContentValues contentValues1 = new ContentValues();
@@ -773,7 +775,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         db.insert(TABLE_TRANSACTIONS, null, contentValues1);
         db.insert(TABLE_PRODUCTS, null, contentValues);
         db.close();
-        return true;
     }
 
 
@@ -833,15 +834,13 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
      * */
     public Cursor getProducts(String sql) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery(sql, null);
-        return c;
+        return db.rawQuery(sql, null);
     }
     public Cursor getUnsyncedTransactions() {
         SQLiteDatabase db = this.getReadableDatabase();
         String[] param = new String[]{"0"};
         String sql = "SELECT * FROM " + TABLE_TRANSACTIONS + " WHERE " + COLUMN_TRANSACTION_STATUS + " = ?;";
-        Cursor cursor = db.rawQuery(sql, param);
-        return cursor;
+        return db.rawQuery(sql, param);
     }
     public Cursor getAllUsersAdmin(String sql) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -1040,6 +1039,7 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
                 }
             }
             db.setTransactionSuccessful();
+            cursor.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -1072,9 +1072,6 @@ public class DatabaseHelper  extends SQLiteOpenHelper implements LoaderManager.L
         return list;
     }
     */
-
-
-    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
         return null;

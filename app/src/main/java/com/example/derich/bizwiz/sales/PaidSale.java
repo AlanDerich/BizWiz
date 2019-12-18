@@ -17,13 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
-import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.products.DisplayProducts;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 public class PaidSale extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     DatabaseHelper myDb;
@@ -49,9 +50,8 @@ public class PaidSale extends AppCompatActivity implements AdapterView.OnItemSel
         btnViewUpdate = findViewById(R.id.button_update_sales);
         DatabaseHelper databaseHelper= new DatabaseHelper(this);
         ArrayList<String> listProducts = databaseHelper.getAllProducts();
-        Spinner spinner1= findViewById(R.id.product_name);
         ArrayAdapter<String> adapter1= new ArrayAdapter<>(this, R.layout.spinner_layout,R.id.txt,listProducts);
-        spinner1.setAdapter(adapter1);
+        productName.setAdapter(adapter1);
 
         mSpinnerPrices.setOnItemSelectedListener(this);
         CustomAdapter customAdapter= new CustomAdapter(PaidSale.this, prices);
@@ -80,12 +80,6 @@ public class PaidSale extends AppCompatActivity implements AdapterView.OnItemSel
                             int previousBal = databaseHelper.previousBal(product_name);
                             int previousSoldSales = databaseHelper.previousSoldBal(product_name);
                             final int soldSales = previousSoldSales - Integer.valueOf(value);
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                            final String currentDateandTime = sdf.format(new Date());
-                            long timeMillis = System.currentTimeMillis();
-                            final String date = ReductedCash.getDate(timeMillis);
-                            SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                            final String currentTimeOfAdd = sdfAdd.format(new Date());
                             if (typeOfSale.equals("Wholesale")){
                                 int price = databaseHelper.productWholesalePrice(product_name);
                                 mAmount = Integer.valueOf(value) * price;
@@ -119,8 +113,8 @@ public class PaidSale extends AppCompatActivity implements AdapterView.OnItemSel
                                                                             int which)
                                                         {
                                                             boolean isUpdate = myDb.updateQuantity(product_name, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
-                                                            boolean updateCashWholeSale = myDb.insertCashWholesaleSale(String.valueOf(mAmount ),PreferenceHelper.getUsername(),date,currentTimeOfAdd,product_name,value);
-                                                            if (isUpdate == true && updateCashWholeSale) {
+                                                            boolean updateCashWholeSale = myDb.insertCashWholesaleSale(String.valueOf(mAmount ),PreferenceHelper.getUsername(),getDate(),currentTimeOfAdd,product_name,value);
+                                                            if (isUpdate && updateCashWholeSale) {
                                                                 Toast.makeText(PaidSale.this, "Data Updated", Toast.LENGTH_LONG).show();
 
                                                                 emptyInputEditText();
@@ -189,8 +183,8 @@ public class PaidSale extends AppCompatActivity implements AdapterView.OnItemSel
                                                                                 int which)
                                                             {
                                                                 boolean isUpdate = myDb.updateQuantity(product_name, String.valueOf(new_value), String.valueOf(soldSales),currentDateandTime, type, PreferenceHelper.getUsername());
-                                                                boolean updateCashRetailSale = myDb.insertCashRetailSale(String.valueOf(mAmount),PreferenceHelper.getUsername(),date,currentTimeOfAdd,product_name,value);
-                                                                if (isUpdate == true && updateCashRetailSale) {
+                                                                boolean updateCashRetailSale = myDb.insertCashRetailSale(String.valueOf(mAmount),PreferenceHelper.getUsername(), getDate(),currentTimeOfAdd,product_name,value);
+                                                                if (isUpdate && updateCashRetailSale) {
                                                                     Toast.makeText(PaidSale.this, "Data Updated", Toast.LENGTH_LONG).show();
 
                                                                     emptyInputEditText();

@@ -91,10 +91,10 @@
             tools:layout_editor_absoluteY="153dp" />
 
 
-    <ListView
-        android:id="@+id/listViewClients"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></ListView>
+        <ListView
+            android:id="@+id/listViewClients"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
 

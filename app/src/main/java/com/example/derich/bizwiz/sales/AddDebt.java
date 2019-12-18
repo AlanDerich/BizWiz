@@ -19,13 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.clients.ViewClient;
-import com.example.derich.bizwiz.mpesa.ReductedCash;
 import com.example.derich.bizwiz.products.DisplayProducts;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
+import com.example.derich.bizwiz.utils.DateAndTime;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
 
 
 public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -52,13 +53,11 @@ public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSele
         ProductName = findViewById(R.id.Prod_Name);
         editTextQuantity = findViewById(R.id.editText_quantity);
         ArrayList<String> listPro = databaseHelper.getAllClients();
-        Spinner spinner= findViewById(R.id.editText_Name);
         ArrayAdapter<String> adapter= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listPro);
-        spinner.setAdapter(adapter);
+        editTextName.setAdapter(adapter);
         ArrayList<String> listProducts = databaseHelper.getAllProducts();
-        Spinner spinner1= findViewById(R.id.Prod_Name);
         ArrayAdapter<String> adapter1= new ArrayAdapter<>(this, R.layout.spinner_layout, R.id.txt, listProducts);
-        spinner1.setAdapter(adapter1);
+        ProductName.setAdapter(adapter1);
         mSpinnerPrices = findViewById(R.id.product_price_spinner);
         mSpinnerPrices.setOnItemSelectedListener(this);
         viewAll();
@@ -89,13 +88,7 @@ public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSele
                         final int soldSales = previousSoldSales - Integer.valueOf(quantity);
 
                         int syncStatus = databaseHelper.syncStatus(client_name);
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-                            final String currentDateandTime = sdf.format(new Date());
-                            long timeMillis = System.currentTimeMillis();
-                            final String date = ReductedCash.getDate(timeMillis);
-                            SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-                            final String currentDateandTimeOfAdd = sdfAdd.format(new Date());
-                          //  final int previousSalesDebt = databaseHelper.previousSalesDebt(PreferenceHelper.getUsername(),date);
+
                             if (productPrice.equals("Wholesale")) {
                             int price = databaseHelper.productWholesalePrice(productName);
                             mAmount = price * Integer.valueOf(quantity);
@@ -135,7 +128,7 @@ public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSele
                                                                             int which)
                                                         {
                                                             boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
-                                                            boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount )),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
+                                                            boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount )),PreferenceHelper.getUsername(), DateAndTime.getDate(), currentTimeOfAdd,productName,quantity);
                                                             if (Update && updateSales) {
                                                                 Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
                                                                 emptyInputEditText();
@@ -193,7 +186,7 @@ public class AddDebt extends AppCompatActivity implements AdapterView.OnItemSele
                                                                             int which)
                                                         {
                                                             boolean Update = databaseHelper.updateData(client_name, String.valueOf(new_unsynced_debt), String.valueOf(new_debt), productName, String.valueOf(new_value),String.valueOf(soldSales), currentDateandTime, type, PreferenceHelper.getUsername());
-                                                            boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount)),PreferenceHelper.getUsername(),date,currentDateandTimeOfAdd,productName,quantity);
+                                                            boolean updateSales = databaseHelper.insertDebtSales((String.valueOf(mAmount)),PreferenceHelper.getUsername(),DateAndTime.getDate(), currentTimeOfAdd,productName,quantity);
                                                             if (Update && updateSales) {
                                                                 Toast.makeText(AddDebt.this, "Data Updated", Toast.LENGTH_LONG).show();
                                                                 emptyInputEditText();

@@ -19,10 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import com.example.derich.bizwiz.utils.DateAndTime;
 
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_CASH;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_FLOAT;
@@ -41,6 +38,8 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
 
 public class AddedCash extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -92,7 +91,7 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
                                         {
                                             Integer addedCash = Integer.valueOf(addedAmount);
                                             long timeMillis = System.currentTimeMillis();
-                                            insert(getDate(timeMillis),addedCash, comments);
+                                            insert(DateAndTime.getDate(),addedCash, comments);
                                             amount.setText("");
                                             comment.setText("");
                                             Toast.makeText(AddedCash.this,"Added successfully",Toast.LENGTH_SHORT).show();
@@ -122,20 +121,10 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
         });
     }
 
-    public static String getDate(long milliseconds){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Calendar vCalendar = Calendar.getInstance();
-        vCalendar.setTimeInMillis(milliseconds);
-        return sdf.format(vCalendar.getTime());
-    }
-
     public void insert(String date,Integer addedCash,String comments) {
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(AddedCash.this);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
-        String currentDateandTime = sdf.format(new Date());
+
         String type = "A cash of  " + addedCash + " Ksh added.";
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues contentValue = new ContentValues();
@@ -143,7 +132,7 @@ public class AddedCash extends AppCompatActivity implements LoaderManager.Loader
         contentValue.put(DATE_MILLIS, date);
 
         contentValue.put(COLUMN_ADDED_CASH, addedCash);
-        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
+        contentValue.put(TIME_OF_TRANSACTION, currentTimeOfAdd);
         contentValue.put(COLUMN_COMMENT, comments);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 

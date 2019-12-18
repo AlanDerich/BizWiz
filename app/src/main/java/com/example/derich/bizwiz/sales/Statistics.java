@@ -143,6 +143,7 @@ public class Statistics extends AppCompatActivity {
                 String openCash = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_OPENING_CASH_SALES));
                 openingCash = Float.valueOf(openCash) + openingCash;
             }
+            cursorQUery.close();
         } else {
             openingCash = openingCash;
         }
@@ -155,6 +156,7 @@ public class Statistics extends AppCompatActivity {
                 String wholesale = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_WHOLESALE_SALES));
                 wholesaleSales = Float.valueOf(wholesale) + wholesaleSales;
             }
+            cursorQUery.close();
         } else {
            wholesaleSales = wholesaleSales;
         }
@@ -167,6 +169,7 @@ public class Statistics extends AppCompatActivity {
                 String retail = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_RETAIL_SALES));
                 retail_sales = Float.valueOf(retail) + retail_sales;
             }
+            cursorQUery.close();
         } else {
             retail_sales = retail_sales;
         }
@@ -178,6 +181,7 @@ public class Statistics extends AppCompatActivity {
                 String expense = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_DAILY_EXPENSE));
                 daily_expense = Float.valueOf(expense) + daily_expense;
             }
+            cursorQUery.close();
            // daily_expense = cursorExpense.getFloat(0);
         } else {
             daily_expense = daily_expense;
@@ -190,6 +194,7 @@ public class Statistics extends AppCompatActivity {
                 String paidDebts = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_DEBTS_PAID));
                 debts_paid = Float.valueOf(paidDebts) + debts_paid;
             }
+            cursorQUery.close();
           //  debts_paid = cursorPaidDebts.getInt(0);
         } else {
             debts_paid = debts_paid;
@@ -202,6 +207,7 @@ public class Statistics extends AppCompatActivity {
                 String debtsGiven = cursorQUery.getString(cursorQUery.getColumnIndexOrThrow(COLUMN_DAILY_DEBT));
                 daily_debt = Float.valueOf(debtsGiven) + daily_debt;
             }
+            cursorQUery.close();
            // daily_debt = cursorGivenDebts.getInt(0);
         } else {
             daily_debt = daily_debt;

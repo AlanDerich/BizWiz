@@ -20,6 +20,7 @@ import com.example.derich.bizwiz.sql.DatabaseHelper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_DAILY_EXPENSE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_DEBTS_PAID;
@@ -151,7 +152,7 @@ public class SalesTransactions extends AppCompatActivity {
         cursorQUery.close();
     }
     public static String getDate(long milliseconds){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         Calendar vCalendar = Calendar.getInstance();
         vCalendar.setTimeInMillis(milliseconds);
         return sdf.format(vCalendar.getTime());

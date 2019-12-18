@@ -283,13 +283,13 @@ public class Main extends AppCompatActivity {
             Toast.makeText(this, "Export Failed!", Toast.LENGTH_LONG).show();
         }
     }
-    public static String DB_FILEPATH = "/data/data/com.example.derich.bizwiz/databases/Bizwiz.db";
+    public String DB_FILEPATH = Main.this.getFilesDir().getPath() + "/data/com.example.derich.bizwiz/databases/Bizwiz.db";
 
     /**
      * Copies the database file at the specified location over the current
      * internal application database.
      * */
-    public boolean importDatabase(String dbPath) throws IOException {
+    public void importDatabase(String dbPath) throws IOException {
 
         // Close the SQLiteOpenHelper so it will commit the created empty
         // database to internal storage.
@@ -303,11 +303,9 @@ public class Main extends AppCompatActivity {
             // it as created.
             db.getWritableDatabase().close();
             Toast.makeText(Main.this, "Imported successfully!", Toast.LENGTH_SHORT).show();
-            return true;
         }
         else {
             Toast.makeText(Main.this, "No backup found!", Toast.LENGTH_SHORT).show();
-            return false;
         }
     }
     public static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {

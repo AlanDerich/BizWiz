@@ -17,10 +17,6 @@ import com.example.derich.bizwiz.PreferenceHelper;
 import com.example.derich.bizwiz.R;
 import com.example.derich.bizwiz.sql.DatabaseHelper;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_CASH;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_ADDED_FLOAT;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.COLUMN_CLOSING_CASH;
@@ -38,6 +34,9 @@ import static com.example.derich.bizwiz.sql.DatabaseHelper.TIME_OF_TRANSACTION;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_DATE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_TYPE;
 import static com.example.derich.bizwiz.sql.DatabaseHelper.TRANSACTION_USER;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentDateandTime;
+import static com.example.derich.bizwiz.utils.DateAndTime.currentTimeOfAdd;
+import static com.example.derich.bizwiz.utils.DateAndTime.getDate;
 
 public class ReductedCash extends AppCompatActivity {
     EditText amount,comment;
@@ -58,7 +57,6 @@ public class ReductedCash extends AppCompatActivity {
         btn_insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 final String reductedAmount = amount.getText().toString().trim();
                 final String comm = comment.getText().toString().trim();
                 if (!(reductedAmount.isEmpty())) {
@@ -82,7 +80,7 @@ public class ReductedCash extends AppCompatActivity {
                                         {
                                             Integer addedCash = Integer.valueOf(reductedAmount);
                                             long timeMillis = System.currentTimeMillis();
-                                            insert(getDate(timeMillis), addedCash,comm);
+                                            insert(getDate(), addedCash,comm);
                                             amount.setText("");
                                             comment.setText("");
                                             Toast.makeText(ReductedCash.this,"Added successfully",Toast.LENGTH_SHORT).show();
@@ -111,18 +109,8 @@ public class ReductedCash extends AppCompatActivity {
             }
         });
     }
-    public static String getDate(long milliseconds){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        Calendar vCalendar = Calendar.getInstance();
-        vCalendar.setTimeInMillis(milliseconds);
-        return sdf.format(vCalendar.getTime());
-    }
 
     public void insert(String date,Integer reductedCash, String comm) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd  'at' HH:mm:ss z");
-        String currentDateandTime = sdf.format(new Date());
-        SimpleDateFormat sdfAdd = new SimpleDateFormat("HH:mm:ss");
-        String currentDateandTimeOfAdd = sdfAdd.format(new Date());
         String type = "A cash of  " + reductedCash + " Ksh was deducted.";
         //Your DB Helper
         SQLiteOpenHelper dbHelper = new DatabaseHelper(ReductedCash.this);
@@ -133,7 +121,7 @@ public class ReductedCash extends AppCompatActivity {
         ContentValues contentValue1 = new ContentValues();
         contentValue.put(DATE_MILLIS, date);
         contentValue.put(COLUMN_REDUCTED_CASH, reductedCash);
-        contentValue.put(TIME_OF_TRANSACTION, currentDateandTimeOfAdd);
+        contentValue.put(TIME_OF_TRANSACTION, currentTimeOfAdd);
         contentValue.put(COLUMN_COMMENT, comm);
         contentValue.put(COLUMN_MPESA_STATUS, 0);
 
